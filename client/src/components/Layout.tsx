@@ -132,17 +132,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-xs text-muted-foreground mt-1">
                 Sistema de RPG baseado no universo de Blue Lock · Livro de Regras v4.0
               </p>
+              <p className="text-xs mt-2" style={{ color: 'oklch(0.75 0.15 230)' }}>
+                Site feito por <span className="font-bold">oja\sado</span>
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              {navLinks.slice(0, 4).map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-xs text-muted-foreground hover:text-white transition-colors font-heading tracking-wider uppercase"
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground font-heading tracking-wider uppercase">
+              <p>© 2026 Blue Lock RPG</p>
             </div>
           </div>
         </div>
