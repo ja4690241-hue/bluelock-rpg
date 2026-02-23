@@ -132,8 +132,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-xs text-muted-foreground mt-1">
                 Sistema de RPG baseado no universo de Blue Lock · Livro de Regras v4.0
               </p>
-              <p className="text-xs mt-2" style={{ color: 'oklch(0.75 0.15 230)' }}>
-                Site feito por <span className="font-bold">oja\sado</span>
+              <p className="text-sm mt-3 font-bold" style={{ color: 'oklch(0.75 0.15 230)' }}>
+                🚀 Site feito por <span className="text-base" style={{ color: 'oklch(0.52 0.22 260)' }}>oja\sado</span>
               </p>
             </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground font-heading tracking-wider uppercase">
