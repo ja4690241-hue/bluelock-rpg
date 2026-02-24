@@ -143,7 +143,7 @@ export default function Pericias() {
         </motion.div>
 
         <Tabs defaultValue="potencia" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8 bg-transparent gap-2 h-auto p-0">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-5 mb-8 bg-transparent gap-2 h-auto p-0 overflow-x-auto">
             {periciasData.map((attr) => (
               <TabsTrigger
                 key={attr.atributo}
@@ -184,7 +184,7 @@ export default function Pericias() {
                   </p>
                 </div>
 
-                <div className="grid gap-4">
+                <div className="grid gap-4 max-w-5xl">
                   {attr.pericias.map((pericia, idx) => (
                     <motion.div
                       key={pericia.nome}
@@ -192,7 +192,7 @@ export default function Pericias() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                     >
-                      <Card className="p-6 bl-card bl-card-flow hover:bl-border-glow transition-all">
+                      <Card className="p-6 bl-card bl-card-flow hover:bl-border-glow transition-all duration-300">
                         <div className="flex items-start gap-4">
                           <div
                             className="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0"
@@ -233,11 +233,11 @@ export default function Pericias() {
           <h2 className="font-display text-3xl text-white tracking-wider mb-8">REGRAS DE PERÍCIAS</h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6 bl-card">
-              <h3 className="font-heading text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <span style={{ color: 'oklch(0.52 0.22 260)' }}>▸</span>
-                Testes de Perícia
-              </h3>
+                      <Card className="p-6 bl-card hover:bl-border-glow transition-all duration-300">
+                        <h3 className="font-heading text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                          <span style={{ color: 'oklch(0.52 0.22 260)' }}>▸</span>
+                          Testes de Perícia
+                        </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Quando um jogador tenta algo que pode falhar, o narrador pode exigir um teste. O resultado é 1d20 + modificador da perícia. Sucesso em testes acima de 10 geralmente resulta em ação bem-sucedida.
               </p>

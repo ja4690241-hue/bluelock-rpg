@@ -101,7 +101,7 @@ export default function Classes() {
         </p>
 
         {/* Classes Grid */}
-        <div className="space-y-4">
+        <div className="space-y-4 max-w-7xl">
           {filteredClasses.map((cls, i) => (
             <motion.div
               key={cls.id}
@@ -156,7 +156,7 @@ export default function Classes() {
                   <div className="border-t border-border/50 pt-6">
                     <p className="text-sm text-muted-foreground leading-relaxed mb-6">{cls.description}</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                       {/* Attribute Bonuses */}
                       <div>
                         <h3 className="font-heading text-xs tracking-widest uppercase text-muted-foreground mb-3">Bônus em Atributos</h3>

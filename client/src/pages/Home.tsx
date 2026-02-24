@@ -134,7 +134,7 @@ export default function Home() {
             <div className="w-24 h-0.5 mt-4" style={{ background: 'oklch(0.52 0.22 260)' }} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
@@ -178,7 +178,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
             {featuredClasses.map((cls, i) => (
               <motion.div
                 key={cls.id}
