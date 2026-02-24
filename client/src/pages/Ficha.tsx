@@ -19,6 +19,7 @@ interface FichaData {
   folego: number;
   treinamentos: string[];
   notas: string;
+  foto?: string;
 }
 
 const initialFicha: FichaData = {
@@ -35,7 +36,8 @@ const initialFicha: FichaData = {
   pericias: {},
   folego: 0,
   treinamentos: [],
-  notas: ""
+  notas: "",
+  foto: undefined
 };
 
 const allSkills = [
@@ -176,6 +178,33 @@ export default function Ficha() {
                       className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
                       style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
                     />
+                  </div>
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Foto do Personagem</label>
+                    <div className="flex items-center gap-4">
+                      {ficha.foto && (
+                        <div className="w-24 h-24 rounded-sm overflow-hidden border-2" style={{ borderColor: 'oklch(0.52 0.22 260)' }}>
+                          <img src={ficha.foto} alt="Foto do personagem" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              setFicha(prev => ({ ...prev, foto: event.target?.result as string }));
+                              toast.success("Foto adicionada!");
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="flex-1 px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none cursor-pointer"
+                        style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Notas / Backstory</label>

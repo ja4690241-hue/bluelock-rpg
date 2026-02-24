@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Trash2, Plus, RotateCcw } from "lucide-react";
+import { Trash2, Plus, RotateCcw, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface Player {
@@ -9,6 +9,7 @@ interface Player {
   y: number;
   team: "azul" | "vermelho";
   numero: number;
+  foto?: string;
 }
 
 const FIELD_WIDTH = 1200;
@@ -36,6 +37,7 @@ export default function MapaTatico() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showDistance, setShowDistance] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [uploadingPlayerId, setUploadingPlayerId] = useState<string | null>(null);
 
   const handleMouseDown = (e: React.MouseEvent, playerId: string) => {
     const rect = (e.currentTarget as SVGElement).getBoundingClientRect();
@@ -117,6 +119,17 @@ export default function MapaTatico() {
     toast.success(`Jogador ${team === "azul" ? "Azul" : "Vermelho"} adicionado!`);
   };
 
+  const updatePlayerFoto = (playerId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPlayers(prev =>
+        prev.map(p => p.id === playerId ? { ...p, foto: event.target?.result as string } : p)
+      );
+      toast.success("Foto adicionada ao jogador!");
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="py-16">
       <div className="container">
@@ -132,7 +145,7 @@ export default function MapaTatico() {
           </h1>
           <div className="w-24 h-0.5 mb-6" style={{ background: "oklch(0.52 0.22 260)" }} />
           <p className="text-muted-foreground max-w-2xl leading-relaxed">
-            Visualize o campo de futebol em tempo real, posicione seus jogadores e planeje suas estratégias. Arraste os ícones para repositionar, clique para selecionar e veja as distâncias entre os jogadores.
+            Visualize o campo de futebol em tempo real, posicione seus jogadores e planeje suas estratégias. Adicione fotos dos personagens para uma experiência mais imersiva!
           </p>
         </motion.div>
 
@@ -256,6 +269,14 @@ export default function MapaTatico() {
             )}
 
             {/* Players */}
+            <defs>
+              {players.map((player) => (
+                <clipPath key={`clip-${player.id}`} id={`clip-${player.id}`}>
+                  <circle cx={player.x} cy={player.y} r="30" />
+                </clipPath>
+              ))}
+            </defs>
+
             {players.map((player) => (
               <g key={player.id}>
                 {/* Selection Indicator */}
@@ -271,31 +292,57 @@ export default function MapaTatico() {
                   />
                 )}
 
-                {/* Player Circle */}
-                <circle
-                  cx={player.x}
-                  cy={player.y}
-                  r="30"
-                  fill={player.team === "azul" ? "oklch(0.52 0.22 260)" : "oklch(0.75 0.18 25)"}
-                  stroke="white"
-                  strokeWidth="2"
-                  onMouseDown={(e) => handleMouseDown(e, player.id)}
-                  onClick={() => togglePlayerSelection(player.id)}
-                  style={{ cursor: "grab", opacity: draggingId === player.id ? 0.8 : 1 }}
-                />
+                {/* Player Avatar or Circle */}
+                {player.foto ? (
+                  <>
+                    <image
+                      x={player.x - 30}
+                      y={player.y - 30}
+                      width="60"
+                      height="60"
+                      href={player.foto}
+                      clipPath={`url(#clip-${player.id})`}
+                      onMouseDown={(e) => handleMouseDown(e, player.id)}
+                      onClick={() => togglePlayerSelection(player.id)}
+                      style={{ cursor: "grab", opacity: draggingId === player.id ? 0.8 : 1 }}
+                    />
+                    <circle
+                      cx={player.x}
+                      cy={player.y}
+                      r="30"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      pointerEvents="none"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <circle
+                      cx={player.x}
+                      cy={player.y}
+                      r="30"
+                      fill={player.team === "azul" ? "oklch(0.52 0.22 260)" : "oklch(0.75 0.18 25)"}
+                      stroke="white"
+                      strokeWidth="2"
+                      onMouseDown={(e) => handleMouseDown(e, player.id)}
+                      onClick={() => togglePlayerSelection(player.id)}
+                      style={{ cursor: "grab", opacity: draggingId === player.id ? 0.8 : 1 }}
+                    />
 
-                {/* Player Number */}
-                <text
-                  x={player.x}
-                  y={player.y + 8}
-                  fill="white"
-                  fontSize="20"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                  pointerEvents="none"
-                >
-                  {player.numero}
-                </text>
+                    <text
+                      x={player.x}
+                      y={player.y + 8}
+                      fill="white"
+                      fontSize="20"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      pointerEvents="none"
+                    >
+                      {player.numero}
+                    </text>
+                  </>
+                )}
               </g>
             ))}
           </svg>
@@ -331,6 +378,7 @@ export default function MapaTatico() {
               <li>✓ Selecione 2 jogadores e ative "Mostrar Distâncias"</li>
               <li>✓ Use os botões para adicionar/remover jogadores</li>
               <li>✓ Clique em "Resetar" para voltar às posições iniciais</li>
+              <li>✓ Adicione fotos aos jogadores selecionados abaixo</li>
             </ul>
           </div>
         </div>
@@ -354,22 +402,42 @@ export default function MapaTatico() {
                     style={{ background: "oklch(0.12 0.015 260)" }}
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold"
-                        style={{ background: player.team === "azul" ? "oklch(0.52 0.22 260)" : "oklch(0.75 0.18 25)" }}
-                      >
-                        {player.numero}
-                      </div>
+                      {player.foto ? (
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-2" style={{ borderColor: "oklch(0.52 0.22 260)" }}>
+                          <img src={player.foto} alt={`Jogador ${player.numero}`} className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                          style={{ background: player.team === "azul" ? "oklch(0.52 0.22 260)" : "oklch(0.75 0.18 25)" }}
+                        >
+                          {player.numero}
+                        </div>
+                      )}
                       <span className="text-sm text-white">
                         Jogador {player.numero} ({player.team === "azul" ? "Azul" : "Vermelho"})
                       </span>
                     </div>
-                    <button
-                      onClick={() => deletePlayer(playerId)}
-                      className="p-2 hover:bg-red-500/20 rounded transition"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
+                    <div className="flex gap-2">
+                      <label className="p-2 hover:bg-blue-500/20 rounded transition cursor-pointer">
+                        <Upload className="w-4 h-4 text-blue-500" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) updatePlayerFoto(playerId, file);
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                      <button
+                        onClick={() => deletePlayer(playerId)}
+                        className="p-2 hover:bg-red-500/20 rounded transition"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
                   </div>
                 );
               })}
