@@ -133,11 +133,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Sistema de RPG baseado no universo de Blue Lock · Livro de Regras v4.0
               </p>
               <p className="text-sm mt-3 font-bold" style={{ color: 'oklch(0.75 0.15 230)' }}>
-                🚀 Site feito por <span className="text-base" style={{ color: 'oklch(0.52 0.22 260)' }}>oja\sado</span>
+                🚀 Site feito por <span className="text-base" style={{ color: 'oklch(0.52 0.22 260)' }}>oja/sado</span>
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Contato: <a href="mailto:ja4690241@gmail.com" className="hover:text-white transition-colors" style={{ color: 'oklch(0.75 0.15 230)' }}>ja4690241@gmail.com</a>
               </p>
             </div>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground font-heading tracking-wider uppercase">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-xs text-muted-foreground font-heading tracking-wider uppercase">
               <p>© 2026 Blue Lock RPG</p>
+              <span className="hidden md:block">·</span>
+              <p>Desenvolvido com ❤️</p>
             </div>
           </div>
         </div>
