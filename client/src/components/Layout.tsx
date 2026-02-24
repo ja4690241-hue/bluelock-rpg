@@ -39,6 +39,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Scanline overlay */}
+      <div className="bl-scanline"></div>
+      
       {/* Navbar */}
       <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md" style={{ background: 'oklch(0.08 0.01 260 / 0.97)' }}>
         <div className="bl-nav-container">
@@ -214,7 +217,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 onClick={() => setMestreOpen(!mestreOpen)}
                 className="px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors text-muted-foreground hover:text-white hover:bg-white/5 flex items-center justify-between"
               >
-                Guia do Mestre
+                Mestre
                 <ChevronDown className={`w-4 h-4 transition-transform ${mestreOpen ? 'rotate-180' : ''}`} />
               </button>
               {mestreOpen && (
