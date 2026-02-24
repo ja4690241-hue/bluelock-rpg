@@ -25,7 +25,6 @@ import Calculadora from "./pages/Calculadora";
 import FluxoDetalhado from "./pages/FluxoDetalhado";
 import ItensCondicoes from "./pages/ItensCondicoes";
 import GuiaNarrador from "./pages/GuiaNarrador";
-import MapaTatico from "./pages/MapaTatico";
 
 function Router() {
   return (
@@ -50,7 +49,6 @@ function Router() {
         <Route path="/fluxo-detalhado" component={FluxoDetalhado} />
         <Route path="/itens-condicoes" component={ItensCondicoes} />
         <Route path="/guia-narrador" component={GuiaNarrador} />
-        <Route path="/mapa-tatico" component={MapaTatico} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
