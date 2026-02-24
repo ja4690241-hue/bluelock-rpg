@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Layout from "./components/Layout";
+import DiceRoller from "./components/DiceRoller";
 import Home from "./pages/Home";
 import Criacao from "./pages/Criacao";
 import Classes from "./pages/Classes";
@@ -63,6 +64,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <DiceRoller />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

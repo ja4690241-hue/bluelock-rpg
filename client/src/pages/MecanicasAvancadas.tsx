@@ -43,12 +43,12 @@ export default function MecanicasAvancadas() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-12"
+          className="mb-12 bl-speed-lines-animated"
         >
           <div className="mb-4 inline-block px-3 py-1 rounded-sm" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.5)' }}>
             <span className="font-heading text-xs tracking-widest uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>Parte 8</span>
           </div>
-          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6">MECÂNICAS AVANÇADAS</h1>
+          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6 bl-glitch">MECÂNICAS AVANÇADAS</h1>
           <div className="w-16 h-1 mb-8" style={{ background: 'oklch(0.52 0.22 260)' }}></div>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
             Aqui estão mecânicas avançadas que buscam auxiliar ainda mais os narradores e dar mais suporte para que as campanhas fluam com mais agilidade, mais diversão e que valorize a interpretação mas também conceda bônus mecânicos para aqueles "combeiros" de plantão.
@@ -64,7 +64,7 @@ export default function MecanicasAvancadas() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
             >
-              <Card className="p-8 bl-card overflow-hidden relative">
+              <Card className="p-8 bl-card bl-card-flow overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 opacity-5" style={{
                   background: `radial-gradient(circle, oklch(0.52 0.22 260), transparent)`,
                   filter: 'blur(40px)'

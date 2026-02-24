@@ -166,12 +166,23 @@
   
   .bl-card:hover {
     border-color: oklch(0.35 0.08 260);
+    transition: all 0.3s ease;
   }
 
   /* Glow border on hover */
   .bl-border-glow {
     border-color: oklch(0.52 0.22 260 / 0.6) !important;
     box-shadow: 0 0 12px oklch(0.52 0.22 260 / 0.15);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 12px oklch(0.52 0.22 260 / 0.15);
+    }
+    50% {
+      box-shadow: 0 0 20px oklch(0.52 0.22 260 / 0.3);
+    }
   }
 
   /* Primary Button */
@@ -312,8 +323,145 @@
     );
   }
 
+  /* Flow State - Aura e Brilho */
+  .bl-flow-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .bl-flow-glow::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      oklch(0.52 0.22 260 / 0.1) 0%,
+      oklch(0.52 0.22 260 / 0.05) 40%,
+      transparent 70%
+    );
+    animation: flowPulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes flowPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+  }
+
+  /* Card Hover Flow Effect */
+  .bl-card-flow {
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .bl-card-flow:hover {
+    border-color: oklch(0.52 0.22 260 / 0.8) !important;
+    box-shadow: 0 0 20px oklch(0.52 0.22 260 / 0.3), inset 0 0 20px oklch(0.52 0.22 260 / 0.05);
+    transform: translateY(-2px);
+  }
+
+  /* Speed Lines Animation */
+  .bl-speed-lines-animated {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .bl-speed-lines-animated::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 3px,
+      oklch(0.52 0.22 260 / 0.02) 3px,
+      oklch(0.52 0.22 260 / 0.02) 6px
+    );
+    animation: speedLines 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes speedLines {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Glitch Effect for Headers */
+  .bl-glitch {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .bl-glitch:hover {
+    animation: glitch 0.3s ease-in-out;
+  }
+
+  @keyframes glitch {
+    0% {
+      text-shadow: -2px 0 oklch(0.52 0.22 260), 2px 0 oklch(0.75 0.15 230);
+    }
+    50% {
+      text-shadow: 2px 0 oklch(0.52 0.22 260), -2px 0 oklch(0.75 0.15 230);
+    }
+    100% {
+      text-shadow: -2px 0 oklch(0.52 0.22 260), 2px 0 oklch(0.75 0.15 230);
+    }
+  }
+
+  /* Electric Pulse Border */
+  .bl-electric-border {
+    position: relative;
+    border: 2px solid oklch(0.52 0.22 260 / 0.5);
+    background: linear-gradient(
+      90deg,
+      oklch(0.10 0.015 260),
+      oklch(0.10 0.015 260)
+    );
+  }
+  
+  .bl-electric-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(0.52 0.22 260 / 0.2),
+      transparent
+    );
+    animation: electricPulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes electricPulse {
+    0%, 100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
   /* Scrollbar */
-  ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }

@@ -130,12 +130,12 @@ export default function Pericias() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-12"
+          className="mb-12 bl-speed-lines-animated"
         >
           <div className="mb-4 inline-block px-3 py-1 rounded-sm" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.5)' }}>
             <span className="font-heading text-xs tracking-widest uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>Parte 1</span>
           </div>
-          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6">PERÍCIAS</h1>
+          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6 bl-glitch">PERÍCIAS</h1>
           <div className="w-16 h-1 mb-8" style={{ background: 'oklch(0.52 0.22 260)' }}></div>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
             As perícias são formas específicas de usar seus atributos. Cada atributo possui uma lista de perícias que mostram diferentes competências de um mesmo atleta. Um jogador pode ter um bom valor em Passe e Técnica, mas não necessariamente ser um bom driblador.
@@ -192,7 +192,7 @@ export default function Pericias() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                     >
-                      <Card className="p-6 bl-card hover:bl-border-glow transition-all">
+                      <Card className="p-6 bl-card bl-card-flow hover:bl-border-glow transition-all">
                         <div className="flex items-start gap-4">
                           <div
                             className="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0"
