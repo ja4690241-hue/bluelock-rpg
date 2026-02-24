@@ -838,3 +838,67 @@
     }
   }
 }
+
+
+  /* Flow/Ego Mode Styles */
+  .bl-flow-mode {
+    background: linear-gradient(135deg, oklch(0.08 0.02 280), oklch(0.06 0.02 320)) !important;
+  }
+
+  .bl-flow-mode .bl-card {
+    border-color: oklch(0.52 0.22 280 / 0.4);
+    background: linear-gradient(135deg, oklch(0.10 0.02 280 / 0.8), oklch(0.12 0.02 320 / 0.6));
+  }
+
+  .bl-flow-mode .bl-card:hover {
+    border-color: oklch(0.52 0.22 280 / 0.8);
+    box-shadow: 0 12px 40px oklch(0.52 0.22 280 / 0.35);
+  }
+
+  .bl-flow-mode .bl-btn-primary {
+    background: oklch(0.52 0.22 280);
+    border-color: oklch(0.52 0.22 280);
+  }
+
+  .bl-flow-mode .bl-btn-primary:hover {
+    background: oklch(0.60 0.22 280);
+    border-color: oklch(0.60 0.22 280);
+    box-shadow: 0 8px 32px oklch(0.52 0.22 280 / 0.5);
+  }
+
+  .bl-flow-mode .bl-tag {
+    background: oklch(0.52 0.22 280 / 0.15);
+    border-color: oklch(0.52 0.22 280 / 0.4);
+    color: oklch(0.75 0.15 280);
+  }
+
+  .bl-flow-mode .bl-nav-link {
+    color: oklch(0.55 0.02 280);
+  }
+
+  .bl-flow-mode .bl-nav-link:hover,
+  .bl-flow-mode .bl-nav-link.active {
+    color: oklch(0.75 0.15 280);
+  }
+
+  /* Ego Awakening Animation */
+  @keyframes egoAwaken {
+    0% {
+      filter: brightness(1);
+      text-shadow: none;
+    }
+    50% {
+      filter: brightness(1.1);
+      text-shadow: 0 0 20px oklch(0.52 0.22 280 / 0.6);
+    }
+    100% {
+      filter: brightness(1);
+      text-shadow: 0 0 10px oklch(0.52 0.22 280 / 0.3);
+    }
+  }
+
+  .bl-flow-mode h1,
+  .bl-flow-mode h2,
+  .bl-flow-mode h3 {
+    animation: egoAwaken 3s ease-in-out infinite;
+  }

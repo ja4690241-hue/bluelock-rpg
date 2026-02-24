@@ -4,7 +4,8 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Zap, ChevronDown } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, Flame } from "lucide-react";
+import { useFlow } from "@/contexts/FlowContext";
 
 const navLinks = [
   { href: "/", label: "Início", category: "principal" },
@@ -31,6 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [regrasOpen, setRegrasOpen] = useState(false);
   const [mestreOpen, setMestreOpen] = useState(false);
+  const { isFlowActive, toggleFlow } = useFlow();
 
   const principalLinks = navLinks.filter(l => l.category === 'principal' || l.category === 'criacao');
   const regrasLinks = navLinks.filter(l => l.category === 'regras');
@@ -38,22 +40,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const mestreLinks = navLinks.filter(l => l.category === 'mestre');
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className={`min-h-screen flex flex-col transition-all duration-500 ${isFlowActive ? 'bl-flow-mode' : ''}`} style={isFlowActive ? { background: 'linear-gradient(135deg, oklch(0.08 0.02 280), oklch(0.06 0.02 320))' } : {}}>
       {/* Scanline overlay */}
       <div className="bl-scanline"></div>
       
+      {/* Flow Mode Particles */}
+      {isFlowActive && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-36 h-36 bg-purple-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+      )}
+      
       {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md" style={{ background: 'oklch(0.08 0.01 260 / 0.97)' }}>
+      <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md transition-all duration-300" style={{ background: isFlowActive ? 'oklch(0.08 0.02 280 / 0.97)' : 'oklch(0.08 0.01 260 / 0.97)' }}>
         <div className="bl-nav-container">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-              <div className="w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg" style={{ background: 'oklch(0.52 0.22 260)' }}>
+              <div className={`w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg ${isFlowActive ? 'bg-purple-600' : ''}`} style={{ background: isFlowActive ? 'oklch(0.52 0.22 280)' : 'oklch(0.52 0.22 260)' }}>
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
                 <span className="font-display text-lg tracking-widest text-white leading-none">BLUE LOCK</span>
-                <span className="block font-heading text-xs tracking-[0.3em] uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>RPG</span>
+                <span className="block font-heading text-xs tracking-[0.3em] uppercase" style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>RPG</span>
               </div>
             </Link>
 
@@ -131,6 +142,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </nav>
 
+            {/* Flow Toggle Button */}
+            <button
+              onClick={toggleFlow}
+              className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-sm text-xs font-heading tracking-wider uppercase transition-all duration-300 flex-shrink-0 ${
+                isFlowActive
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/50'
+                  : 'bg-transparent text-muted-foreground hover:text-white hover:bg-white/5'
+              }`}
+              title="Ativar modo Ego/Flow"
+            >
+              <Flame className="w-4 h-4" />
+              <span className="hidden md:inline">EGO</span>
+            </button>
+
             {/* CTA Button — desktop */}
             <div className="hidden md:flex items-center flex-shrink-0">
               <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 transition-all hover:shadow-lg">
@@ -141,7 +166,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Mobile Menu Button */}
             <button
               className="md:hidden p-2 rounded-sm transition-colors flex-shrink-0"
-              style={{ color: 'oklch(0.75 0.15 230)' }}
+              style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
             >
@@ -152,7 +177,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-border/50 py-4 animate-in fade-in slide-in-from-top-2" style={{ background: 'oklch(0.08 0.01 260)' }}>
+          <div className="md:hidden border-t border-border/50 py-4 animate-in fade-in slide-in-from-top-2" style={{ background: isFlowActive ? 'oklch(0.08 0.02 280)' : 'oklch(0.08 0.01 260)' }}>
             <div className="bl-nav-container flex flex-col gap-1">
               {principalLinks.map((link) => (
                 <Link
@@ -239,6 +264,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               )}
 
+              {/* Mobile Flow Toggle */}
+              <button
+                onClick={() => {
+                  toggleFlow();
+                  setMobileOpen(false);
+                }}
+                className={`px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors flex items-center justify-between w-full ${
+                  isFlowActive
+                    ? 'bg-purple-600 text-white'
+                    : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Flame className="w-4 h-4" />
+                  Modo Ego
+                </span>
+              </button>
+
               <Link
                 href="/ficha"
                 className="bl-btn-primary text-xs mt-2 justify-center"
@@ -257,11 +300,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8 mt-16" style={{ background: 'oklch(0.06 0.01 260)' }}>
+      <footer className="border-t border-border/50 py-8 mt-16 transition-colors duration-300" style={{ background: isFlowActive ? 'oklch(0.06 0.02 280)' : 'oklch(0.06 0.01 260)' }}>
         <div className="bl-nav-container">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-sm flex items-center justify-center" style={{ background: 'oklch(0.52 0.22 260)' }}>
+              <div className={`w-7 h-7 rounded-sm flex items-center justify-center transition-colors ${isFlowActive ? 'bg-purple-600' : ''}`} style={{ background: isFlowActive ? 'oklch(0.52 0.22 280)' : 'oklch(0.52 0.22 260)' }}>
                 <Zap className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -270,16 +313,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="text-center">
               <p className="text-xs text-muted-foreground font-heading tracking-wider">
-                Escrito por <span style={{ color: 'oklch(0.75 0.15 230)' }}>Manjiro_O`Zeno</span> · Design por <span style={{ color: 'oklch(0.75 0.15 230)' }}>Antonio P. Grandin</span>
+                Escrito por <span style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>Manjiro_O`Zeno</span> · Design por <span style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>Antonio P. Grandin</span>
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Sistema de RPG baseado no universo de Blue Lock · Livro de Regras v4.0
               </p>
-              <p className="text-sm mt-3 font-bold" style={{ color: 'oklch(0.75 0.15 230)' }}>
-                🚀 Site feito por <span className="text-base" style={{ color: 'oklch(0.52 0.22 260)' }}>oja/sado</span>
+              <p className="text-sm mt-3 font-bold" style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>
+                🚀 Site feito por <span className="text-base" style={{ color: isFlowActive ? 'oklch(0.52 0.22 280)' : 'oklch(0.52 0.22 260)' }}>oja/sado</span>
               </p>
               <p className="text-xs text-muted-foreground mt-2">
-                Contato: <a href="mailto:ja4690241@gmail.com" className="hover:text-white transition-colors" style={{ color: 'oklch(0.75 0.15 230)' }}>ja4690241@gmail.com</a>
+                Contato: <a href="mailto:ja4690241@gmail.com" className="hover:text-white transition-colors" style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>ja4690241@gmail.com</a>
               </p>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-xs text-muted-foreground font-heading tracking-wider uppercase">
