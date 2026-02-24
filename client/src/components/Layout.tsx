@@ -20,6 +20,7 @@ const navLinks = [
   { href: "/fluxo-detalhado", label: "Fluxo Detalhado" },
   { href: "/itens-condicoes", label: "Itens & Condições" },
   { href: "/guia-narrador", label: "Guia Narrador" },
+  { href: "/mapa-tatico", label: "Mapa Tático" },
   { href: "/mestres", label: "Mestres" },
   { href: "/exemplo", label: "Exemplo" },
   { href: "/treinamentos", label: "Treinamentos" },
