@@ -48,12 +48,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-1 overflow-x-auto">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`bl-nav-link ${location === link.href ? 'active' : ''}`}
+                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap ${location === link.href ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
