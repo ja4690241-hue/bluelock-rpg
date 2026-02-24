@@ -40,52 +40,54 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md" style={{ background: 'oklch(0.08 0.01 260 / 0.95)' }}>
-        <div className="container">
-          <div className="flex items-center justify-between h-16">
+      <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md" style={{ background: 'oklch(0.08 0.01 260 / 0.97)' }}>
+        <div className="bl-nav-container">
+          <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
               <div className="w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg" style={{ background: 'oklch(0.52 0.22 260)' }}>
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <span className="font-display text-lg md:text-xl tracking-widest text-white leading-none">BLUE LOCK</span>
+              <div className="hidden sm:block">
+                <span className="font-display text-lg tracking-widest text-white leading-none">BLUE LOCK</span>
                 <span className="block font-heading text-xs tracking-[0.3em] uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>RPG</span>
               </div>
             </Link>
 
-            {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-6 overflow-x-auto flex-1 ml-8">
+            {/* Desktop Nav — visível a partir de 768px */}
+            <nav className="hidden md:flex items-center gap-1 flex-1 justify-center flex-wrap">
               {principalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
+                  className={`bl-nav-link text-xs px-3 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
               ))}
 
               {/* Regras Dropdown */}
-              <div className="group relative">
-                <button className="bl-nav-link text-xs px-2 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
+              <div className="relative group">
+                <button className="bl-nav-link text-xs px-3 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
                   REGRAS
                   <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                 </button>
-                <div className="absolute left-0 top-full hidden group-hover:block bg-gradient-to-b from-black/95 to-black/85 border border-blue-500/20 rounded-sm py-2 z-50 min-w-max shadow-2xl backdrop-blur-sm">
-                  {regrasLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
-                        location === link.href
-                          ? 'text-white bg-blue-500/20'
-                          : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                <div className="absolute left-0 top-full pt-1 hidden group-hover:block z-50">
+                  <div className="bg-gradient-to-b from-black/98 to-black/90 border border-blue-500/20 rounded-sm py-2 min-w-max shadow-2xl backdrop-blur-sm">
+                    {regrasLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
+                          location === link.href
+                            ? 'text-white bg-blue-500/20'
+                            : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -94,38 +96,40 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
+                  className={`bl-nav-link text-xs px-3 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
               ))}
 
               {/* Guia do Mestre Dropdown */}
-              <div className="group relative">
-                <button className="bl-nav-link text-xs px-2 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
+              <div className="relative group">
+                <button className="bl-nav-link text-xs px-3 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
                   MESTRE
                   <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
                 </button>
-                <div className="absolute left-0 top-full hidden group-hover:block bg-gradient-to-b from-black/95 to-black/85 border border-blue-500/20 rounded-sm py-2 z-50 min-w-max shadow-2xl backdrop-blur-sm">
-                  {mestreLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
-                        location === link.href
-                          ? 'text-white bg-blue-500/20'
-                          : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                <div className="absolute left-0 top-full pt-1 hidden group-hover:block z-50">
+                  <div className="bg-gradient-to-b from-black/98 to-black/90 border border-blue-500/20 rounded-sm py-2 min-w-max shadow-2xl backdrop-blur-sm">
+                    {mestreLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
+                          location === link.href
+                            ? 'text-white bg-blue-500/20'
+                            : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             </nav>
 
-            {/* CTA Button */}
-            <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+            {/* CTA Button — desktop */}
+            <div className="hidden md:flex items-center flex-shrink-0">
               <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 transition-all hover:shadow-lg">
                 Criar Ficha
               </Link>
@@ -133,19 +137,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 rounded-sm transition-colors"
+              className="md:hidden p-2 rounded-sm transition-colors flex-shrink-0"
               style={{ color: 'oklch(0.75 0.15 230)' }}
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menu"
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-border/50 py-4 animate-in fade-in slide-in-from-top-2" style={{ background: 'oklch(0.08 0.01 260)' }}>
-            <div className="container flex flex-col gap-2">
+          <div className="md:hidden border-t border-border/50 py-4 animate-in fade-in slide-in-from-top-2" style={{ background: 'oklch(0.08 0.01 260)' }}>
+            <div className="bl-nav-container flex flex-col gap-1">
               {principalLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -250,7 +255,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 mt-16" style={{ background: 'oklch(0.06 0.01 260)' }}>
-        <div className="container">
+        <div className="bl-nav-container">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-sm flex items-center justify-center" style={{ background: 'oklch(0.52 0.22 260)' }}>
