@@ -4,31 +4,38 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, ChevronDown } from "lucide-react";
 
 const navLinks = [
-  { href: "/", label: "Início" },
-  { href: "/criacao", label: "Criação de Ficha" },
-  { href: "/calculadora", label: "Calculadora" },
-  { href: "/atributos", label: "Atributos" },
-  { href: "/pericias", label: "Perícias" },
-  { href: "/classes", label: "Classes" },
-  { href: "/mecanicas", label: "Mecânicas" },
-  { href: "/mecanicas-avancadas", label: "Avançadas" },
-  { href: "/acoes", label: "Ações" },
-  { href: "/fluxo", label: "Fluxo" },
-  { href: "/fluxo-detalhado", label: "Fluxo Detalhado" },
-  { href: "/itens-condicoes", label: "Itens & Condições" },
-  { href: "/guia-narrador", label: "Guia Narrador" },
-  { href: "/mestres", label: "Mestres" },
-  { href: "/exemplo", label: "Exemplo" },
-  { href: "/treinamentos", label: "Treinamentos" },
-  { href: "/ego", label: "Ego" },
+  { href: "/", label: "Início", category: "principal" },
+  { href: "/criacao", label: "Criar Ficha", category: "criacao" },
+  { href: "/atributos", label: "Atributos", category: "regras" },
+  { href: "/pericias", label: "Perícias", category: "regras" },
+  { href: "/classes", label: "Classes", category: "regras" },
+  { href: "/mecanicas", label: "Mecânicas", category: "regras" },
+  { href: "/mecanicas-avancadas", label: "Mec. Avançadas", category: "regras" },
+  { href: "/acoes", label: "Ações", category: "regras" },
+  { href: "/fluxo", label: "Fluxo", category: "regras" },
+  { href: "/fluxo-detalhado", label: "Fluxo Detalhado", category: "regras" },
+  { href: "/itens-condicoes", label: "Itens & Condições", category: "regras" },
+  { href: "/calculadora", label: "Calculadora", category: "ferramentas" },
+  { href: "/guia-narrador", label: "Guia Narrador", category: "mestre" },
+  { href: "/mestres", label: "Mestres", category: "mestre" },
+  { href: "/exemplo", label: "Exemplo", category: "mestre" },
+  { href: "/treinamentos", label: "Treinamentos", category: "mestre" },
+  { href: "/ego", label: "Ego", category: "mestre" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [regrasOpen, setRegrasOpen] = useState(false);
+  const [mestreOpen, setMestreOpen] = useState(false);
+
+  const principalLinks = navLinks.filter(l => l.category === 'principal' || l.category === 'criacao');
+  const regrasLinks = navLinks.filter(l => l.category === 'regras');
+  const ferramentasLinks = navLinks.filter(l => l.category === 'ferramentas');
+  const mestreLinks = navLinks.filter(l => l.category === 'mestre');
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -37,32 +44,89 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="container">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden" style={{ background: 'oklch(0.52 0.22 260)' }}>
+            <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
+              <div className="w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg" style={{ background: 'oklch(0.52 0.22 260)' }}>
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="font-display text-xl tracking-widest text-white leading-none">BLUE LOCK</span>
+                <span className="font-display text-lg md:text-xl tracking-widest text-white leading-none">BLUE LOCK</span>
                 <span className="block font-heading text-xs tracking-[0.3em] uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>RPG</span>
               </div>
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-1 overflow-x-auto">
-              {navLinks.map((link) => (
+            <nav className="hidden lg:flex items-center gap-6 overflow-x-auto flex-1 ml-8">
+              {principalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap ${location === link.href ? 'active' : ''}`}
+                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
               ))}
+
+              {/* Regras Dropdown */}
+              <div className="group relative">
+                <button className="bl-nav-link text-xs px-2 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
+                  REGRAS
+                  <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                </button>
+                <div className="absolute left-0 top-full hidden group-hover:block bg-gradient-to-b from-black/95 to-black/85 border border-blue-500/20 rounded-sm py-2 z-50 min-w-max shadow-2xl backdrop-blur-sm">
+                  {regrasLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
+                        location === link.href
+                          ? 'text-white bg-blue-500/20'
+                          : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Ferramentas */}
+              {ferramentasLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`bl-nav-link text-xs px-2 py-1 whitespace-nowrap transition-all ${location === link.href ? 'active' : ''}`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              {/* Guia do Mestre Dropdown */}
+              <div className="group relative">
+                <button className="bl-nav-link text-xs px-2 py-1 whitespace-nowrap flex items-center gap-1 group-hover:text-white transition-all">
+                  MESTRE
+                  <ChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+                </button>
+                <div className="absolute left-0 top-full hidden group-hover:block bg-gradient-to-b from-black/95 to-black/85 border border-blue-500/20 rounded-sm py-2 z-50 min-w-max shadow-2xl backdrop-blur-sm">
+                  {mestreLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block px-4 py-2 text-xs whitespace-nowrap transition-all ${
+                        location === link.href
+                          ? 'text-white bg-blue-500/20'
+                          : 'text-muted-foreground hover:text-white hover:bg-blue-500/10'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </nav>
 
             {/* CTA Button */}
-            <div className="hidden lg:flex items-center gap-3">
-              <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2">
+            <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+              <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 transition-all hover:shadow-lg">
                 Criar Ficha
               </Link>
             </div>
@@ -80,9 +144,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-border/50 py-4" style={{ background: 'oklch(0.08 0.01 260)' }}>
-            <div className="container flex flex-col gap-1">
-              {navLinks.map((link) => (
+          <div className="lg:hidden border-t border-border/50 py-4 animate-in fade-in slide-in-from-top-2" style={{ background: 'oklch(0.08 0.01 260)' }}>
+            <div className="container flex flex-col gap-2">
+              {principalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -96,6 +160,77 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Mobile Regras */}
+              <button
+                onClick={() => setRegrasOpen(!regrasOpen)}
+                className="px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors text-muted-foreground hover:text-white hover:bg-white/5 flex items-center justify-between"
+              >
+                Regras
+                <ChevronDown className={`w-4 h-4 transition-transform ${regrasOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {regrasOpen && (
+                <div className="pl-4 flex flex-col gap-1">
+                  {regrasLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`px-3 py-2 rounded-sm font-heading text-xs tracking-wider uppercase transition-colors ${
+                        location === link.href
+                          ? 'text-white bg-primary/20'
+                          : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Mobile Ferramentas */}
+              {ferramentasLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors ${
+                    location === link.href
+                      ? 'text-white bg-primary/20'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  }`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              {/* Mobile Mestre */}
+              <button
+                onClick={() => setMestreOpen(!mestreOpen)}
+                className="px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors text-muted-foreground hover:text-white hover:bg-white/5 flex items-center justify-between"
+              >
+                Guia do Mestre
+                <ChevronDown className={`w-4 h-4 transition-transform ${mestreOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mestreOpen && (
+                <div className="pl-4 flex flex-col gap-1">
+                  {mestreLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`px-3 py-2 rounded-sm font-heading text-xs tracking-wider uppercase transition-colors ${
+                        location === link.href
+                          ? 'text-white bg-primary/20'
+                          : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
               <Link
                 href="/ficha"
                 className="bl-btn-primary text-xs mt-2 justify-center"
@@ -116,7 +251,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Footer */}
       <footer className="border-t border-border/50 py-8 mt-16" style={{ background: 'oklch(0.06 0.01 260)' }}>
         <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-sm flex items-center justify-center" style={{ background: 'oklch(0.52 0.22 260)' }}>
                 <Zap className="w-4 h-4 text-white" />
