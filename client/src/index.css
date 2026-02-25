@@ -195,7 +195,7 @@
   
   .bl-card:hover {
     @apply border-primary/40 bg-card/90;
-    box-shadow: 0 8px 32px 0 var(--primary / 0.1);
+    box-shadow: 0 8px 32px 0 color-mix(in srgb, var(--primary), transparent 90%);
     transform: translateY(-2px);
   }
 
