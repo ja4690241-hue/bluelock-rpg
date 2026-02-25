@@ -77,21 +77,21 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <div className="bl-tag mb-6">Livro de Regras v4.0</div>
-              <h1 className="font-display text-7xl md:text-9xl text-white leading-none tracking-wider mb-2 bl-glow">
+              <h1 className="font-display text-6xl sm:text-7xl md:text-9xl text-white leading-none tracking-wider mb-2 bl-glow">
                 BLUE LOCK
               </h1>
-              <h2 className="font-display text-4xl md:text-6xl leading-none tracking-widest mb-6 text-primary">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-6xl leading-none tracking-widest mb-6 text-primary">
                 RPG
               </h2>
               <p className="font-body text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
                 Crie seu atleta egoísta, escolha sua classe e conquiste o título de melhor centroavante do mundo. Um sistema de RPG de futebol baseado no universo de Blue Lock.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/criacao" className="bl-btn-primary">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/criacao" className="bl-btn-primary justify-center">
                   Criar Personagem
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link href="/classes" className="bl-btn-secondary">
+                <Link href="/classes" className="bl-btn-secondary justify-center">
                   Ver Classes
                 </Link>
               </div>

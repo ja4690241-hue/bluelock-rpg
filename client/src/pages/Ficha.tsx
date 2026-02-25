@@ -253,24 +253,24 @@ export default function Ficha() {
         </AnimatePresence>
 
         {/* Step Indicator */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 custom-scrollbar">
+        <div className="flex items-center gap-1 sm:gap-2 mb-8 sm:mb-10 overflow-x-auto pb-4 custom-scrollbar no-scrollbar">
           {steps.map((s, i) => (
-            <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => setStep(s.id)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading tracking-wider uppercase transition-all border ${
-                      step === s.id 
-                        ? 'bg-primary text-white border-primary' 
-                        : step > s.id 
-                          ? 'bg-primary/20 text-primary border-primary/50' 
-                          : 'bg-secondary text-muted-foreground border-border'
-                    }`}
-                  >
-                <span className="font-mono-stats">{s.id}</span>
-                {s.label}
+            <div key={s.id} className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <button
+                onClick={() => setStep(s.id)}
+                className={`flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-sm text-[10px] sm:text-xs font-heading tracking-wider uppercase transition-all border ${
+                  step === s.id 
+                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
+                    : step > s.id 
+                      ? 'bg-primary/10 text-primary border-primary/30' 
+                      : 'bg-secondary/50 text-muted-foreground border-border/50'
+                }`}
+              >
+                <span className="font-mono-stats opacity-70">{s.id}</span>
+                <span className={step === s.id ? 'inline' : 'hidden sm:inline'}>{s.label}</span>
               </button>
               {i < steps.length - 1 && (
-                <div className="w-4 h-px" style={{ background: 'oklch(0.22 0.03 260)' }} />
+                <div className="w-2 sm:w-4 h-px bg-border/30" />
               )}
             </div>
           ))}
@@ -536,36 +536,36 @@ export default function Ficha() {
                   <div className="relative z-10 flex flex-col gap-6">
                     {/* Header: Foto, Nome e Overall */}
                     <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 border-b border-white/10 pb-6">
-                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left w-full sm:w-auto">
                         {ficha.foto && (
-                          <div className="w-32 h-32 sm:w-24 sm:h-24 rounded-sm overflow-hidden border-2 border-primary/40 flex-shrink-0 shadow-xl shadow-primary/10">
+                          <div className="w-40 h-40 sm:w-28 sm:h-28 rounded-sm overflow-hidden border-2 border-primary/40 flex-shrink-0 shadow-2xl shadow-primary/20">
                             <img src={ficha.foto} alt="Atleta" className="w-full h-full object-cover" />
                           </div>
                         )}
-                        <div>
-                          <div className="bl-tag mb-2 mx-auto sm:mx-0">ATLETA BLUE LOCK</div>
-                          <h2 className="font-display text-4xl sm:text-5xl text-white tracking-wider uppercase italic leading-none mb-2">{ficha.nome || "SEM NOME"}</h2>
+                        <div className="flex-1">
+                          <div className="bl-tag mb-2 mx-auto sm:mx-0 text-[10px]">ATLETA BLUE LOCK</div>
+                          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl text-white tracking-wider uppercase italic leading-none mb-2 break-words">{ficha.nome || "SEM NOME"}</h2>
                           <div className="flex items-center justify-center sm:justify-start gap-3">
-                            <p className="font-heading text-xl text-primary font-bold">#{ficha.numero || "00"}</p>
+                            <p className="font-heading text-2xl text-primary font-bold">#{ficha.numero || "00"}</p>
                             {ficha.arma && (
                               <>
-                                <div className="w-1 h-1 rounded-full bg-white/20" />
-                                <p className="font-heading text-xs text-muted-foreground uppercase tracking-widest">{ficha.arma}</p>
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                                <p className="font-heading text-xs text-muted-foreground uppercase tracking-[0.2em]">{ficha.arma}</p>
                               </>
                             )}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="flex flex-row sm:flex-col items-center sm:items-end gap-4 sm:gap-0 bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-sm border border-white/5 sm:border-0">
+                      <div className="flex flex-row sm:flex-col items-center sm:items-end gap-6 sm:gap-1 bg-primary/5 sm:bg-transparent p-4 sm:p-0 rounded-sm border border-primary/10 sm:border-0 w-full sm:w-auto justify-center">
                         <div className="text-center sm:text-right">
-                          <div className="text-5xl sm:text-4xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.total}</div>
-                          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground">OVERALL</div>
+                          <div className="text-6xl sm:text-5xl font-black italic leading-none bl-glow" style={{ color: overallData.rankColor }}>{overallData.total}</div>
+                          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mt-1">OVERALL</div>
                         </div>
-                        <div className="w-px h-8 bg-white/10 sm:hidden"></div>
-                        <div className="text-center sm:text-right sm:mt-1">
-                          <div className="text-3xl sm:text-2xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
-                          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground">RANK</div>
+                        <div className="w-px h-10 bg-primary/20 sm:hidden"></div>
+                        <div className="text-center sm:text-right sm:mt-2">
+                          <div className="text-4xl sm:text-3xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
+                          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mt-1">RANK</div>
                         </div>
                       </div>
                     </div>

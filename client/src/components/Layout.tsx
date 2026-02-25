@@ -60,13 +60,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="bl-nav-container">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-              <div className={`w-9 h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg ${isFlowActive ? 'bg-purple-600' : ''}`} style={{ background: isFlowActive ? 'oklch(0.52 0.22 280)' : 'oklch(0.52 0.22 260)' }}>
-                <Zap className="w-5 h-5 text-white" />
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-sm flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-lg ${isFlowActive ? 'bg-purple-600' : 'bg-primary'}`}>
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="hidden sm:block">
-                <span className="font-display text-lg tracking-widest text-white leading-none">BLUE LOCK</span>
-                <span className="block font-heading text-xs tracking-[0.3em] uppercase" style={{ color: isFlowActive ? 'oklch(0.75 0.15 280)' : 'oklch(0.75 0.15 230)' }}>RPG</span>
+              <div className="flex flex-col">
+                <span className="font-display text-base sm:text-lg tracking-widest text-white leading-none">BLUE LOCK</span>
+                <span className="block font-heading text-[10px] sm:text-xs tracking-[0.3em] uppercase text-primary-foreground/80">RPG</span>
               </div>
             </Link>
 
@@ -164,7 +164,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
 
             {/* CTA Button — desktop */}
-            <div className="hidden md:flex items-center flex-shrink-0">
+            <div className="hidden lg:flex items-center flex-shrink-0">
               <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 transition-all hover:shadow-lg">
                 Criar Ficha
               </Link>
