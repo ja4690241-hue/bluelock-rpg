@@ -7,7 +7,7 @@ import { Link, useLocation } from "wouter";
 import { Menu, X, Zap, ChevronDown, Flame } from "lucide-react";
 import { useFlow } from "@/contexts/FlowContext";
 import { CommandPalette } from "./CommandPalette";
-import { ThemeToggle } from "./ThemeToggle";
+
 
 const navLinks = [
   { href: "/", label: "Início", category: "principal" },
@@ -147,8 +147,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Command Palette / Search */}
             <CommandPalette />
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
+
 
             {/* Flow Toggle Button */}
             <button

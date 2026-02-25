@@ -256,15 +256,16 @@ export default function Ficha() {
         <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 custom-scrollbar">
           {steps.map((s, i) => (
             <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={() => setStep(s.id)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading tracking-wider uppercase transition-all"
-                style={{
-                  background: step === s.id ? 'oklch(0.52 0.22 260)' : step > s.id ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.12 0.015 260)',
-                  color: step === s.id ? 'white' : step > s.id ? 'oklch(0.75 0.15 230)' : 'oklch(0.5 0.02 260)',
-                  border: `1px solid ${step >= s.id ? 'oklch(0.52 0.22 260 / 0.5)' : 'oklch(0.22 0.03 260)'}`
-                }}
-              >
+                  <button
+                    onClick={() => setStep(s.id)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading tracking-wider uppercase transition-all border ${
+                      step === s.id 
+                        ? 'bg-primary text-white border-primary' 
+                        : step > s.id 
+                          ? 'bg-primary/20 text-primary border-primary/50' 
+                          : 'bg-secondary text-muted-foreground border-border'
+                    }`}
+                  >
                 <span className="font-mono-stats">{s.id}</span>
                 {s.label}
               </button>
@@ -307,11 +308,11 @@ export default function Ficha() {
                     <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Foto do Personagem</label>
                     <div className="flex items-center gap-4">
                       {ficha.foto && (
-                        <div className="w-24 h-24 rounded-sm overflow-hidden border-2" style={{ borderColor: 'oklch(0.52 0.22 260)' }}>
+                        <div className="w-24 h-24 rounded-sm overflow-hidden border-2 border-primary">
                           <img src={ficha.foto} alt="Foto do personagem" className="w-full h-full object-cover" />
                         </div>
                       )}
-                      <input
+                        <input
                         type="file"
                         accept="image/*"
                         onChange={(e) => {
@@ -325,8 +326,7 @@ export default function Ficha() {
                             reader.readAsDataURL(file);
                           }
                         }}
-                        className="flex-1 px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none cursor-pointer"
-                        style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                        className="flex-1 px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none cursor-pointer bg-input border border-border text-foreground"
                       />
                     </div>
                   </div>

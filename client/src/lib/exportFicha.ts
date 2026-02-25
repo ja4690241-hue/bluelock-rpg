@@ -40,10 +40,23 @@ export async function exportFichaAsImage(
     });
 
     const image = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = `${ficha.nome || 'ficha'}_bluelock.png`;
-    link.click();
+    
+    // Fallback para dispositivos móveis onde link.click() pode falhar
+    try {
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = `${ficha.nome || 'ficha'}_bluelock.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      // Se falhar, abre em uma nova aba para o usuário salvar manualmente
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write(`<img src="${image}" style="width:100%" />`);
+        newTab.document.title = "Salvar Ficha";
+      }
+    }
 
     return true;
   } catch (error) {
@@ -82,7 +95,15 @@ export async function exportFichaAsPDF(
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    pdf.save(`${ficha.nome || 'ficha'}_bluelock.pdf`);
+    
+    // Para dispositivos móveis, pdf.output('bloburl') costuma ser mais confiável
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+    } else {
+      pdf.save(`${ficha.nome || 'ficha'}_bluelock.pdf`);
+    }
 
     return true;
   } catch (error) {
