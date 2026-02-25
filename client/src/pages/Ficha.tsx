@@ -523,43 +523,56 @@ export default function Ficha() {
                 <div 
                   id="ficha-final-card" 
                   ref={fichaRef}
-                  className="bl-card p-8 border-primary/40 relative overflow-hidden bg-black"
-                  style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, oklch(0.52 0.22 260 / 0.1) 0%, transparent 50%)' }}
+                  className="bl-card p-4 md:p-8 border-primary/40 relative overflow-hidden bg-black max-w-full mx-auto"
+                  style={{ 
+                    backgroundImage: 'radial-gradient(circle at 20% 20%, oklch(0.52 0.22 260 / 0.1) 0%, transparent 50%)',
+                    width: '100%',
+                    maxWidth: '800px'
+                  }}
                 >
                   {/* Speed Lines Background for Export */}
                   <div className="absolute inset-0 bl-speed-lines opacity-20 pointer-events-none"></div>
                   
-                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 space-y-8">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex gap-4">
-                          {ficha.foto && (
-                            <div className="w-24 h-24 rounded-sm overflow-hidden border-2 border-primary/40 flex-shrink-0">
-                              <img src={ficha.foto} alt="Atleta" className="w-full h-full object-cover" />
-                            </div>
-                          )}
-                          <div>
-                            <div className="bl-tag mb-2">ATLETA BLUE LOCK</div>
-                            <h2 className="font-display text-5xl text-white tracking-wider uppercase italic leading-none">{ficha.nome || "SEM NOME"}</h2>
-                            <div className="flex items-center gap-3">
-                              <p className="font-heading text-xl text-primary font-bold">#{ficha.numero || "00"}</p>
-                              {ficha.arma && (
-                                <>
-                                  <div className="w-1 h-1 rounded-full bg-white/20" />
-                                  <p className="font-heading text-xs text-muted-foreground uppercase tracking-widest">{ficha.arma}</p>
-                                </>
-                              )}
-                            </div>
+                  <div className="relative z-10 flex flex-col gap-6">
+                    {/* Header: Foto, Nome e Overall */}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 border-b border-white/10 pb-6">
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                        {ficha.foto && (
+                          <div className="w-32 h-32 sm:w-24 sm:h-24 rounded-sm overflow-hidden border-2 border-primary/40 flex-shrink-0 shadow-xl shadow-primary/10">
+                            <img src={ficha.foto} alt="Atleta" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div>
+                          <div className="bl-tag mb-2 mx-auto sm:mx-0">ATLETA BLUE LOCK</div>
+                          <h2 className="font-display text-4xl sm:text-5xl text-white tracking-wider uppercase italic leading-none mb-2">{ficha.nome || "SEM NOME"}</h2>
+                          <div className="flex items-center justify-center sm:justify-start gap-3">
+                            <p className="font-heading text-xl text-primary font-bold">#{ficha.numero || "00"}</p>
+                            {ficha.arma && (
+                              <>
+                                <div className="w-1 h-1 rounded-full bg-white/20" />
+                                <p className="font-heading text-xs text-muted-foreground uppercase tracking-widest">{ficha.arma}</p>
+                              </>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-4xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.total}</div>
+                      </div>
+                      
+                      <div className="flex flex-row sm:flex-col items-center sm:items-end gap-4 sm:gap-0 bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-sm border border-white/5 sm:border-0">
+                        <div className="text-center sm:text-right">
+                          <div className="text-5xl sm:text-4xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.total}</div>
                           <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground">OVERALL</div>
-                          <div className="text-2xl font-black italic mt-1" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
+                        </div>
+                        <div className="w-px h-8 bg-white/10 sm:hidden"></div>
+                        <div className="text-center sm:text-right sm:mt-1">
+                          <div className="text-3xl sm:text-2xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
+                          <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground">RANK</div>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="md:col-span-2 space-y-8">
+                        <div className="grid grid-cols-2 gap-4 sm:gap-6">
                         <div className="space-y-4">
                           <h3 className="font-heading text-xs tracking-[0.3em] uppercase text-muted-foreground">STATUS</h3>
                           <div className="space-y-2">
@@ -611,25 +624,24 @@ export default function Ficha() {
 
                     <div className="space-y-8">
                       <div>
-                        <h3 className="font-heading text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">GRÁFICO DE ATRIBUTOS</h3>
-                        <div className="h-[220px] w-full flex items-center justify-center">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                              <PolarGrid stroke="oklch(0.22 0.03 260)" />
-                              <PolarAngleAxis dataKey="subject" tick={{ fill: 'oklch(0.5 0.02 260)', fontSize: 9, fontWeight: 'bold' }} />
-                              <Radar
-                                name="Atleta"
-                                dataKey="A"
-                                stroke="oklch(0.52 0.22 260)"
-                                fill="oklch(0.52 0.22 260)"
-                                fillOpacity={0.6}
-                              />
-                            </RadarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-
-                      <div>
+                        <h3 className="font-heading text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">GRÁFICO DE ATRIB                    <div className="h-48 sm:h-64 md:h-full min-h-[200px] sm:min-h-[300px] bl-card bg-white/5 border-white/10 p-2 sm:p-4">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                          <PolarGrid stroke="oklch(0.94 0.01 220 / 0.1)" />
+                          <PolarAngleAxis 
+                            dataKey="subject" 
+                            tick={{ fill: 'oklch(0.55 0.02 260)', fontSize: 8, fontWeight: 600 }} 
+                          />
+                          <Radar
+                            name="Atributos"
+                            dataKey="A"
+                            stroke="oklch(0.52 0.22 260)"
+                            fill="oklch(0.52 0.22 260)"
+                            fillOpacity={0.5}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>            <div>
                         <h3 className="font-heading text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">PERÍCIAS DESTAQUE</h3>
                         <div className="grid grid-cols-2 gap-2">
                           {Object.entries(ficha.pericias)
