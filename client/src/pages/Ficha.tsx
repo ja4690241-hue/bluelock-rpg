@@ -143,14 +143,7 @@ export default function Ficha() {
     }).finally(() => setIsExporting(false));
   };
 
-  const handleExportPDF = async () => {
-    setIsExporting(true);
-    toast.promise(exportFichaAsPDF(ficha, selectedClass, 'ficha-final-card'), {
-      loading: 'Gerando PDF da ficha...',
-      success: 'PDF baixado com sucesso!',
-      error: 'Erro ao gerar PDF.',
-    }).finally(() => setIsExporting(false));
-  };
+
 
   const steps = [
     { id: 1, label: "Identidade" },
@@ -671,16 +664,9 @@ export default function Ficha() {
                   <button 
                     onClick={handleExportImage} 
                     disabled={isExporting}
-                    className="bl-btn-primary gap-2"
+                    className="bl-btn-primary gap-2 bg-blue-600 border-blue-600 hover:bg-blue-700 shadow-blue-500/20"
                   >
-                    <ImageIcon className="w-4 h-4" /> EXPORTAR IMAGEM
-                  </button>
-                  <button 
-                    onClick={handleExportPDF} 
-                    disabled={isExporting}
-                    className="bl-btn-primary gap-2"
-                  >
-                    <FileText className="w-4 h-4" /> EXPORTAR PDF
+                    <Download className="w-4 h-4" /> BAIXAR PROVA DA FICHA
                   </button>
                   <button 
                     onClick={handleNewFicha} 
