@@ -23,7 +23,7 @@ interface ClassData {
 export async function exportFichaAsImage(
   ficha: FichaData,
   selectedClass: ClassData | undefined,
-  elementId: string = 'ficha-export'
+  elementId: string = 'ficha-final-card'
 ) {
   try {
     const element = document.getElementById(elementId);
@@ -55,7 +55,7 @@ export async function exportFichaAsImage(
 export async function exportFichaAsPDF(
   ficha: FichaData,
   selectedClass: ClassData | undefined,
-  elementId: string = 'ficha-export'
+  elementId: string = 'ficha-final-card'
 ) {
   try {
     const element = document.getElementById(elementId);

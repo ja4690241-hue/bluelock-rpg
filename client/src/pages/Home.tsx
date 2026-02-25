@@ -63,7 +63,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${HERO_BG})` }}
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, oklch(0.06 0.01 260 / 0.92) 0%, oklch(0.08 0.01 260 / 0.75) 50%, oklch(0.06 0.01 260 / 0.85) 100%)' }} />
+        <div className="absolute inset-0 bg-background/90" />
         
         {/* Speed lines overlay */}
         <div className="absolute inset-0 bl-speed-lines opacity-30" />
@@ -80,7 +80,7 @@ export default function Home() {
               <h1 className="font-display text-7xl md:text-9xl text-white leading-none tracking-wider mb-2 bl-glow">
                 BLUE LOCK
               </h1>
-              <h2 className="font-display text-4xl md:text-6xl leading-none tracking-widest mb-6" style={{ color: 'oklch(0.75 0.15 230)' }}>
+              <h2 className="font-display text-4xl md:text-6xl leading-none tracking-widest mb-6 text-primary">
                 RPG
               </h2>
               <p className="font-body text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
@@ -161,7 +161,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${CLASSES_BG})` }}
         />
-        <div className="absolute inset-0" style={{ background: 'oklch(0.08 0.01 260 / 0.85)' }} />
+        <div className="absolute inset-0 bg-background/85" />
 
         <div className="container relative z-10">
           <div className="flex items-end justify-between mb-16">
