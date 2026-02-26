@@ -132,6 +132,10 @@ export default function Ficha() {
     toast.success('Ficha exportada com sucesso!');
   };
 
+  const printFicha = () => {
+    window.print();
+  };
+
   const handleImportFicha = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0];
     if (!file) return;
