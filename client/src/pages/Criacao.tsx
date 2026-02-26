@@ -18,10 +18,10 @@ export default function Criacao() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-16 bl-speed-lines-animated"
+          className="mb-16"
         >
           <div className="bl-tag mb-4">Parte 1</div>
-          <h1 className="font-display text-6xl md:text-7xl text-white tracking-wider mb-4 bl-glitch">
+          <h1 className="font-display text-6xl md:text-7xl text-white tracking-wider mb-4">
             CRIAÇÃO DE FICHA
           </h1>
           <div className="w-24 h-0.5 mb-6" style={{ background: 'oklch(0.52 0.22 260)' }} />
@@ -41,7 +41,7 @@ export default function Criacao() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bl-card bl-card-flow overflow-hidden"
+                className="bl-card overflow-hidden"
               >
                 <button
                   className="w-full p-5 flex items-start gap-4 text-left"

@@ -63,7 +63,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${HERO_BG})` }}
         />
-        <div className="absolute inset-0 bg-background/90" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, oklch(0.06 0.01 260 / 0.92) 0%, oklch(0.08 0.01 260 / 0.75) 50%, oklch(0.06 0.01 260 / 0.85) 100%)' }} />
         
         {/* Speed lines overlay */}
         <div className="absolute inset-0 bl-speed-lines opacity-30" />
@@ -77,21 +77,21 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <div className="bl-tag mb-6">Livro de Regras v4.0</div>
-              <h1 className="font-display text-6xl sm:text-7xl md:text-9xl text-white leading-none tracking-wider mb-2 bl-glow">
+              <h1 className="font-display text-7xl md:text-9xl text-white leading-none tracking-wider mb-2 bl-glow">
                 BLUE LOCK
               </h1>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-6xl leading-none tracking-widest mb-6 text-primary">
+              <h2 className="font-display text-4xl md:text-6xl leading-none tracking-widest mb-6" style={{ color: 'oklch(0.75 0.15 230)' }}>
                 RPG
               </h2>
               <p className="font-body text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
                 Crie seu atleta egoísta, escolha sua classe e conquiste o título de melhor centroavante do mundo. Um sistema de RPG de futebol baseado no universo de Blue Lock.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/criacao" className="bl-btn-primary justify-center">
+              <div className="flex flex-wrap gap-4">
+                <Link href="/criacao" className="bl-btn-primary">
                   Criar Personagem
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link href="/classes" className="bl-btn-secondary justify-center">
+                <Link href="/classes" className="bl-btn-secondary">
                   Ver Classes
                 </Link>
               </div>
@@ -134,7 +134,7 @@ export default function Home() {
             <div className="w-24 h-0.5 mt-4" style={{ background: 'oklch(0.52 0.22 260)' }} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
@@ -161,7 +161,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${CLASSES_BG})` }}
         />
-        <div className="absolute inset-0 bg-background/85" />
+        <div className="absolute inset-0" style={{ background: 'oklch(0.08 0.01 260 / 0.85)' }} />
 
         <div className="container relative z-10">
           <div className="flex items-end justify-between mb-16">
@@ -178,7 +178,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredClasses.map((cls, i) => (
               <motion.div
                 key={cls.id}

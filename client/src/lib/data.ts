@@ -53,7 +53,7 @@ export const attributes = [
 ];
 
 export const skillDescriptions: Record<string, string> = {
-  "Corpo a Corpo": "Usada para demonstrar a força física de um personagem. Pode ser usada para travar a passagem de outro atleta com o próprio corpo. Jogadores que não possuam habilidades para driblar com corpo a corpo ainda podem tentar, mas um resultado final menor que 18 causa falta.",
+  "Corpo a Corpo": "Usada para demonstrar a força física de um personagem. Pode ser usada para travar a passagem de outro atleta com o próprio corpo. Sem habilidades específicas, usar para driblar com resultado menor que 18 causa falta.",
   "Cabeceio": "Demonstra a habilidade de cabeceio, servindo tanto para passes de cabeça quanto para finalizações.",
   "Chute": "Demonstra o quão forte e destrutivo é um chute. Representa um canhão que destrói o que vier na frente, não necessariamente uma técnica sofisticada.",
   "Pontaria": "Método de chute mais sofisticado que demonstra competência técnica. Área de efetividade reduzida (geralmente apenas dentro da grande área). Também pode ser usada em bolas paradas.",
@@ -65,10 +65,10 @@ export const skillDescriptions: Record<string, string> = {
   "Furtividade": "Usada quando um jogador deseja mascarar/ocultar sua presença dentro de campo. Jogador furtivo obtém os benefícios da condição Furtivo.",
   "Corrida a Longa Distância": "Quando dois jogadores disputam velocidade para chegarem na bola primeiro, a partir de 15 pés ou mais de distância.",
   "Explosão": "Quando um passe em profundidade é feito e dois jogadores disputam para pegar a bola primeiro, a menos de 15 pés de distância.",
-  "Acrobacias": "Antes de chutes acrobáticos como voleio, o narrador pode exigir um teste. Resultado acima de 10: sucesso. Acerto crítico (20): +2 na rolagem do chute. Abaixo de 6: falha automática no chute.",
+  "Acrobacias": "Antes de chutes acrobáticos como voleio, o narrador pode exigir um teste. Resultado acima de 10: sucesso. Acerto crítico (20): +2 no chute. Abaixo de 6: falha no chute.",
   "Reflexos": "Muito utilizada para reagir a possíveis adversidades. Defensores podem se jogar na frente de chutes para desviar a finalização.",
   "Defesa": "Centralmente dedicada aos goleiros para bloquear chutes com as mãos. Jogadores na barreira também podem usar para bloquear ângulos.",
-  "Intimidação": "Impor medo ou sentimento de ameaça. Sucesso por 3: -2 por 2 rodadas em testes contra o intimidador. Sucesso por 6: -3 por 3 rodadas. 20 natural: alvo trava por 1d2+1 rodadas em estado de choque.",
+  "Intimidação": "Impor medo ou sentimento de ameaça. Sucesso por 3: -2 por 2 rodadas. Sucesso por 6: -3 por 3 rodadas. 20 natural: alvo trava por 1d2+1 rodadas.",
   "Presença": "Resiliência mental. Representa o quão bom o personagem é em lidar com estresse psicológico da torcida, afrontes do time adversário ou críticas.",
   "Diplomacia": "Pode ser usada para livrar jogadores intimidados. Resultado igual ou superior ao teste de intimidação liberta a vítima da penalidade.",
   "Enganação": "Não apenas verbal - pode ser usada dentro do jogo para enganar oponentes, fingindo ir para um lado e indo para o outro."
@@ -1037,7 +1037,7 @@ export const mechanics = {
       },
       {
         title: "Dificuldades por Distância",
-        content: "A partir de 15 pés: DT 15. A cada 5 pés adicionais, +5 na DT (Ex: 20 pés = DT 20)."
+        content: "A partir de 15 pés: DT 15. A cada 5 pés adicionais, +5 na DT. Um passe de 20 pés seria DT 20."
       },
       {
         title: "Resultado de Falha (1d4)",
@@ -1059,7 +1059,7 @@ export const mechanics = {
       },
       {
         title: "Chute Marcado",
-        content: "Sendo marcado a 5 pés ou menos: -3 na finalização por marcador (cumulativo por cada marcador adicional). O marcador pode usar Defesa ou Roubo de Bola como reação."
+        content: "Sendo marcado a 5 pés ou menos: -3 na finalização por marcador (+3 cumulativo por cada marcador adicional). O marcador pode usar Defesa ou Roubo de Bola como reação."
       },
       {
         title: "Chutes das Laterais",

@@ -130,12 +130,12 @@ export default function Pericias() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-12 bl-speed-lines-animated"
+          className="mb-12"
         >
           <div className="mb-4 inline-block px-3 py-1 rounded-sm" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.5)' }}>
             <span className="font-heading text-xs tracking-widest uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>Parte 1</span>
           </div>
-          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6 bl-glitch">PERÍCIAS</h1>
+          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6">PERÍCIAS</h1>
           <div className="w-16 h-1 mb-8" style={{ background: 'oklch(0.52 0.22 260)' }}></div>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
             As perícias são formas específicas de usar seus atributos. Cada atributo possui uma lista de perícias que mostram diferentes competências de um mesmo atleta. Um jogador pode ter um bom valor em Passe e Técnica, mas não necessariamente ser um bom driblador.
@@ -143,7 +143,7 @@ export default function Pericias() {
         </motion.div>
 
         <Tabs defaultValue="potencia" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-5 mb-8 bg-transparent gap-2 h-auto p-0 overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8 bg-transparent gap-2 h-auto p-0">
             {periciasData.map((attr) => (
               <TabsTrigger
                 key={attr.atributo}
@@ -184,7 +184,7 @@ export default function Pericias() {
                   </p>
                 </div>
 
-                <div className="grid gap-4 max-w-5xl">
+                <div className="grid gap-4">
                   {attr.pericias.map((pericia, idx) => (
                     <motion.div
                       key={pericia.nome}
@@ -192,7 +192,7 @@ export default function Pericias() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                     >
-                      <Card className="p-6 bl-card bl-card-flow hover:bl-border-glow transition-all duration-300">
+                      <Card className="p-6 bl-card hover:bl-border-glow transition-all">
                         <div className="flex items-start gap-4">
                           <div
                             className="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0"
@@ -233,11 +233,11 @@ export default function Pericias() {
           <h2 className="font-display text-3xl text-white tracking-wider mb-8">REGRAS DE PERÍCIAS</h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-                      <Card className="p-6 bl-card hover:bl-border-glow transition-all duration-300">
-                        <h3 className="font-heading text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                          <span style={{ color: 'oklch(0.52 0.22 260)' }}>▸</span>
-                          Testes de Perícia
-                        </h3>
+            <Card className="p-6 bl-card">
+              <h3 className="font-heading text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                <span style={{ color: 'oklch(0.52 0.22 260)' }}>▸</span>
+                Testes de Perícia
+              </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Quando um jogador tenta algo que pode falhar, o narrador pode exigir um teste. O resultado é 1d20 + modificador da perícia. Sucesso em testes acima de 10 geralmente resulta em ação bem-sucedida.
               </p>

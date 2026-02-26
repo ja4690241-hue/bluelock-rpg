@@ -55,39 +55,39 @@
 }
 
 :root {
-  --radius: 0.125rem;
-  --primary: oklch(0.60 0.25 260); /* Azul Blue Lock mais vibrante */
-  --primary-foreground: oklch(1 0 0);
-  --background: oklch(0.05 0.01 260); /* Fundo mais profundo */
-  --foreground: oklch(0.98 0.01 220);
-  --card: oklch(0.08 0.015 260);
-  --card-foreground: oklch(0.98 0.01 220);
-  --popover: oklch(0.08 0.015 260);
-  --popover-foreground: oklch(0.98 0.01 220);
-  --secondary: oklch(0.12 0.02 260);
-  --secondary-foreground: oklch(0.90 0.01 220);
-  --muted: oklch(0.12 0.015 260);
-  --muted-foreground: oklch(0.60 0.02 260);
-  --accent: oklch(0.60 0.25 260 / 0.15);
-  --accent-foreground: oklch(0.80 0.15 230);
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.18 0.03 260);
-  --input: oklch(0.10 0.02 260);
-  --ring: oklch(0.60 0.25 260);
-  --chart-1: oklch(0.60 0.25 260);
-  --chart-2: oklch(0.80 0.15 230);
-  --chart-3: oklch(0.80 0.18 60);
-  --chart-4: oklch(0.80 0.18 25);
-  --chart-5: oklch(0.70 0.18 145);
-  --sidebar: oklch(0.08 0.015 260);
-  --sidebar-foreground: oklch(0.98 0.01 220);
-  --sidebar-primary: oklch(0.60 0.25 260);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.12 0.02 260);
-  --sidebar-accent-foreground: oklch(0.98 0.01 220);
-  --sidebar-border: oklch(0.18 0.03 260);
-  --sidebar-ring: oklch(0.60 0.25 260);
+  --radius: 0.25rem;
+  --primary: oklch(0.52 0.22 260);
+  --primary-foreground: oklch(0.98 0 0);
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.94 0.01 220);
+  --card: oklch(0.10 0.015 260);
+  --card-foreground: oklch(0.94 0.01 220);
+  --popover: oklch(0.12 0.015 260);
+  --popover-foreground: oklch(0.94 0.01 220);
+  --secondary: oklch(0.15 0.02 260);
+  --secondary-foreground: oklch(0.80 0.01 220);
+  --muted: oklch(0.14 0.015 260);
+  --muted-foreground: oklch(0.55 0.02 260);
+  --accent: oklch(0.52 0.22 260 / 0.15);
+  --accent-foreground: oklch(0.75 0.15 230);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.22 0.03 260);
+  --input: oklch(0.18 0.02 260);
+  --ring: oklch(0.52 0.22 260);
+  --chart-1: oklch(0.52 0.22 260);
+  --chart-2: oklch(0.75 0.15 230);
+  --chart-3: oklch(0.75 0.18 60);
+  --chart-4: oklch(0.75 0.18 25);
+  --chart-5: oklch(0.65 0.18 145);
+  --sidebar: oklch(0.10 0.015 260);
+  --sidebar-foreground: oklch(0.94 0.01 220);
+  --sidebar-primary: oklch(0.52 0.22 260);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.15 0.02 260);
+  --sidebar-accent-foreground: oklch(0.94 0.01 220);
+  --sidebar-border: oklch(0.22 0.03 260);
+  --sidebar-ring: oklch(0.52 0.22 260);
 }
 
 @layer base {
@@ -156,89 +156,47 @@
     }
   }
 
-  /* Navbar container — sem max-width restritivo, ocupa toda a largura disponível */
-  .bl-nav-container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  @media (min-width: 640px) {
-    .bl-nav-container {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .bl-nav-container {
-      padding-left: 2rem;
-      padding-right: 2rem;
-      max-width: 1400px;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .bl-nav-container {
-      padding-left: 3rem;
-      padding-right: 3rem;
-    }
-  }
-
   /* Blue Lock Card */
   .bl-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 rounded-sm transition-all duration-300;
-    box-shadow: 0 8px 32px 0 oklch(0 0 0 / 0.05);
+    background: oklch(0.10 0.015 260);
+    border: 1px solid oklch(0.22 0.03 260);
+    border-radius: 0.25rem;
+    transition: border-color 0.2s ease;
   }
   
   .bl-card:hover {
-    @apply border-primary/40 bg-card/90;
-    box-shadow: 0 8px 32px 0 color-mix(in srgb, var(--primary), transparent 90%);
-    transform: translateY(-2px);
-  }
-
-  .dark .bl-card {
-    background: linear-gradient(135deg, oklch(0.10 0.015 260 / 0.8), oklch(0.12 0.015 260 / 0.6));
-  }
-
-  .dark .bl-card:hover {
-    background: linear-gradient(135deg, oklch(0.12 0.015 260 / 0.9), oklch(0.14 0.015 260 / 0.7));
+    border-color: oklch(0.35 0.08 260);
   }
 
   /* Glow border on hover */
   .bl-border-glow {
     border-color: oklch(0.52 0.22 260 / 0.6) !important;
     box-shadow: 0 0 12px oklch(0.52 0.22 260 / 0.15);
-    animation: glowPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes glowPulse {
-    0%, 100% {
-      box-shadow: 0 0 12px oklch(0.52 0.22 260 / 0.15);
-    }
-    50% {
-      box-shadow: 0 0 20px oklch(0.52 0.22 260 / 0.3);
-    }
   }
 
   /* Primary Button */
   .bl-btn-primary {
-    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-heading text-[0.8125rem] font-semibold tracking-widest uppercase rounded-sm border border-primary transition-all duration-300 no-underline relative overflow-hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: oklch(0.52 0.22 260);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 0.25rem;
+    border: 1px solid oklch(0.52 0.22 260);
+    transition: all 0.2s ease;
+    text-decoration: none;
   }
   
-  .bl-btn-primary::after {
-    content: '';
-    @apply absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-[-20deg] transition-transform duration-500;
-  }
-
   .bl-btn-primary:hover {
-    @apply bg-primary/90 border-primary/90 shadow-xl shadow-primary/40 -translate-y-1;
-  }
-
-  .bl-btn-primary:hover::after {
-    @apply translate-x-[100%];
+    background: oklch(0.60 0.22 260);
+    border-color: oklch(0.60 0.22 260);
+    box-shadow: 0 0 16px oklch(0.52 0.22 260 / 0.4);
   }
   
   .bl-btn-primary:disabled {
@@ -354,144 +312,6 @@
     );
   }
 
-  /* Flow State - Aura e Brilho */
-  .bl-flow-glow {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .bl-flow-glow::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-      circle,
-      oklch(0.52 0.22 260 / 0.1) 0%,
-      oklch(0.52 0.22 260 / 0.05) 40%,
-      transparent 70%
-    );
-    animation: flowPulse 4s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  @keyframes flowPulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.5;
-    }
-    50% {
-      transform: scale(1.2);
-      opacity: 0.8;
-    }
-  }
-
-  /* Card Hover Flow Effect */
-  .bl-card-flow {
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .bl-card-flow:hover {
-    border-color: oklch(0.52 0.22 260 / 0.8) !important;
-    box-shadow: 0 0 20px oklch(0.52 0.22 260 / 0.3), inset 0 0 20px oklch(0.52 0.22 260 / 0.05);
-    transform: translateY(-2px);
-  }
-
-  /* Speed Lines Animation */
-  .bl-speed-lines-animated {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .bl-speed-lines-animated::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 3px,
-      oklch(0.52 0.22 260 / 0.02) 3px,
-      oklch(0.52 0.22 260 / 0.02) 6px
-    );
-    animation: speedLines 20s linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes speedLines {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  /* Glitch Effect for Headers */
-  .bl-glitch {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .bl-glitch:hover {
-    animation: glitch 0.3s ease-in-out;
-  }
-
-  @keyframes glitch {
-    0% {
-      text-shadow: -2px 0 oklch(0.52 0.22 260), 2px 0 oklch(0.75 0.15 230);
-    }
-    50% {
-      text-shadow: 2px 0 oklch(0.52 0.22 260), -2px 0 oklch(0.75 0.15 230);
-    }
-    100% {
-      text-shadow: -2px 0 oklch(0.52 0.22 260), 2px 0 oklch(0.75 0.15 230);
-    }
-  }
-
-  /* Electric Pulse Border */
-  .bl-electric-border {
-    position: relative;
-    border: 2px solid oklch(0.52 0.22 260 / 0.5);
-    background: linear-gradient(
-      90deg,
-      oklch(0.10 0.015 260),
-      oklch(0.10 0.015 260)
-    );
-  }
-  
-  .bl-electric-border::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      oklch(0.52 0.22 260 / 0.2),
-      transparent
-    );
-    animation: electricPulse 2s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  @keyframes electricPulse {
-    0%, 100% {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
   /* Scrollbar */
   ::-webkit-scrollbar {
     width: 4px;
@@ -507,394 +327,19 @@
   ::-webkit-scrollbar-thumb:hover {
     background: oklch(0.52 0.22 260 / 0.6);
   }
-
-  /* Print styles */
-  @media print {
-    header, footer, nav, .bl-btn-primary, .bl-btn-secondary {
-      display: none !important;
-    }
-    body {
-      background: white !important;
-      color: black !important;
-    }
-    .bl-card {
-      border: 1px solid #ccc !important;
-      background: white !important;
-    }
-  }
-
-  /* Scanline Effect */
-  .bl-scanline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      to bottom,
-      rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.05) 50%
-    );
-    background-size: 100% 4px;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.3;
-  }
-
-  /* Ultra-Wide Layout Optimization */
-  @media (min-width: 1920px) {
-    .container {
-      max-width: 1600px;
-    }
-    
-    .bl-nav-container {
-      max-width: 1600px;
-    }
-    
-    .font-display {
-      font-size: 1.1em;
-    }
-  }
-
-  @media (min-width: 2560px) {
-    .container {
-      max-width: 1920px;
-    }
-    
-    .bl-nav-container {
-      max-width: 1920px;
-    }
-    
-    .font-display {
-      font-size: 1.2em;
-    }
-  }
-
-  /* Advanced Hover Effects for Desktop */
-  .bl-card {
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .bl-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      oklch(0.52 0.22 260 / 0.1),
-      transparent
-    );
-    transition: left 0.5s ease;
-    pointer-events: none;
-  }
-
-  .bl-card:hover::before {
-    left: 100%;
-  }
-
-  .bl-card:hover {
-    transform: translateY(-4px);
-    border-color: oklch(0.52 0.22 260 / 0.8);
-    box-shadow: 0 12px 40px oklch(0.52 0.22 260 / 0.25);
-  }
-
-  /* Button Hover Effects */
-  .bl-btn-primary {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bl-btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: oklch(0.60 0.22 260 / 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .bl-btn-primary:hover::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  .bl-btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 32px oklch(0.52 0.22 260 / 0.4);
-  }
-
-  .bl-btn-secondary {
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bl-btn-secondary:hover {
-    transform: translateX(4px);
-    border-color: oklch(0.52 0.22 260 / 0.8);
-    background: oklch(0.52 0.22 260 / 0.15);
-    box-shadow: 0 8px 24px oklch(0.52 0.22 260 / 0.2);
-  }
-
-  /* Nav Link Enhanced Effects */
-  .bl-nav-link {
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .bl-nav-link::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, oklch(0.52 0.22 260), oklch(0.75 0.15 230));
-    transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bl-nav-link:hover::before,
-  .bl-nav-link.active::before {
-    width: 100%;
-  }
-
-  .bl-nav-link:hover {
-    color: oklch(0.75 0.15 230);
-    text-shadow: 0 0 8px oklch(0.52 0.22 260 / 0.3);
-  }
-
-  /* Tag Hover Effects */
-  .bl-tag {
-    transition: all 0.3s ease;
-    cursor: default;
-  }
-
-  .bl-tag:hover {
-    background: oklch(0.52 0.22 260 / 0.25);
-    border-color: oklch(0.52 0.22 260 / 0.6);
-    box-shadow: 0 4px 12px oklch(0.52 0.22 260 / 0.2);
-  }
-
-  /* Smooth Page Transitions */
-  main {
-    animation: fadeIn 0.4s ease-in-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Enhanced Grid Layouts for Wide Screens */
-  @media (min-width: 1920px) {
-    .grid {
-      gap: 2rem;
-    }
-
-    .grid.grid-cols-1 {
-      @media (min-width: 1920px) {
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      }
-    }
-  }
-
-  /* Improved Text Selection */
-  ::selection {
-    background: oklch(0.52 0.22 260 / 0.4);
-    color: white;
-    text-shadow: none;
-  }
-
-  /* Focus States for Accessibility */
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible {
-    outline: 2px solid oklch(0.52 0.22 260);
-    outline-offset: 2px;
-  }
-
-  /* Smooth Scrolling */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Enhanced Dropdown Animation */
-  .group:hover > div {
-    animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Improved Speed Lines Animation */
-  @keyframes speedLines {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 100% 100%;
-    }
-  }
-
-  .bl-speed-lines-animated::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 10px,
-      oklch(0.52 0.22 260 / 0.03) 10px,
-      oklch(0.52 0.22 260 / 0.03) 11px
-    );
-    background-size: 200% 200%;
-    animation: speedLines 15s linear infinite;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Parallax Effect on Hero Sections */
-  .hero-section {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: inherit;
-    z-index: -1;
-  }
-
-  /* Responsive Typography for Large Screens */
-  @media (min-width: 1920px) {
-    h1 {
-      font-size: 4.5rem;
-      line-height: 1.1;
-    }
-
-    h2 {
-      font-size: 3rem;
-      line-height: 1.2;
-    }
-
-    h3 {
-      font-size: 1.875rem;
-    }
-
-    p {
-      font-size: 1.0625rem;
-      line-height: 1.6;
-    }
-  }
-
-  @media (min-width: 2560px) {
-    h1 {
-      font-size: 5.5rem;
-    }
-
-    h2 {
-      font-size: 3.5rem;
-    }
-
-    p {
-      font-size: 1.25rem;
-    }
-  }
 }
 
-
-  /* Flow/Ego Mode Styles */
-  .bl-flow-mode {
-    background: linear-gradient(135deg, oklch(0.08 0.02 280), oklch(0.06 0.02 320)) !important;
+/* Print styles */
+@media print {
+  header, footer, nav, .bl-btn-primary, .bl-btn-secondary {
+    display: none !important;
   }
-
-  .bl-flow-mode .bl-card {
-    border-color: oklch(0.52 0.22 280 / 0.4);
-    background: linear-gradient(135deg, oklch(0.10 0.02 280 / 0.8), oklch(0.12 0.02 320 / 0.6));
+  body {
+    background: white !important;
+    color: black !important;
   }
-
-  .bl-flow-mode .bl-card:hover {
-    border-color: oklch(0.52 0.22 280 / 0.8);
-    box-shadow: 0 12px 40px oklch(0.52 0.22 280 / 0.35);
+  .bl-card {
+    border: 1px solid #ccc !important;
+    background: white !important;
   }
-
-  .bl-flow-mode .bl-btn-primary {
-    background: oklch(0.52 0.22 280);
-    border-color: oklch(0.52 0.22 280);
-  }
-
-  .bl-flow-mode .bl-btn-primary:hover {
-    background: oklch(0.60 0.22 280);
-    border-color: oklch(0.60 0.22 280);
-    box-shadow: 0 8px 32px oklch(0.52 0.22 280 / 0.5);
-  }
-
-  .bl-flow-mode .bl-tag {
-    background: oklch(0.52 0.22 280 / 0.15);
-    border-color: oklch(0.52 0.22 280 / 0.4);
-    color: oklch(0.75 0.15 280);
-  }
-
-  .bl-flow-mode .bl-nav-link {
-    color: oklch(0.55 0.02 280);
-  }
-
-  .bl-flow-mode .bl-nav-link:hover,
-  .bl-flow-mode .bl-nav-link.active {
-    color: oklch(0.75 0.15 280);
-  }
-
-  /* Ego Awakening Animation */
-  @keyframes egoAwaken {
-    0% {
-      filter: brightness(1);
-      text-shadow: none;
-    }
-    50% {
-      filter: brightness(1.1);
-      text-shadow: 0 0 20px oklch(0.52 0.22 280 / 0.6);
-    }
-    100% {
-      filter: brightness(1);
-      text-shadow: 0 0 10px oklch(0.52 0.22 280 / 0.3);
-    }
-  }
-
-  .bl-flow-mode h1,
-  .bl-flow-mode h2,
-  .bl-flow-mode h3 {
-    animation: egoAwaken 3s ease-in-out infinite;
-  }
+}

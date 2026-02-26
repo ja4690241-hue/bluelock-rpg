@@ -60,7 +60,7 @@ export function calculateOverall(
   } else if (total >= 80) {
     rank = "A";
     rankColor = "oklch(0.75 0.15 230)"; // Azul
-    description = "Excelente - Jogador de Classe Mundial";
+    description = "Excelente - Jogador de Classe Mundiai";
   } else if (total >= 70) {
     rank = "B";
     rankColor = "oklch(0.75 0.18 160)"; // Verde
