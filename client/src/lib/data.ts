@@ -1283,6 +1283,128 @@ export const items = [
   }
 ];
 
+export const skills = [
+  // Potência
+  {
+    attribute: "Potência",
+    name: "Corpo a Corpo",
+    description: "Usada para demonstrar a força física de um personagem. Pode ser usada para travar a passagem de outro atleta com o próprio corpo.",
+    usage: "Sem habilidades específicas, usar para driblar com resultado menor que 18 causa falta."
+  },
+  {
+    attribute: "Potência",
+    name: "Cabeceio",
+    description: "Demonstra a habilidade de cabeceio, servindo tanto para passes de cabeça quanto para finalizações.",
+    usage: "Usada em disputas aéreas, passes de cabeça e finalizações de cabeça."
+  },
+  {
+    attribute: "Potência",
+    name: "Chute",
+    description: "Demonstra o quão forte e destrutivo é um chute. Representa um canhão que destrói o que vier na frente, não necessariamente uma técnica sofisticada.",
+    usage: "Usada para finalizações com força bruta. Não exige técnica refinada."
+  },
+  // Técnica
+  {
+    attribute: "Técnica",
+    name: "Pontaria",
+    description: "Método de chute mais sofisticado que demonstra competência técnica. Área de efetividade reduzida (geralmente apenas dentro da grande área).",
+    usage: "Usada para finalizações precisas e bolas paradas."
+  },
+  {
+    attribute: "Técnica",
+    name: "Domínio",
+    description: "Ao receber um passe com DT, o narrador pode exigir um teste de domínio para que o atleta deixe a bola segura.",
+    usage: "Falha pode resultar na bola se afastando, permitindo interceptações."
+  },
+  {
+    attribute: "Técnica",
+    name: "Passe",
+    description: "Extremamente útil para qualquer jogador. Usada para passes, cruzamentos, passes em profundidade e passes curtos.",
+    usage: "Usada em toda ação de passe, cruzamento ou lançamento."
+  },
+  {
+    attribute: "Técnica",
+    name: "Drible/Finta",
+    description: "Jogadores com bons números são verdadeiras pontas de lança capazes de atravessar as linhas inimigas com ferocidade.",
+    usage: "Usada para ultrapassar marcadores e criar espaço em campo."
+  },
+  {
+    attribute: "Técnica",
+    name: "Intuição",
+    description: "Capaz de perceber jogadores furtivos através de instintos. Também pode ser utilizada para tentar entender estratégias dos adversários.",
+    usage: "Usada para detectar furtividade e antecipar movimentos inimigos."
+  },
+  {
+    attribute: "Técnica",
+    name: "Roubo de Bola",
+    description: "Usada por jogadores nas alas ofensivas e defensivas. Sempre como reação para tentar roubar a bola de um jogador que tenta driblar.",
+    usage: "Sempre como reação ao drible de um adversário."
+  },
+  {
+    attribute: "Técnica",
+    name: "Furtividade",
+    description: "Usada quando um jogador deseja mascarar/ocultar sua presença dentro de campo.",
+    usage: "Jogador furtivo obtém os benefícios da condição Furtivo."
+  },
+  // Velocidade
+  {
+    attribute: "Velocidade",
+    name: "Corrida a Longa Distância",
+    description: "Quando dois jogadores disputam velocidade para chegarem na bola primeiro, a partir de 15 pés ou mais de distância.",
+    usage: "Usada em corridas longas para disputar a bola."
+  },
+  {
+    attribute: "Velocidade",
+    name: "Explosão",
+    description: "Quando um passe em profundidade é feito e dois jogadores disputam para pegar a bola primeiro, a menos de 15 pés de distância.",
+    usage: "Usada em arrancadas curtas e disputas de bola próximas."
+  },
+  // Agilidade
+  {
+    attribute: "Agilidade",
+    name: "Acrobacias",
+    description: "Antes de chutes acrobáticos como voleio, o narrador pode exigir um teste.",
+    usage: "Resultado acima de 10: sucesso. Acerto crítico (20): +2 no chute. Abaixo de 6: falha no chute."
+  },
+  {
+    attribute: "Agilidade",
+    name: "Reflexos",
+    description: "Muito utilizada para reagir a possíveis adversidades. Defensores podem se jogar na frente de chutes para desviar a finalização.",
+    usage: "Usada como reação a chutes, passes e situações imprevistas."
+  },
+  {
+    attribute: "Agilidade",
+    name: "Defesa",
+    description: "Centralmente dedicada aos goleiros para bloquear chutes com as mãos. Jogadores na barreira também podem usar para bloquear ângulos.",
+    usage: "Usada por goleiros para defesas e por jogadores em barreiras."
+  },
+  // Ego
+  {
+    attribute: "Ego",
+    name: "Intimidação",
+    description: "Impor medo ou sentimento de ameaça.",
+    usage: "Sucesso por 3: -2 por 2 rodadas. Sucesso por 6: -3 por 3 rodadas. 20 natural: alvo trava por 1d2+1 rodadas."
+  },
+  {
+    attribute: "Ego",
+    name: "Presença",
+    description: "Resiliência mental. Representa o quão bom o personagem é em lidar com estresse psicológico da torcida, afrontes do time adversário ou críticas.",
+    usage: "Usada para resistir a intimidações e pressões psicológicas."
+  },
+  {
+    attribute: "Ego",
+    name: "Diplomacia",
+    description: "Pode ser usada para livrar jogadores intimidados.",
+    usage: "Resultado igual ou superior ao teste de intimidação liberta a vítima da penalidade."
+  },
+  {
+    attribute: "Ego",
+    name: "Enganação",
+    description: "Não apenas verbal - pode ser usada dentro do jogo para enganar oponentes, fingindo ir para um lado e indo para o outro.",
+    usage: "Usada para fintas psicológicas e enganar adversários em campo."
+  }
+];
+
 export const mechanics = {
   passes: {
     title: "Passes e Complicações",
