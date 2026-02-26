@@ -6,25 +6,47 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Zap } from "lucide-react";
 
-const navLinks = [
-  { href: "/", label: "Início" },
-  { href: "/criacao", label: "Criação de Ficha" },
-  { href: "/calculadora", label: "Calculadora" },
-  { href: "/atributos", label: "Atributos" },
-  { href: "/pericias", label: "Perícias" },
-  { href: "/classes", label: "Classes" },
-  { href: "/mecanicas", label: "Mecânicas" },
-  { href: "/mecanicas-avancadas", label: "Avançadas" },
-  { href: "/acoes", label: "Ações" },
-  { href: "/fluxo", label: "Fluxo" },
-  { href: "/fluxo-detalhado", label: "Fluxo Detalhado" },
-  { href: "/itens-condicoes", label: "Itens & Condições" },
-  { href: "/guia-narrador", label: "Guia Narrador" },
-  { href: "/mestres", label: "Mestres" },
-  { href: "/exemplo", label: "Exemplo" },
-  { href: "/treinamentos", label: "Treinamentos" },
-  { href: "/ego", label: "Ego" },
+const navCategories = [
+  {
+    label: "INÍCIO",
+    links: [
+      { href: "/", label: "Início" },
+      { href: "/criacao", label: "Criação de Ficha" },
+      { href: "/calculadora", label: "Calculadora" }
+    ]
+  },
+  {
+    label: "REGRAS",
+    links: [
+      { href: "/atributos", label: "Atributos" },
+      { href: "/pericias", label: "Perícias" },
+      { href: "/classes", label: "Classes" },
+      { href: "/mecanicas", label: "Mecânicas" },
+      { href: "/mecanicas-avancadas", label: "Avançadas" }
+    ]
+  },
+  {
+    label: "SISTEMA",
+    links: [
+      { href: "/acoes", label: "Ações" },
+      { href: "/fluxo", label: "Fluxo" },
+      { href: "/fluxo-detalhado", label: "Fluxo Detalhado" },
+      { href: "/itens-condicoes", label: "Itens & Condições" },
+      { href: "/treinamentos", label: "Treinamentos" },
+      { href: "/ego", label: "Ego" }
+    ]
+  },
+  {
+    label: "MESTRES",
+    links: [
+      { href: "/guia-narrador", label: "Guia Narrador" },
+      { href: "/mestres", label: "Mestres" },
+      { href: "/exemplo", label: "Exemplo" }
+    ]
+  }
 ];
+
+const navLinks = navCategories.flatMap(cat => cat.links);
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -48,15 +70,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`bl-nav-link ${location === link.href ? 'active' : ''}`}
-                >
-                  {link.label}
-                </Link>
+            <nav className="hidden lg:flex items-center gap-8">
+              {navCategories.map((category) => (
+                <div key={category.label} className="group relative">
+                  <button className="text-sm font-heading tracking-wider uppercase text-muted-foreground hover:text-white transition-colors py-2">
+                    {category.label}
+                  </button>
+                  <div className="absolute left-0 mt-0 w-48 bg-black/95 border border-border/50 rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50">
+                    {category.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`block px-4 py-2 text-sm font-heading tracking-wider uppercase transition-colors ${
+                          location === link.href
+                            ? 'text-white bg-primary/20'
+                            : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </nav>
 
@@ -81,24 +116,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Mobile Menu */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-border/50 py-4" style={{ background: 'oklch(0.08 0.01 260)' }}>
-            <div className="container flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors ${
-                    location === link.href
-                      ? 'text-white bg-primary/20'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                  }`}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.label}
-                </Link>
+            <div className="container flex flex-col gap-2">
+              {navCategories.map((category) => (
+                <div key={category.label}>
+                  <div className="px-3 py-2 font-heading text-xs tracking-wider uppercase text-primary/70 font-bold">
+                    {category.label}
+                  </div>
+                  {category.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`block px-6 py-2.5 rounded-sm font-heading text-sm tracking-wider uppercase transition-colors ${
+                        location === link.href
+                          ? 'text-white bg-primary/20'
+                          : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                      }`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
               ))}
               <Link
                 href="/ficha"
-                className="bl-btn-primary text-xs mt-2 justify-center"
+                className="bl-btn-primary text-xs mt-4 justify-center"
                 onClick={() => setMobileOpen(false)}
               >
                 Criar Ficha
@@ -134,7 +176,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              {navLinks.slice(0, 4).map((link) => (
+              {navCategories[0].links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

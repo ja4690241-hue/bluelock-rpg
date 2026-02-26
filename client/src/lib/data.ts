@@ -1023,6 +1023,263 @@ export const classes = [
         bonus: "+5 em Reflexos para interceptar passes destinados a adversários. Pode usar Corpo a Corpo para bloquear o caminho de um atacante."
       }
     ]
+  },
+  {
+    id: "atacante-completo",
+    name: "O Atacante Completo",
+    subtitle: "O Camaleão do Campo",
+    description: "Talvez pouco chamativo a princípio, mas isso se torna sua maior força quando bem explorada. Um jogador capaz de atuar na defesa, no meio campo e no ataque com igual efetividade.",
+    role: "Versátil",
+    difficulty: "Difícil",
+    attributeBonus: [
+      { attr: "Técnica", value: 3 },
+      { attr: "Agilidade", value: 2 },
+      { attr: "Velocidade", value: 1 },
+      { attr: "Potência", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Escolhe 6 perícias", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Dupla Dinâmica",
+        cost: "6 FO",
+        duration: "2 Rodadas (5 FO para manter)",
+        type: "Ativo",
+        description: "Como um camaleão social, o atacante completo é capaz de se adaptar a praticamente qualquer pessoa/jogador.",
+        bonus: "+5 para passes para o jogador sincronizado. O jogador que receber define duas perícias para ganhar +3."
+      },
+      {
+        name: "Camaleão Imperfeito",
+        cost: "Igual à habilidade copiada",
+        duration: "Variável",
+        type: "Ativo",
+        description: "Uma habilidade capaz de colocar você em nível de qualquer jogador dentro de campo.",
+        bonus: "Pode copiar qualquer habilidade física de um atleta vendo ela ser usada ao menos uma vez. Teste de perícia DT 14."
+      }
+    ]
+  },
+  {
+    id: "caçador-de-gols",
+    name: "O Caçador de Gols",
+    subtitle: "O Predador Implacável",
+    description: "Um jogador extremamente agressivo e ofensivo, focado unicamente em marcar gols. Seu instinto de matador é praticamente sobrenatural, sendo capaz de sentir a oportunidade de gol a quilômetros de distância.",
+    role: "Ataque",
+    difficulty: "Médio",
+    attributeBonus: [
+      { attr: "Potência", value: 3 },
+      { attr: "Velocidade", value: 2 },
+      { attr: "Ego", value: 3 },
+      { attr: "Técnica", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Chute", value: 5 },
+      { skill: "Acrobacia", value: 5 },
+      { skill: "Explosão", value: 5 },
+      { skill: "Intimidação", value: 5 },
+      { skill: "Enganação", value: 5 },
+      { skill: "Corpo a Corpo", value: 5 },
+      { skill: "Pontaria", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Chute Big Bang",
+        cost: "14 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Um chute tão destrutivo que praticamente destrói o próprio campo ao seu redor.",
+        bonus: "+8 em Chute. Goleiro faz teste de Defesa DT 18 ou sofre -2 em defesas próximas por 2 rodadas."
+      },
+      {
+        name: "Posicionamento do Às",
+        cost: "8 FO",
+        duration: "1 Rodada",
+        type: "Ativo",
+        description: "Como um verdadeiro predador, você sente exatamente onde a bola vai estar.",
+        bonus: "+5 em Reflexos e pode se mover 10 pés como reação para se posicionar melhor."
+      },
+      {
+        name: "Drible Agressivo",
+        cost: "6 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Um drible agressivo que não busca apenas passar, mas também intimidar.",
+        bonus: "+5 em Drible. Adversário sofre -1 em próximas ações por 1 rodada."
+      },
+      {
+        name: "Início Destrutivo",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Seu instinto predatório é tão aguçado que você começa cada partida em estado de fúria.",
+        bonus: "Primeiras 3 rodadas: +2 em Chute e Explosão. Após rodada 3: -1 em todas as ações."
+      }
+    ]
+  },
+  {
+    id: "atacante-controlador",
+    name: "O Atacante Controlador",
+    subtitle: "O Maestro da Manipulação",
+    description: "Um jogador extremamente hábil em controlar o jogo através de passes e movimentos calculados. Suas finalizações são sofisticadas e seus passes criam oportunidades que parecem impossíveis.",
+    role: "Ataque / Meio-Campo",
+    difficulty: "Difícil",
+    attributeBonus: [
+      { attr: "Técnica", value: 3 },
+      { attr: "Ego", value: 2 },
+      { attr: "Potência", value: 1 },
+      { attr: "Agilidade", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Pontaria", value: 5 },
+      { skill: "Drible", value: 5 },
+      { skill: "Passe", value: 5 },
+      { skill: "Intimidação", value: 5 },
+      { skill: "Presença", value: 5 },
+      { skill: "Furtividade", value: 5 },
+      { skill: "Intuição", value: 5 },
+      { skill: "Roubo de Bola", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Marionetista",
+        cost: "10 FO",
+        duration: "3 Rodadas (6 FO para manter)",
+        type: "Ativo",
+        description: "Como um marionetista, você controla cada movimento de seus companheiros de time.",
+        bonus: "+5 em Passe. Aliados a até 15 pés ganham +3 em suas ações."
+      },
+      {
+        name: "Chute Sofisticado",
+        cost: "7 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Um chute tão refinado que parece uma obra de arte.",
+        bonus: "+4 em Pontaria. Pode chutar com desvantagem e ainda assim ganhar bônus."
+      },
+      {
+        name: "Enganador de Percepções",
+        cost: "8 FO",
+        duration: "2 Rodadas",
+        type: "Ativo",
+        description: "Você engana a percepção do adversário fazendo-o acreditar que você está em outro lugar.",
+        bonus: "+5 em Enganação. Adversários sofrem desvantagem em testes contra você."
+      },
+      {
+        name: "Fator Sorte Aprimorado",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Sua sorte parece ser constantemente aprimorada.",
+        bonus: "Uma vez por rodada, pode rolar um d20 novamente e usar o melhor resultado."
+      },
+      {
+        name: "Fake Shot",
+        cost: "5 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Você finge chutar para enganar o goleiro e passa a bola.",
+        bonus: "+5 em Enganação. Pode fazer um passe em seguida com +3."
+      }
+    ]
+  }
+];
+
+export const items = [
+  {
+    name: "Item Afetuoso",
+    description: "Um item dado por alguém importante da sua família.",
+    effects: "1 Vez por dia você possui vantagem desde que você esteja carregando o item.",
+    price: "Sem preço (item pessoal)"
+  },
+  {
+    name: "Garrafa D'água Pequena",
+    description: "Uma garrafa d'água de 500ml",
+    effects: "Gasta uma ação padrão para beber água e recupera 1d2+1 de fôlego. Possui 2 usos.",
+    price: "226 Ienes"
+  },
+  {
+    name: "Garrafa D'água Média",
+    description: "Uma garrafa d'água média de 1,5l",
+    effects: "Gasta uma ação padrão para beber e recupera 1d4+4 de fôlego. Possui 4 usos.",
+    price: "339 Ienes"
+  },
+  {
+    name: "Garrafa D'água Grande",
+    description: "Uma garrafa d'água grande de 2l",
+    effects: "Gasta uma ação padrão para beber e recuperar 1d8+8 de fôlego. Possui 6 usos.",
+    price: "452 Ienes"
+  },
+  {
+    name: "Caneleira",
+    description: "Uma Caneleira que protege seu corpo de sofrer grandes danos em uma queda ou dividida forte.",
+    effects: "Você possui +2 em testes de Potência para evitar lesões.",
+    price: "988 Ienes"
+  },
+  {
+    name: "Caneleira Aprimorada",
+    description: "Uma caneleira praticamente feita sob medida para um jogador.",
+    effects: "Você possui +3 em testes de Potência para evitar lesões e +1 em testes de Corpo a Corpo gerais.",
+    price: "1271 Ienes"
+  },
+  {
+    name: "Chuteira Leve",
+    description: "Uma chuteira que parece mais leve do que habitualmente as outras são.",
+    effects: "Essa chuteira anormalmente leve concede +1 em testes de Acrobacia.",
+    price: "2260-5933 Ienes"
+  },
+  {
+    name: "Chuteira Sofisticada",
+    description: "Uma chuteira muito refinada feita com tecnologia de ponta.",
+    effects: "Essa chuteira concede +1 Em Testes de Passe e Drible.",
+    price: "2260-5933 Ienes"
+  },
+  {
+    name: "Refeição Leve",
+    description: "Uma refeição muito satisfatória apesar de leve.",
+    effects: "Concede +1 em Explosão e Corrida a longa distância.",
+    price: "500-2000 Ienes"
+  },
+  {
+    name: "Refeição Reforçada",
+    description: "Uma refeição mais pesada que concede melhorias em suas aptidões físicas.",
+    effects: "Concede +1 Em Corpo a Corpo.",
+    price: "500-2000 Ienes"
+  },
+  {
+    name: "Bebida Energética",
+    description: "Uma bebida com taurina e cafeína que energiza quem bebe.",
+    effects: "Concede +1 Em Reflexos, Explosão e Corrida a longa distância.",
+    price: "565-3673 Ienes"
+  },
+  {
+    name: "Bebida Alcoólica",
+    description: "Ao beber álcool você se torna mais indiferente a forma de jogo.",
+    effects: "Concede +1 Em Roubo De Bola, Defesa e Acrobacia.",
+    price: "565-3673 Ienes"
+  },
+  {
+    name: "Item Favorito",
+    description: "Esse item pode ser uma bandana, uma faixa, qualquer adereço de preferência do seu jogador.",
+    effects: "Ganha +1 Em 2 Perícias a escolha do jogador.",
+    price: "Sem preço (item pessoal)"
+  },
+  {
+    name: "Remédio Fraco",
+    description: "Um item que alguns jogadores podem carregar consigo ou deixar com a equipe técnica",
+    effects: "Pode usar este remédio para parar efeitos de dor de cabeça e etc.",
+    price: "Variável"
+  },
+  {
+    name: "Bandagens",
+    description: "Bandagens são extremamente úteis para estancar sangramento",
+    effects: "Personagens podem rodar um teste DT 14+Grau da lesão que sofreu. Se obtiver sucesso o jogador lesionado perde a lesão.",
+    price: "Variável"
+  },
+  {
+    name: "Chuteira Anti Derrapante",
+    description: "Uma chuteira especialmente feita para impedir condições ruins causadas por chuva ou gramado que foi recém molhado.",
+    effects: "Retira qualquer tipo de penalidade causada por jogar em campos molhados ou em chuva, neve. Todavia, causa -2 em qualquer carrinho quando o jogador estiver em um campo seco.",
+    price: "2260-5933 Ienes"
   }
 ];
 
