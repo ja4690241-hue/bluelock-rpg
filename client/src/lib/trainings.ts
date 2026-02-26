@@ -254,5 +254,75 @@ export const trainings: Training[] = [
     description: "Capacidade avançada de reorganizar os resultados preditos.",
     effect: "Além de rodar 4d20, você pode reorganizar a ordem dos resultados como desejar (ex: 1,15,5,20 vira 20,15,5,1).",
     category: "Avançado"
+  },
+  {
+    id: "treino-finalizacao",
+    name: "Treino de Finalização",
+    description: "Treinamento intensivo focado em aumentar a eficácia das finalizações.",
+    effect: "Aumenta precisão e força de chute. +1 em Chute e Pontaria.",
+    category: "Geral"
+  },
+  {
+    id: "treino-passe",
+    name: "Treino de Passe",
+    description: "Treinamento dedicado à melhoria da qualidade dos passes.",
+    effect: "Melhora precisão em passes curtos e longos. +1 em Passe.",
+    category: "Geral"
+  },
+  {
+    id: "treino-drible",
+    name: "Treino de Drible",
+    description: "Treinamento focado em superar adversários com o drible.",
+    effect: "Aumenta capacidade de superar adversários. +1 em Drible.",
+    category: "Geral"
+  },
+  {
+    id: "treino-velocidade",
+    name: "Treino de Velocidade",
+    description: "Treinamento físico para aumentar a velocidade em campo.",
+    effect: "Aumenta atributo de velocidade. +1 em Explosão e Corrida a Longa Distância.",
+    category: "Geral"
+  },
+  {
+    id: "treino-resistencia",
+    name: "Treino de Resistência",
+    description: "Treinamento de condicionamento físico para aumentar a stamina.",
+    effect: "Aumenta stamina total. Recupera +2 de fôlego por rodada de descanso.",
+    category: "Geral"
+  },
+  {
+    id: "treino-defesa",
+    name: "Treino de Defesa",
+    description: "Treinamento especializado em técnicas defensivas.",
+    effect: "Melhora interceptação e bloqueios. +1 em Roubo de Bola e Defesa.",
+    category: "Especializado"
+  },
+  {
+    id: "treino-reflexo",
+    name: "Treino de Reflexo",
+    description: "Treinamento para aumentar o tempo de reação em campo.",
+    effect: "Aumenta tempo de reação. +1 em Reflexos e Acrobacia.",
+    category: "Especializado"
+  },
+  {
+    id: "treino-tatico",
+    name: "Treino Tático",
+    description: "Treinamento focado em posicionamento e leitura de jogo.",
+    effect: "Melhora posicionamento e leitura de jogo. +1 em Intuição e Percepção.",
+    category: "Especializado"
+  },
+  {
+    id: "treino-trabalho-equipe",
+    name: "Treino de Trabalho em Equipe",
+    description: "Treinamento para aumentar a sinergia com aliados.",
+    effect: "Aumenta sinergia com aliados. Aliados a até 10 pés ganham +1 em Passe quando você está próximo.",
+    category: "Especializado"
+  },
+  {
+    id: "treino-mental",
+    name: "Treino Mental",
+    description: "Treinamento psicológico para reduzir penalidades mentais.",
+    effect: "Reduz penalidades psicológicas. -1 nas penalidades de condições mentais como Intimidado.",
+    category: "Especializado"
   }
 ];

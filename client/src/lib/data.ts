@@ -887,6 +887,66 @@ export const items = [
     description: "Uma garrafa d'água grande de 2l",
     effects: "Gasta uma ação padrão para beber e recuperar 1d8+8 de fôlego. Possui 6 usos.",
     price: "452 Ienes"
+  },
+  {
+    name: "Chuteira Profissional",
+    description: "Chuteira de alto desempenho para jogadores profissionais.",
+    effects: "+2 Velocidade. Ignora penalidade leve de campo molhado.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Munhequeira de Foco",
+    description: "Munhequeira que auxilia na concentração mental durante o jogo.",
+    effects: "+2 Concentração. -1 penalidade mental.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Faixa de Capitão",
+    description: "A faixa que simboliza a liderança do time.",
+    effects: "+1 Trabalho em Equipe. Aliados +1 Moral.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Garrafa Térmica Energética",
+    description: "Garrafa especial com bebida energética de alto desempenho.",
+    effects: "Recupera +10 Stamina. Uso único.",
+    price: "Item Consumível"
+  },
+  {
+    name: "Joelheira Reforçada",
+    description: "Joelheira de proteção reforçada contra impactos.",
+    effects: "-2 dano físico. +1 Resistência contra faltas.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Óculos de Visão Tática",
+    description: "Equipamento ótico que melhora a percepção tática em campo.",
+    effects: "+2 Percepção. +1 leitura de jogadas.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Bandagem de Recuperação",
+    description: "Bandagem medicinal para recuperação pós-jogo.",
+    effects: "Recupera +5 HP após partida.",
+    price: "Item Consumível"
+  },
+  {
+    name: "Caneleira Especial",
+    description: "Caneleira reforçada para proteção contra jogadas físicas.",
+    effects: "-1 dano de impacto. +1 contra jogadas físicas.",
+    price: "Equipamento Especial"
+  },
+  {
+    name: "Apito Tático",
+    description: "Apito especial utilizado pelo narrador para reorganizações táticas.",
+    effects: "Reorganização tática 1x por partida.",
+    price: "Item Especial"
+  },
+  {
+    name: "Kit Médico Portátil",
+    description: "Kit de primeiros socorros para uso durante a partida.",
+    effects: "Recupera +15 HP. Uso único.",
+    price: "Item Consumível"
   }
 ];
 
