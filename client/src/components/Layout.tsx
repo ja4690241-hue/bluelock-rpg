@@ -6,6 +6,9 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Zap } from "lucide-react";
 
+const CONTACT_EMAIL = "ja4690241@gmail.com";
+const DEVELOPER_NAME = "oja/sado";
+
 const navCategories = [
   {
     label: "INÍCIO",
@@ -174,6 +177,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Sistema de RPG baseado no universo de Blue Lock · Livro de Regras v4.0
+              </p>
+              <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/50">
+                Site desenvolvido por <span style={{ color: 'oklch(0.75 0.15 230)' }}>oja/sado</span> · Contato: <a href="mailto:ja4690241@gmail.com" className="hover:text-white transition-colors" style={{ color: 'oklch(0.75 0.15 230)' }}>ja4690241@gmail.com</a>
               </p>
             </div>
             <div className="flex items-center gap-4">
