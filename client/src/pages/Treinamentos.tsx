@@ -1,108 +1,123 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { trainings } from "@/lib/trainings";
+import { Filter } from "lucide-react";
 
-interface Treinamento {
-  nome: string;
-  descricao: string;
-  bonus: string;
-  restricoes?: string;
-}
-
-const treinamentosData: Treinamento[] = [
-  {
-    nome: "Força Bruta",
-    descricao: "Treino intenso focado em aumentar a potência dos chutes e força física geral.",
-    bonus: "+1 em Potência ou +2 em Chute",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Velocidade Extrema",
-    descricao: "Sprints repetidos e exercícios de aceleração para melhorar a mobilidade.",
-    bonus: "+1 em Velocidade ou +2 em Aceleração",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Maestria em Passes",
-    descricao: "Prática intensiva de passes em diferentes distâncias e ângulos.",
-    bonus: "+2 em Passe",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Domínio de Bola",
-    descricao: "Treino focado em controle perfeito da bola em qualquer situação.",
-    bonus: "+2 em Domínio",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Fortalecimento Mental",
-    descricao: "Meditação e técnicas de foco para resistir a pressão psicológica.",
-    bonus: "+2 em Presença",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Liderança Carismática",
-    descricao: "Desenvolvimento de carisma e capacidade de influência.",
-    bonus: "+1 em Ego ou +2 em Intimidação",
-    restricoes: "Máximo 1 vez por personagem"
-  }
-];
+const categoryColors: Record<string, string> = {
+  "Geral": "oklch(0.52 0.22 260)",
+  "Especializado": "oklch(0.75 0.18 60)",
+  "Avançado": "oklch(0.58 0.22 25)"
+};
 
 export default function Treinamentos() {
+  const [selectedCategory, setSelectedCategory] = useState<"Todos" | "Geral" | "Especializado" | "Avançado">("Todos");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredTrainings = trainings.filter(training => {
+    const matchesCategory = selectedCategory === "Todos" || training.category === selectedCategory;
+    const matchesSearch = training.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      training.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
-    <div className="min-h-screen bg-background pt-20 pb-16">
-      <div className="container max-w-4xl">
+    <div className="py-16">
+      <div className="container">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
           className="mb-12"
         >
-          <div className="mb-4 inline-block px-3 py-1 rounded-sm" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.5)' }}>
-            <span className="font-heading text-xs tracking-widest uppercase" style={{ color: 'oklch(0.75 0.15 230)' }}>Parte 7</span>
-          </div>
-          <h1 className="font-display text-5xl md:text-6xl text-white tracking-wider mb-6">TREINAMENTOS</h1>
-          <div className="w-16 h-1 mb-8" style={{ background: 'oklch(0.52 0.22 260)' }}></div>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
-            Treinamentos são formas de seus personagens evoluírem além das limitações naturais de suas classes. Cada treinamento fornece bônus específicos e pode ser escolhido durante a criação ou ao longo da campanha.
+          <div className="bl-tag mb-4">Parte 7</div>
+          <h1 className="font-display text-6xl md:text-7xl text-white tracking-wider mb-4">
+            TREINAMENTOS
+          </h1>
+          <div className="w-24 h-0.5 mb-6" style={{ background: 'oklch(0.52 0.22 260)' }} />
+          <p className="text-muted-foreground max-w-2xl leading-relaxed">
+            Treinamentos são formas de seus personagens evoluírem além das limitações naturais de suas classes. Cada treinamento fornece bônus específicos e pode ser escolhido durante a criação ou ao longo da campanha. Máximo de 3 treinamentos por personagem.
           </p>
         </motion.div>
 
-        <div className="grid gap-6 mb-16">
-          {treinamentosData.map((treino, idx) => (
+        {/* Filters */}
+        <div className="mb-8 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Buscar treinamento..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-sm text-sm font-heading tracking-wider placeholder-muted-foreground focus:outline-none transition-colors"
+              style={{
+                background: 'oklch(0.12 0.015 260)',
+                border: '1px solid oklch(0.22 0.03 260)',
+                color: 'oklch(0.94 0.01 220)'
+              }}
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            {["Todos", "Geral", "Especializado", "Avançado"].map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category as any)}
+                className="px-3 py-1.5 text-xs font-heading tracking-wider uppercase rounded-sm transition-all duration-200"
+                style={{
+                  background: selectedCategory === category ? 'oklch(0.52 0.22 260)' : 'oklch(0.12 0.015 260)',
+                  color: selectedCategory === category ? 'white' : 'oklch(0.6 0.02 260)',
+                  border: `1px solid ${selectedCategory === category ? 'oklch(0.52 0.22 260)' : 'oklch(0.22 0.03 260)'}`
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Trainings count */}
+        <p className="text-xs text-muted-foreground font-heading tracking-wider mb-6">
+          {filteredTrainings.length} {filteredTrainings.length === 1 ? 'treinamento encontrado' : 'treinamentos encontrados'}
+        </p>
+
+        {/* Trainings Grid */}
+        <div className="space-y-4 max-w-7xl">
+          {filteredTrainings.map((training, i) => (
             <motion.div
-              key={treino.nome}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+              key={training.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
             >
-              <Card className="p-6 bl-card hover:bl-border-glow transition-all">
+              <Card className="p-6 bl-card overflow-hidden hover:border-primary/50 transition-all">
                 <div className="flex items-start gap-4">
+                  {/* Category Badge */}
                   <div
                     className="w-12 h-12 rounded-sm flex items-center justify-center flex-shrink-0 font-heading font-bold text-lg"
-                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.52 0.22 260)' }}
+                    style={{
+                      background: `${categoryColors[training.category]}/20`,
+                      color: categoryColors[training.category],
+                      border: `1px solid ${categoryColors[training.category]}/30`
+                    }}
                   >
-                    {idx + 1}
+                    {training.category[0]}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-heading text-lg font-semibold text-white mb-2">
-                      {treino.nome}
-                    </h3>
-                    <p className="text-muted-foreground mb-3 text-sm leading-relaxed">
-                      {treino.descricao}
-                    </p>
-                    <div className="flex flex-col gap-2 text-sm">
-                      <div className="flex items-start gap-2">
-                        <span className="font-heading text-xs uppercase tracking-wider" style={{ color: 'oklch(0.52 0.22 260)' }}>Bônus:</span>
-                        <span className="text-muted-foreground">{treino.bonus}</span>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div>
+                        <h2 className="font-heading text-xl font-bold text-white">{training.name}</h2>
+                        <p className="text-sm text-muted-foreground font-heading tracking-wider">{training.category}</p>
                       </div>
-                      {treino.restricoes && (
-                        <div className="flex items-start gap-2">
-                          <span className="font-heading text-xs uppercase tracking-wider" style={{ color: 'oklch(0.75 0.18 25)' }}>Restrição:</span>
-                          <span className="text-muted-foreground">{treino.restricoes}</span>
-                        </div>
-                      )}
+                    </div>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">{training.description}</p>
+
+                    {/* Effect */}
+                    <div className="p-3 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}>
+                      <p className="text-xs font-heading tracking-widest uppercase text-muted-foreground mb-1">Efeito</p>
+                      <p className="text-sm text-white leading-relaxed">{training.effect}</p>
                     </div>
                   </div>
                 </div>
@@ -111,35 +126,52 @@ export default function Treinamentos() {
           ))}
         </div>
 
-        {/* Dicas para Narradores */}
-        <section>
-          <h2 className="font-display text-4xl text-white tracking-wider mb-8">DICAS PARA NARRADORES</h2>
-          
+        {/* Empty State */}
+        {filteredTrainings.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhum treinamento encontrado com os filtros selecionados.</p>
+          </div>
+        )}
+
+        {/* Tips Section */}
+        <section className="mt-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <h2 className="font-display text-4xl md:text-5xl text-white tracking-wider mb-4">
+              DICAS PARA NARRADORES
+            </h2>
+            <div className="w-16 h-0.5" style={{ background: 'oklch(0.52 0.22 260)' }} />
+          </motion.div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                title: "Equilíbrio de Bônus",
-                content: "Bônus de condições positivas devem ser baixos (1-3) para não tornar os modificadores absurdamente altos em níveis mais altos. Reserve bônus maiores para habilidades de classe."
+                title: "Limite de Treinamentos",
+                content: "Cada personagem pode escolher no máximo 3 treinamentos. Isso garante que nenhum jogador fique excessivamente poderoso."
               },
               {
-                title: "Fôlego Inicial",
-                content: "Para aventuras, conceda no mínimo 12 pontos de fôlego. Narradores 'impiedosos' podem optar por valores baixos, resultando em poucos usos de habilidades durante uma partida."
+                title: "Treinamentos Avançados",
+                content: "Habilidades Avançadas (Meta Visão e Percepção Espacial) não podem ser escolhidas por classes que já possuam essas habilidades em seu kit."
               },
               {
-                title: "Dribles Excessivos",
-                content: "Implemente penalidades graduais para dribladores que tentam passar por todo o time: -2 após o 2° jogador, desvantagem após 3-5 jogadores, e gasto de fôlego adicional."
+                title: "Progressão em Campanha",
+                content: "Permita que jogadores ganhem novos treinamentos ao atingir marcos importantes na campanha, recompensando desenvolvimento de personagem."
               },
               {
-                title: "Furtividade Balanceada",
-                content: "Permita formas de jogar contra jogadores furtivos para evitar repetição excessiva, mas mantenha a furtividade como arma viável — especialmente para a classe Ninja."
+                title: "Sinergia de Treinamentos",
+                content: "Alguns treinamentos funcionam melhor juntos. Incentive escolhas temáticas e coerentes com o estilo de jogo do personagem."
               },
               {
-                title: "Distâncias de Chute",
-                content: "Geralmente não permita chutes de 15+ pés. Se o jogador insistir, aplique penalidade severa. Penalidades são cumulativas e podem desencorajar posicionamentos ruins."
+                title: "Balanceamento",
+                content: "Treinamentos Gerais são acessíveis a todos. Especializados requerem certas condições. Avançados são os mais poderosos."
               },
               {
-                title: "Reações e Interceptações",
-                content: "Para passes com adversários na trajetória, gerar teste de Reflexos para interceptação é mais recomendado que aumentar DT — dá a sensação de agência aos defensores."
+                title: "Customização",
+                content: "Sinta-se livre para criar treinamentos customizados para sua campanha, mantendo o mesmo nível de poder dos existentes."
               }
             ].map((tip, i) => (
               <motion.div
@@ -148,14 +180,11 @@ export default function Treinamentos() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-5 rounded-sm"
-                style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
               >
-                <h3 className="font-heading text-base font-semibold text-white mb-2 flex items-center gap-2">
-                  <span style={{ color: 'oklch(0.52 0.22 260)' }}>▸</span>
-                  {tip.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{tip.content}</p>
+                <Card className="p-6 bl-card h-full">
+                  <h3 className="font-heading text-lg font-bold text-white mb-3">{tip.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{tip.content}</p>
+                </Card>
               </motion.div>
             ))}
           </div>
