@@ -13,13 +13,6 @@ export default function Itens() {
     "Especiais": items.filter(i => !i.name.includes("Chuteira") && !i.name.includes("Caneleira") && !i.name.includes("Garrafa") && !i.name.includes("Bebida") && !i.name.includes("Refeição") && !i.name.includes("Remédio"))
   };
 
-  const rarities = [
-    { name: "Comum", color: "oklch(0.7 0.05 220)", description: "Itens básicos e acessíveis" },
-    { name: "Incomum", color: "oklch(0.75 0.15 230)", description: "Itens melhorados com bônus moderados" },
-    { name: "Raro", color: "oklch(0.75 0.18 60)", description: "Itens poderosos com bônus significativos" },
-    { name: "Muito Raro", color: "oklch(0.52 0.22 260)", description: "Itens lendários com efeitos especiais" }
-  ];
-
   return (
     <div className="py-16">
       <div className="container">
@@ -35,32 +28,9 @@ export default function Itens() {
           </h1>
           <div className="w-24 h-0.5 mb-6" style={{ background: 'oklch(0.52 0.22 260)' }} />
           <p className="text-muted-foreground max-w-3xl leading-relaxed">
-            Equipamentos e itens especiais para melhorar seu desempenho em campo. De uniformes reforçados a cristais lendários, cada item oferece benefícios únicos.
+            Equipamentos e itens especiais para melhorar seu desempenho em campo. Cada item oferece benefícios únicos para sua classe e estilo de jogo.
           </p>
         </motion.div>
-
-        {/* Rarity Guide */}
-        <div className="mb-12">
-          <h2 className="font-display text-3xl text-white tracking-wider mb-6">RARIDADE DOS ITENS</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {rarities.map((rarity, i) => (
-              <motion.div
-                key={rarity.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bl-card p-4 text-center"
-              >
-                <div
-                  className="w-12 h-12 rounded-sm mx-auto mb-3"
-                  style={{ background: rarity.color }}
-                />
-                <h3 className="font-heading text-sm font-bold text-white mb-1">{rarity.name}</h3>
-                <p className="text-xs text-muted-foreground">{rarity.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
 
         {/* Categorias de Itens */}
         <div className="space-y-16 mb-16">
@@ -131,9 +101,9 @@ export default function Itens() {
               </p>
             </div>
             <div>
-              <h3 className="font-heading text-lg font-bold text-white mb-3">Orçamento Inicial</h3>
+              <h3 className="font-heading text-lg font-bold text-white mb-3">Combinações Estratégicas</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Comece com itens Comuns e Incomuns. Conforme progride, invista em itens Raros. Itens Muito Raros são para campanhas de longo prazo.
+                Combine itens para criar sinergia. Braçadeira de Capitão + Anel de Concentração criam um líder poderoso. Experimente diferentes combinações.
               </p>
             </div>
             <div>
