@@ -55,11 +55,12 @@ export default function Ficha() {
   const selectedClass = classes.find(c => c.id === ficha.classId);
   const overallData = calculateOverall(ficha.atributos, ficha.pericias);
   const radarData = [
-    { subject: 'Potência', A: (ficha.atributos.potencia || 0) * 10, fullMark: 100 },
-    { subject: 'Técnica', A: (ficha.atributos.tecnica || 0) * 10, fullMark: 100 },
-    { subject: 'Velocidade', A: (ficha.atributos.velocidade || 0) * 10, fullMark: 100 },
-    { subject: 'Agilidade', A: (ficha.atributos.agilidade || 0) * 10, fullMark: 100 },
-    { subject: 'Ego', A: (ficha.atributos.ego || 0) * 10, fullMark: 100 },
+    { subject: 'SPEED', A: overallData.categories.speed, fullMark: 100 },
+    { subject: 'DEFENSE', A: overallData.categories.defense, fullMark: 100 },
+    { subject: 'PASS', A: overallData.categories.pass, fullMark: 100 },
+    { subject: 'DRIBBLE', A: overallData.categories.dribble, fullMark: 100 },
+    { subject: 'SHOOT', A: overallData.categories.shoot, fullMark: 100 },
+    { subject: 'OFFENSE', A: overallData.categories.offense, fullMark: 100 },
   ];
 
   const rollFolego = () => {
@@ -526,21 +527,20 @@ export default function Ficha() {
                   
                   <div className="flex items-center gap-4 py-4 border-y border-white/5">
                     <div className="text-center">
-                      <div className="text-2xl font-black italic" style={{ color: overallData.rankColor }}>{overallData.total}</div>
-                      <div className="text-[8px] font-heading uppercase tracking-widest text-muted-foreground">OVERALL</div>
+                      <div className="text-3xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.total}</div>
+                      <div className="text-[8px] font-heading uppercase tracking-widest text-muted-foreground">TOTAL</div>
                     </div>
-                    <div className="w-px h-8 bg-white/10" />
+                    <div className="w-px h-10 bg-white/10" />
                     <div>
-                      <div className="text-xl font-black italic" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
-                      <div className="text-[8px] font-heading uppercase tracking-widest text-muted-foreground">RANK</div>
+                      <div className="text-4xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                    {Object.entries(ficha.atributos).map(([key, val]) => (
-                      <div key={key} className="text-center p-2 rounded-sm bg-white/5">
+                    {Object.entries(overallData.categories).map(([key, val]) => (
+                      <div key={key} className="text-center p-2 rounded-sm bg-white/5 border border-white/5">
                         <div className="text-xs font-bold text-white">{val}</div>
-                        <div className="text-[8px] font-heading uppercase text-muted-foreground">{key.slice(0, 3)}</div>
+                        <div className="text-[8px] font-heading uppercase text-muted-foreground">{key}</div>
                       </div>
                     ))}
                   </div>

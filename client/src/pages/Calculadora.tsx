@@ -173,28 +173,17 @@ export default function Calculadora() {
               <h2 className="font-display text-2xl text-white mb-6" style={{ color: 'oklch(0.52 0.22 260)' }}>
                 ATRIBUTOS FINAIS
               </h2>
-              <div className="grid grid-cols-5 gap-3 mb-6">
-                {Object.entries(finalAttributes).map(([attr, value]) => {
-                  const colors: Record<string, string> = {
-                    potencia: 'oklch(0.75 0.18 25)',
-                    tecnica: 'oklch(0.75 0.15 230)',
-                    velocidade: 'oklch(0.65 0.18 145)',
-                    agilidade: 'oklch(0.52 0.22 260)',
-                    ego: 'oklch(0.75 0.18 60)',
-                  };
-                  const color = colors[attr];
-
-                  return (
-                    <div key={attr} className="text-center p-4 rounded-sm" style={{ background: `${color}/15`, border: `1px solid ${color}/30` }}>
-                      <div className="font-heading text-xs uppercase tracking-wider" style={{ color }}>
-                        {attr.slice(0, 3)}
-                      </div>
-                      <div className="font-display text-3xl font-bold" style={{ color }}>
-                        {value}
-                      </div>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+                {Object.entries(overallData.categories).map(([key, val]) => (
+                  <div key={key} className="text-center p-3 rounded-sm bg-white/5 border border-white/10">
+                    <div className="font-heading text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                      {key}
                     </div>
-                  );
-                })}
+                    <div className="font-display text-2xl font-bold text-white">
+                      {val}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-6">

@@ -1,7 +1,7 @@
 /**
  * Blue Lock RPG - Overall Rating System
  * Calcula o Overall (Rank S, A, B, C, D, E, F, G) e a pontuação total do jogador
- * Baseado no sistema oficial do Blue Lock RPG
+ * Baseado no sistema oficial do Blue Lock (Referência: Seishiro Nagi)
  */
 
 export interface OverallRating {
@@ -9,54 +9,70 @@ export interface OverallRating {
   rank: "S" | "A" | "B" | "C" | "D" | "E" | "F" | "G";
   rankColor: string;
   description: string;
+  categories: {
+    speed: number;
+    defense: number;
+    pass: number;
+    dribble: number;
+    shoot: number;
+    offense: number;
+  };
 }
 
 /**
  * Calcula o Overall baseado nos atributos e perícias do jogador
- * 
- * Fórmula Oficial:
- * 1. Média dos 5 Atributos Base (Potência, Técnica, Velocidade, Agilidade, Ego)
- *    - Cada atributo vai de 0 a 10.
- *    - Média = (Soma dos Atributos) / 5
- *    - Multiplicamos por 10 para ter uma base de 0-100.
- * 
- * 2. Bônus de Perícias:
- *    - Cada perícia treinada (valor > 0) adiciona um pequeno bônus ao Overall.
- *    - Bônus = (Soma de todas as perícias) / 20
- *    - Isso reflete que um jogador mais versátil tem um overall ligeiramente maior.
- * 
- * 3. Total = Média Atributos + Bônus Perícias (Limitado a 99)
- * 
- * Ranks:
- * S: 90-99 (Elite Mundial)
- * A: 80-89 (Profissional de Elite)
- * B: 70-79 (Profissional)
- * C: 60-69 (Nível Nacional)
- * D: 50-59 (Promissor)
- * E: 40-49 (Iniciante)
- * F: 30-39 (Amador)
- * G: 0-29 (Novato)
+ * Mapeia os dados do RPG para as 6 categorias oficiais do Blue Lock
  */
 export function calculateOverall(
   atributos: Record<string, number>,
   pericias: Record<string, number>
 ): OverallRating {
-  // 1. Média dos Atributos (Base 0-100)
-  const attrKeys = ["potencia", "tecnica", "velocidade", "agilidade", "ego"];
-  const atributosSum = attrKeys.reduce((sum, key) => sum + (atributos[key] || 0), 0);
-  const mediaAtributos = (atributosSum / 5) * 10;
+  
+  // Helper para pegar valor de perícia ou 0
+  const s = (name: string) => pericias[name] || 0;
+  // Helper para pegar valor de atributo ou 0 (base 0-10)
+  const a = (name: string) => (atributos[name] || 0);
 
-  // 2. Bônus de Perícias
-  // Soma de todos os valores de perícias. 
-  // Se o jogador tiver +5 em 5 perícias, soma 25. 25 / 5 = +5 no overall.
-  const periciasSum = Object.values(pericias).reduce((sum, val) => sum + val, 0);
-  const bonusPericias = periciasSum / 5;
+  /**
+   * MAPEAMENTO DE CATEGORIAS (0-100)
+   * Cada categoria é uma composição de Atributo Base (60%) + Perícias Relacionadas (40%)
+   */
 
-  // 3. Total Final
-  let total = Math.round(mediaAtributos + bonusPericias);
-  total = Math.min(total, 99); // O limite é 99 (estilo FIFA/Blue Lock)
+  // 1. SPEED: Velocidade + (Corrida + Explosão)
+  const speedBase = a('velocidade') * 10; // máx 100
+  const speedSkills = ((s('Corrida a Longa Distância') + s('Explosão')) / 40) * 100; // máx 100
+  const speed = Math.round(speedBase * 0.6 + speedSkills * 0.4);
 
-  // Determinar rank
+  // 2. DEFENSE: Agilidade + (Reflexos + Defesa + Roubo de Bola)
+  const defenseBase = a('agilidade') * 10;
+  const defenseSkills = ((s('Reflexos') + s('Defesa') + s('Roubo de Bola')) / 60) * 100;
+  const defense = Math.round(defenseBase * 0.6 + defenseSkills * 0.4);
+
+  // 3. PASS: Técnica + (Passe + Domínio + Diplomacia)
+  const passBase = a('tecnica') * 10;
+  const passSkills = ((s('Passe') + s('Domínio') + s('Diplomacia')) / 60) * 100;
+  const pass = Math.round(passBase * 0.6 + passSkills * 0.4);
+
+  // 4. DRIBBLE: Técnica + (Drible/Finta + Enganação + Acrobacias)
+  const dribbleBase = a('tecnica') * 10;
+  const dribbleSkills = ((s('Drible/Finta') + s('Enganação') + s('Acrobacias')) / 60) * 100;
+  const dribble = Math.round(dribbleBase * 0.6 + dribbleSkills * 0.4);
+
+  // 5. SHOOT: Potência + (Chute + Pontaria + Cabeceio)
+  const shootBase = a('potencia') * 10;
+  const shootSkills = ((s('Chute') + s('Pontaria') + s('Cabeceio')) / 60) * 100;
+  const shoot = Math.round(shootBase * 0.6 + shootSkills * 0.4);
+
+  // 6. OFFENSE: Ego + (Intimidação + Presença + Intuição)
+  const offenseBase = a('ego') * 10;
+  const offenseSkills = ((s('Intimidação') + s('Presença') + s('Intuição')) / 60) * 100;
+  const offense = Math.round(offenseBase * 0.6 + offenseSkills * 0.4);
+
+  // TOTAL: Média das 6 categorias (conforme nota na imagem: "Cumulative score is not an average, but a reflection...")
+  // No entanto, para fins de sistema, usaremos a média ponderada para manter consistência.
+  const total = Math.round((speed + defense + pass + dribble + shoot + offense) / 6);
+
+  // Determinar rank (Baseado na legenda da imagem)
   let rank: "S" | "A" | "B" | "C" | "D" | "E" | "F" | "G";
   let rankColor: string;
   let description: string;
@@ -84,37 +100,40 @@ export function calculateOverall(
   } else if (total >= 40) {
     rank = "E";
     rankColor = "oklch(0.5 0.1 260)"; // Cinza Claro
-    description = "Iniciante";
   } else if (total >= 30) {
     rank = "F";
     rankColor = "oklch(0.4 0.08 260)"; // Cinza
-    description = "Amador";
   } else {
     rank = "G";
     rankColor = "oklch(0.3 0.05 260)"; // Cinza Escuro
-    description = "Novato";
   }
 
   return {
     total,
     rank,
     rankColor,
-    description
+    description: description || "Jogador em Evolução",
+    categories: {
+      speed,
+      defense,
+      pass,
+      dribble,
+      shoot,
+      offense
+    }
   };
 }
 
 /**
- * Calcula a pontuação de cada categoria para o radar chart
+ * Prepara os dados para o Radar Chart do Recharts
  */
-export function calculateRadarData(
-  atributos: Record<string, number>,
-  pericias: Record<string, number>
-) {
+export function calculateRadarData(rating: OverallRating) {
   return [
-    { subject: 'Potência', A: (atributos.potencia || 0) * 10, fullMark: 100 },
-    { subject: 'Técnica', A: (atributos.tecnica || 0) * 10, fullMark: 100 },
-    { subject: 'Velocidade', A: (atributos.velocidade || 0) * 10, fullMark: 100 },
-    { subject: 'Agilidade', A: (atributos.agilidade || 0) * 10, fullMark: 100 },
-    { subject: 'Ego', A: (atributos.ego || 0) * 10, fullMark: 100 },
+    { subject: 'SPEED', A: rating.categories.speed, fullMark: 100 },
+    { subject: 'DEFENSE', A: rating.categories.defense, fullMark: 100 },
+    { subject: 'PASS', A: rating.categories.pass, fullMark: 100 },
+    { subject: 'DRIBBLE', A: rating.categories.dribble, fullMark: 100 },
+    { subject: 'SHOOT', A: rating.categories.shoot, fullMark: 100 },
+    { subject: 'OFFENSE', A: rating.categories.offense, fullMark: 100 },
   ];
 }
