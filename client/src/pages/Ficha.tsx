@@ -297,22 +297,31 @@ export default function Ficha() {
             {/* Step 3: Attributes */}
             {step === 3 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-6">ATRIBUTOS</h2>
-                <div className="space-y-4 mb-6">
-                  {Object.entries(ficha.atributos).map(([key, val]) => (
-                    <div key={key}>
-                      <div className="flex justify-between mb-2">
-                        <label className="font-heading text-sm uppercase text-white">{key}</label>
-                        <span className="text-primary font-bold">{val}/10</span>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-display text-3xl text-white tracking-wider">ATRIBUTOS</h2>
+                  <div className="px-3 py-1 rounded-sm bg-primary/10 border border-primary/20 text-primary font-heading text-xs uppercase tracking-widest">
+                    Máx 10 por Atributo
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {attributes.filter(a => a.id !== 'folego').map(attr => (
+                    <div key={attr.id} className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{attr.icon}</span>
+                          <span className="font-heading text-sm font-bold text-white uppercase tracking-wider">{attr.name}</span>
+                        </div>
+                        <span className="font-mono-stats text-2xl text-primary">{ficha.atributos[attr.id] || 0}</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="10"
-                        value={val}
-                        onChange={(e) => updateAttr(key, parseInt(e.target.value))}
-                        className="w-full"
+                        value={ficha.atributos[attr.id] || 0}
+                        onChange={(e) => updateAttr(attr.id, parseInt(e.target.value))}
+                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
+                      <p className="text-[10px] text-muted-foreground leading-relaxed">{attr.description}</p>
                     </div>
                   ))}
                 </div>
@@ -323,28 +332,50 @@ export default function Ficha() {
               </motion.div>
             )}
 
-            {/* Step 4: Skills */}
+            {/* Step 4: Perícias */}
             {step === 4 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-6">PERÍCIAS</h2>
-                <div className="space-y-4 mb-6 max-h-96 overflow-y-auto custom-scrollbar">
-                  {dataSkills.map(skill => (
-                    <div key={skill.name}>
-                      <div className="flex justify-between mb-2">
-                        <label className="font-heading text-sm text-white">{skill.name}</label>
-                        <span className="text-primary font-bold">{ficha.pericias[skill.name] || 0}/20</span>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-display text-3xl text-white tracking-wider">PERÍCIAS</h2>
+                  <div className="px-3 py-1 rounded-sm bg-primary/10 border border-primary/20 text-primary font-heading text-xs uppercase tracking-widest">
+                    Limitado pelo Atributo
+                  </div>
+                </div>
+                
+                <div className="space-y-8 mb-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                  {attributes.filter(a => a.id !== 'folego').map(attr => (
+                    <div key={attr.id} className="space-y-4">
+                      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                        <span className="text-lg">{attr.icon}</span>
+                        <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider">{attr.name}</h3>
+                        <span className="text-[10px] text-muted-foreground ml-auto">Máx: {ficha.atributos[attr.id] || 0}</span>
                       </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="20"
-                        value={ficha.pericias[skill.name] || 0}
-                        onChange={(e) => updatePericia(skill.name, parseInt(e.target.value))}
-                        className="w-full"
-                      />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {attr.skills.map(skill => (
+                          <div key={skill} className="space-y-2 p-3 rounded-sm bg-white/5 border border-white/5">
+                            <div className="flex items-center justify-between">
+                              <span className="font-heading text-xs text-white uppercase">{skill}</span>
+                              <span className="font-mono-stats text-lg text-primary">+{ficha.pericias[skill] || 0}</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max={ficha.atributos[attr.id] || 0}
+                              value={ficha.pericias[skill] || 0}
+                              onChange={(e) => updatePericia(skill, parseInt(e.target.value))}
+                              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                            />
+                            <p className="text-[9px] text-muted-foreground leading-tight italic">
+                              {skillDescriptions[skill]}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
+
                 <div className="flex gap-3">
                   <button onClick={() => setStep(3)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={() => setStep(5)} className="bl-btn-primary">Próximo: Treinos</button>
@@ -501,10 +532,33 @@ export default function Ficha() {
                 <div className="bl-card p-6">
                   <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
                   <div className="grid grid-cols-5 gap-2">
-                    {Object.entries(ficha.atributos).map(([key, val]) => (
-                      <div key={key} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
-                        <div className="text-2xl font-black text-white">{val}</div>
-                        <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{key}</div>
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
+                      <div key={attr.id} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
+                        <div className="text-2xl font-black text-white">{ficha.atributos[attr.id] || 0}</div>
+                        <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{attr.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Perícias por Atributo */}
+                <div className="bl-card p-6">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-6">PERÍCIAS & COMPETÊNCIAS</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
+                      <div key={attr.id} className="space-y-3">
+                        <div className="flex items-center gap-2 border-b border-white/5 pb-1">
+                          <span className="text-xs">{attr.icon}</span>
+                          <span className="font-heading text-[10px] font-bold text-white uppercase tracking-wider">{attr.name}</span>
+                        </div>
+                        <div className="space-y-2">
+                          {attr.skills.map(skill => (
+                            <div key={skill} className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">{skill}</span>
+                              <span className="font-mono-stats text-sm text-primary">+{ficha.pericias[skill] || 0}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>

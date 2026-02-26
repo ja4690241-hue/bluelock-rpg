@@ -8,29 +8,29 @@ export default function ItensCondicoes() {
     {
       nome: "Intimidado",
       descricao: "Um jogador Intimidado possui penalidades em suas ações defensivas.",
-      efeito: "-2 em Roubo De Bola, Defesa e Reflexos contra quem o intimidou",
-      duracao: "2 rodadas (pode ser estendido com sucesso crítico)",
-      como: "Teste de Intimidação bem-sucedido contra o alvo"
+      efeito: "-2 em Roubo De Bola, Defesa ou Reflexos contra quem o intimidou",
+      duracao: "2 rodadas (pode aumentar com sucesso crítico)",
+      como: "Teste de Intimidação vs Presença do alvo"
     },
     {
       nome: "Convencido",
       descricao: "Um jogador Convencido recebe bônus para cumprir uma ordem que lhe foi passada.",
       efeito: "+2 para cumprir a ordem passada através de Diplomacia",
-      duracao: "Até o fim da rodada ou até cumprir a ordem",
-      como: "Teste de Diplomacia bem-sucedido contra o alvo"
+      duracao: "Até cumprir a ordem",
+      como: "Teste de Diplomacia bem-sucedido"
     },
     {
       nome: "Marcado",
       descricao: "Um jogador Marcado recebe penalidades em seu chute enquanto está sendo marcado.",
-      efeito: "-3 em seu chute desde que esteja sendo marcado por qualquer um dos lados ou pela frente",
-      duracao: "Enquanto o marcador estiver próximo",
-      como: "Marcação defensiva ativa de um adversário"
+      efeito: "-3 na finalização (cumulativo por marcador)",
+      duracao: "Enquanto estiver sendo marcado a 5 pés ou menos",
+      como: "Estar na linha de visão e ângulos de chute do atacante"
     },
     {
       nome: "Furtivo",
       descricao: "Um jogador em condição Furtiva fica difícil de ser detectado em campo.",
-      efeito: "+5 em Furtividade, difícil de ser visto ou marcado",
-      duracao: "Até ser descoberto ou atacar",
+      efeito: "Bônus flutuante (+1 a +4) em ações surpresa",
+      duracao: "Até agir (perde por 2 rodadas após agir)",
       como: "Teste de Furtividade bem-sucedido"
     },
     {
@@ -38,14 +38,14 @@ export default function ItensCondicoes() {
       descricao: "Um jogador está flanqueado quando tem adversários na frente e atrás.",
       efeito: "-3 em Drible e Passes",
       duracao: "Enquanto estiver entre dois adversários",
-      como: "Posicionamento estratégico de adversários"
+      como: "Um jogador na frente e outro atrás do alvo"
     },
     {
       nome: "Cercado",
       descricao: "Um jogador está cercado quando está rodeado por todos os lados.",
       efeito: "-6 em Passes e Dribles",
       duracao: "Enquanto estiver cercado",
-      como: "Múltiplos adversários ao redor"
+      como: "Rodeado por todos os lados por adversários"
     }
   ];
 
@@ -68,7 +68,7 @@ export default function ItensCondicoes() {
       nome: "Neve",
       icone: "❄️",
       descricao: "Campo coberto de neve. Movimentação prejudicada.",
-      efeito: "Reduz velocidade de movimento em 5 pés. Aumenta custo de stamina em 1 por ação de movimento.",
+      efeito: "Reduz velocidade de movimento em 5 pés. Aumenta custo de fôlego em 1 por ação de movimento.",
       cor: "oklch(0.85 0.05 230)"
     },
     {
@@ -89,7 +89,7 @@ export default function ItensCondicoes() {
       nome: "Calor Intenso",
       icone: "🌡️",
       descricao: "Temperatura elevada que acelera o cansaço.",
-      efeito: "Stamina reduz mais rapidamente. Perde +1 de fôlego adicional por rodada de ação intensa.",
+      efeito: "Fôlego reduz mais rapidamente. Perde +1 de fôlego adicional por rodada de ação intensa.",
       cor: "oklch(0.75 0.18 25)"
     },
     {
