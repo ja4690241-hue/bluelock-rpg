@@ -17,7 +17,8 @@ import {
   Minus,
   Sparkles,
   Check,
-  Globe
+  Globe,
+  LucideIcon
 } from "lucide-react";
 import { 
   Radar, 
@@ -44,7 +45,7 @@ interface Class {
   name: string;
   description: string;
   color: string;
-  icon: any;
+  icon: LucideIcon;
   bonus: Partial<Record<Atributo, number>>;
   abilities: Ability[];
 }
