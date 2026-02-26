@@ -14,7 +14,7 @@ const navCategories = [
     label: "INÍCIO",
     links: [
       { href: "/", label: "Início" },
-      { href: "/criacao", label: "Criação de Ficha" },
+      { href: "/ficha", label: "Criação de Ficha" },
       { href: "/calculadora", label: "Calculadora" }
     ]
   },
@@ -25,8 +25,7 @@ const navCategories = [
       { href: "/atributos", label: "Atributos" },
       { href: "/pericias", label: "Perícias" },
       { href: "/classes", label: "Classes" },
-      { href: "/mecanicas", label: "Mecânicas" },
-      { href: "/mecanicas-avancadas", label: "Avançadas" }
+      { href: "/mecanicas", label: "Mecânicas" }
     ]
   },
   {
@@ -34,8 +33,7 @@ const navCategories = [
     links: [
       { href: "/acoes", label: "Ações" },
       { href: "/fluxo", label: "Fluxo" },
-      { href: "/fluxo-detalhado", label: "Fluxo Detalhado" },
-      { href: "/itens-condicoes", label: "Itens & Condições" },
+      { href: "/itens", label: "Itens" },
       { href: "/treinamentos", label: "Treinamentos" },
       { href: "/ego", label: "Ego" }
     ]
@@ -43,7 +41,6 @@ const navCategories = [
   {
     label: "MESTRES",
     links: [
-      { href: "/guia-narrador", label: "Guia Narrador" },
       { href: "/mestres", label: "Mestres" },
       { href: "/exemplo", label: "Exemplo" }
     ]

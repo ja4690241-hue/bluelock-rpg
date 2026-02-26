@@ -2,10 +2,23 @@
 // Design: Manga Dynamic - Ego system with dramatic visuals
 
 import { motion } from "framer-motion";
+import { classes } from "@/lib/data";
 
 const EGO_BG = "https://private-us-east-1.manuscdn.com/sessionFile/TM67r3e5wntYjNGfa2CDm3/sandbox/DFzQZlCd0T8bJOUKrKBBDw-img-3_1771848968000_na1fn_ZWdvLWJhbm5lcg.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvVE02N3IzZTV3bnRZak5HZmEyQ0RtMy9zYW5kYm94L0RGelFabENkMFQ4YkpPVUtyS0JCRHctaW1nLTNfMTc3MTg0ODk2ODAwMF9uYTFmbl9aV2R2TFdKaGJtNWxjZy5qcGc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=eU~6btEe~CN4HkdEsXwBRs-TEKvbTObwPqxx8rAVU5rPEW6tbtng6b~I8LimN66vMgy~9r0SA9B7KiSiV0QCW-gCiO9VtaKhWnGuTATEnkXLSUeNmTCGnQgEI5PyPV6THEi7u5~G0jnNwjDnsX0NQM-gvnail~ocVoxXPflyTr0MMojWhSCRPdGqaWjEOtyQbaY9GPzJF9i2zGEt8OQbIcWQQljFTrK4YZrswCHjDEofk3EKHuBc6eBCdUIvth7tJZ2WwgGtOixt-P1~znOhGfziJluh4fXmHt0x-18vt5rjpZama3iLqldZIMkxDWgc8aK0TWA3oESdIrGmnipCSA__";
 
 export default function Ego() {
+  // Filtrar classes com bônus alto em Ego (>= 2)
+  const highEgoClasses = classes
+    .filter(cls => {
+      const egoBonus = cls.attributeBonus.find(b => b.attr === "Ego");
+      return egoBonus && egoBonus.value >= 2;
+    })
+    .map(cls => ({
+      name: cls.name,
+      ego: `+${cls.attributeBonus.find(b => b.attr === "Ego")?.value}`,
+      desc: cls.subtitle
+    }))
+    .slice(0, 4);
   return (
     <div className="py-16">
       <div className="container">
@@ -162,12 +175,7 @@ export default function Ego() {
           <h2 className="font-display text-4xl text-white tracking-wider mb-8">CLASSES COM ALTO EGO</h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: "O Imperador", ego: "+4", desc: "O jogador com maior bônus de Ego" },
-              { name: "O Caçador de Gols", ego: "+3", desc: "Ego intenso e explosivo" },
-              { name: "O Especialista Espacial", ego: "+3", desc: "Ego tático e calculista" },
-              { name: "O Analista", ego: "+3", desc: "Ego intelectual e dominante" }
-            ].map((cls) => (
+            {highEgoClasses.map((cls) => (
               <div
                 key={cls.name}
                 className="p-4 rounded-sm text-center"
@@ -175,7 +183,7 @@ export default function Ego() {
               >
                 <div className="font-display text-3xl mb-1" style={{ color: 'oklch(0.75 0.18 60)' }}>{cls.ego}</div>
                 <p className="font-heading text-xs font-semibold text-white mb-1">{cls.name}</p>
-                <p className="text-xs text-muted-foreground">{cls.desc}</p>
+                <p className="text-xs text-muted-foreground line-clamp-1">{cls.desc}</p>
               </div>
             ))}
           </div>

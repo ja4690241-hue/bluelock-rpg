@@ -2,129 +2,16 @@
 // Design: Manga Dynamic - Items and equipment
 
 import { motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { items } from "@/lib/data";
+import { ShoppingBag, Zap, Shield, Star } from "lucide-react";
 
 export default function Itens() {
-  const armors = [
-    {
-      name: "Uniforme Padrão",
-      rarity: "Comum",
-      cost: "Gratuito",
-      bonus: "Nenhum",
-      description: "O uniforme padrão de um time profissional. Oferece proteção básica e permite movimento livre."
-    },
-    {
-      name: "Uniforme Reforçado",
-      rarity: "Incomum",
-      cost: "500 Moedas",
-      bonus: "+1 em testes de Defesa",
-      description: "Uniforme com reforços em áreas críticas. Oferece melhor proteção sem comprometer a mobilidade."
-    },
-    {
-      name: "Colete de Proteção",
-      rarity: "Raro",
-      cost: "1.500 Moedas",
-      bonus: "+2 em testes de Defesa, -1 em Agilidade",
-      description: "Colete de proteção especializado. Oferece proteção significativa mas reduz ligeiramente a mobilidade."
-    },
-    {
-      name: "Armadura de Atleta Elite",
-      rarity: "Muito Raro",
-      cost: "5.000 Moedas",
-      bonus: "+3 em testes de Defesa, sem penalidade de Agilidade",
-      description: "Equipamento de elite usado por centroavantes profissionais. Combina proteção máxima com mobilidade."
-    }
-  ];
-
-  const accessories = [
-    {
-      name: "Fita de Pulso",
-      rarity: "Comum",
-      cost: "100 Moedas",
-      bonus: "+1 em Chute",
-      description: "Fita de pulso que melhora o controle do chute."
-    },
-    {
-      name: "Caneleira Reforçada",
-      rarity: "Incomum",
-      cost: "300 Moedas",
-      bonus: "+1 em Corrida a Longa Distância",
-      description: "Proteção para as canelas que melhora a velocidade."
-    },
-    {
-      name: "Luvas de Goleiro",
-      rarity: "Incomum",
-      cost: "400 Moedas",
-      bonus: "+2 em Defesa (apenas para Goleiros)",
-      description: "Luvas especializadas para goleiros. Melhora significativamente o bloqueio."
-    },
-    {
-      name: "Chuteira de Velocista",
-      rarity: "Raro",
-      cost: "1.200 Moedas",
-      bonus: "+2 em Explosão e Corrida a Longa Distância",
-      description: "Chuteira leve e aerodinâmica para velocistas. Aumenta significativamente a velocidade."
-    },
-    {
-      name: "Braçadeira de Capitão",
-      rarity: "Raro",
-      cost: "2.000 Moedas",
-      bonus: "+2 em Intimidação e Presença",
-      description: "Braçadeira que marca a liderança. Aumenta a autoridade do jogador."
-    },
-    {
-      name: "Anel de Concentração",
-      rarity: "Muito Raro",
-      cost: "3.500 Moedas",
-      bonus: "+1 em testes de Fluxo, -1 custo de FO para Fluxo",
-      description: "Anel misterioso que amplifica a concentração. Facilita entrada em Fluxo."
-    }
-  ];
-
-  const specialItems = [
-    {
-      name: "Bola de Treinamento",
-      rarity: "Comum",
-      cost: "50 Moedas",
-      effect: "Permite treinar perícias fora de partidas",
-      description: "Bola padrão para treinamento. Essencial para melhorar suas habilidades."
-    },
-    {
-      name: "Bebida Energética",
-      rarity: "Incomum",
-      cost: "200 Moedas",
-      effect: "Recupera 5 FO durante uma partida (uso único)",
-      description: "Bebida especial que recupera energia. Pode ser usada uma vez por partida."
-    },
-    {
-      name: "Poção de Resistência",
-      rarity: "Raro",
-      cost: "800 Moedas",
-      effect: "Vantagem em testes de Presença por 1 rodada",
-      description: "Poção que fortalece a mente. Oferece resistência mental temporária."
-    },
-    {
-      name: "Elixir de Fluxo",
-      rarity: "Muito Raro",
-      cost: "4.000 Moedas",
-      effect: "Permite entrar em Fluxo sem requisitos por uma vez",
-      description: "Elixir lendário que força entrada em Fluxo. Uso único por campanha."
-    },
-    {
-      name: "Livro de Estratégias",
-      rarity: "Incomum",
-      cost: "300 Moedas",
-      effect: "+1 em Intuição durante uma partida",
-      description: "Livro com estratégias de jogo. Melhora sua compreensão tática."
-    },
-    {
-      name: "Cristal de Ego",
-      rarity: "Muito Raro",
-      cost: "5.000 Moedas",
-      effect: "+2 em Ego permanentemente",
-      description: "Cristal raro que amplifica o ego. Aumenta permanentemente seu atributo de Ego."
-    }
-  ];
+  // Organizar itens por categorias lógicas baseadas no nome/descrição
+  const categorizedItems = {
+    "Equipamentos": items.filter(i => i.name.includes("Chuteira") || i.name.includes("Caneleira")),
+    "Consumíveis": items.filter(i => i.name.includes("Garrafa") || i.name.includes("Bebida") || i.name.includes("Refeição") || i.name.includes("Remédio")),
+    "Especiais": items.filter(i => !i.name.includes("Chuteira") && !i.name.includes("Caneleira") && !i.name.includes("Garrafa") && !i.name.includes("Bebida") && !i.name.includes("Refeição") && !i.name.includes("Remédio"))
+  };
 
   const rarities = [
     { name: "Comum", color: "oklch(0.7 0.05 220)", description: "Itens básicos e acessíveis" },
@@ -175,104 +62,53 @@ export default function Itens() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="armor" className="mb-12">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="armor">Armaduras</TabsTrigger>
-            <TabsTrigger value="accessories">Acessórios</TabsTrigger>
-            <TabsTrigger value="special">Itens Especiais</TabsTrigger>
-          </TabsList>
-
-          {/* Armor Tab */}
-          <TabsContent value="armor" className="space-y-4">
-            {armors.map((armor, i) => (
-              <motion.div
-                key={armor.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bl-card p-6"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-white">{armor.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="bl-tag">{armor.rarity}</span>
-                      <span className="text-xs text-muted-foreground">{armor.cost}</span>
-                    </div>
-                  </div>
-                  <span
-                    className="px-3 py-1 rounded-sm text-xs font-heading font-bold"
-                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)' }}
+        {/* Categorias de Itens */}
+        <div className="space-y-16 mb-16">
+          {Object.entries(categorizedItems).map(([category, categoryItems]) => (
+            <div key={category}>
+              <div className="flex items-center gap-4 mb-8">
+                <h2 className="font-display text-4xl text-white tracking-wider uppercase">{category}</h2>
+                <div className="flex-1 h-px bg-border/50" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {categoryItems.map((item, i) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                    className="bl-card p-6 group hover:bl-border-glow transition-all"
                   >
-                    {armor.bonus}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">{armor.description}</p>
-              </motion.div>
-            ))}
-          </TabsContent>
-
-          {/* Accessories Tab */}
-          <TabsContent value="accessories" className="space-y-4">
-            {accessories.map((acc, i) => (
-              <motion.div
-                key={acc.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bl-card p-6"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-white">{acc.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="bl-tag">{acc.rarity}</span>
-                      <span className="text-xs text-muted-foreground">{acc.cost}</span>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-sm flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
+                          {category === "Equipamentos" ? <Shield className="w-5 h-5" /> : 
+                           category === "Consumíveis" ? <Zap className="w-5 h-5" /> : 
+                           <Star className="w-5 h-5" />}
+                        </div>
+                        <div>
+                          <h3 className="font-heading text-lg font-bold text-white group-hover:text-primary transition-colors">{item.name}</h3>
+                          <p className="text-[10px] text-primary font-heading tracking-widest uppercase">{item.price}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <span
-                    className="px-3 py-1 rounded-sm text-xs font-heading font-bold"
-                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)' }}
-                  >
-                    {acc.bonus}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">{acc.description}</p>
-              </motion.div>
-            ))}
-          </TabsContent>
-
-          {/* Special Items Tab */}
-          <TabsContent value="special" className="space-y-4">
-            {specialItems.map((item, i) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bl-card p-6"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-heading text-lg font-bold text-white">{item.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="bl-tag">{item.rarity}</span>
-                      <span className="text-xs text-muted-foreground">{item.cost}</span>
+                    
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{item.description}</p>
+                    
+                    <div className="p-3 rounded-sm bg-white/5 border border-white/5">
+                      <p className="text-xs text-white/90">
+                        <span className="text-primary font-bold uppercase text-[10px] mr-2">Efeito:</span>
+                        {item.effects}
+                      </p>
                     </div>
-                  </div>
-                  <span
-                    className="px-3 py-1 rounded-sm text-xs font-heading font-bold"
-                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)' }}
-                  >
-                    {item.effect}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </motion.div>
-            ))}
-          </TabsContent>
-        </Tabs>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Tips */}
         <motion.div

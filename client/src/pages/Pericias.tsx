@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Accordion from "@/components/Accordion";
-import { skills } from "@/lib/data";
+import { skills, attributes } from "@/lib/data";
 
 export default function Pericias() {
   // Agrupar perícias por atributo
@@ -13,31 +13,32 @@ export default function Pericias() {
     return acc;
   }, {} as Record<string, typeof skills>);
 
-  const attributeColors: Record<string, string> = {
-    "Potência": "🔴",
-    "Técnica": "🔵",
-    "Velocidade": "🟢",
-    "Agilidade": "🟣",
-    "Ego": "🟡",
-    "Fôlego": "⚪"
-  };
-
-  const atributosItems = Object.entries(skillsByAttribute).map(([attr, attrSkills]) => ({
-    id: attr.toLowerCase(),
-    title: attr,
-    icon: attributeColors[attr] || "⚡",
-    content: (
-      <div className="space-y-3">
-        {attrSkills.map((skill, idx) => (
-          <div key={idx} className="p-3 rounded-sm border border-border/50" style={{ background: 'oklch(0.08 0.01 260)' }}>
-            <p className="font-bold text-white mb-1">{skill.name}</p>
-            <p className="text-xs text-muted-foreground mb-2">{skill.description}</p>
-            <p className="text-xs text-primary"><strong>Uso:</strong> {skill.usage}</p>
-          </div>
-        ))}
-      </div>
-    )
-  }));
+  const atributosItems = Object.entries(skillsByAttribute).map(([attr, attrSkills]) => {
+    const attrData = attributes.find(a => a.name === attr);
+    const color = attrData?.color || 'var(--primary)';
+    
+    return {
+      id: attr.toLowerCase(),
+      title: attr,
+      icon: attrData?.icon || "⚡",
+      color: color,
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {attrSkills.map((skill, idx) => (
+            <div key={idx} className="p-4 rounded-sm border border-white/5 hover:border-primary/30 transition-colors" style={{ background: 'oklch(0.12 0.015 260)' }}>
+              <p className="font-bold text-white mb-1 uppercase tracking-wider text-sm">{skill.name}</p>
+              <p className="text-xs text-muted-foreground mb-3 leading-relaxed italic">{skill.description}</p>
+              <div className="pt-2 border-t border-white/5">
+                <p className="text-[10px] text-white/80 leading-relaxed">
+                  <strong className="text-primary uppercase mr-1">Uso:</strong> {skill.usage}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    };
+  });
 
   return (
     <div className="py-16">
@@ -63,8 +64,17 @@ export default function Pericias() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="space-y-4"
         >
-          <Accordion items={atributosItems} allowMultiple={true} />
+          {atributosItems.map((item) => (
+            <Accordion 
+              key={item.id} 
+              items={[item]} 
+              allowMultiple={true} 
+              className="border-l-4"
+              style={{ borderLeftColor: item.color }}
+            />
+          ))}
         </motion.div>
 
         {/* Info Box */}

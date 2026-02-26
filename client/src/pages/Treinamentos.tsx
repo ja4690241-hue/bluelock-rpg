@@ -1,54 +1,11 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-interface Treinamento {
-  nome: string;
-  descricao: string;
-  bonus: string;
-  restricoes?: string;
-}
-
-const treinamentosData: Treinamento[] = [
-  {
-    nome: "Força Bruta",
-    descricao: "Treino intenso focado em aumentar a potência dos chutes e força física geral.",
-    bonus: "+1 em Potência ou +2 em Chute",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Velocidade Extrema",
-    descricao: "Sprints repetidos e exercícios de aceleração para melhorar a mobilidade.",
-    bonus: "+1 em Velocidade ou +2 em Aceleração",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Maestria em Passes",
-    descricao: "Prática intensiva de passes em diferentes distâncias e ângulos.",
-    bonus: "+2 em Passe",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Domínio de Bola",
-    descricao: "Treino focado em controle perfeito da bola em qualquer situação.",
-    bonus: "+2 em Domínio",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Fortalecimento Mental",
-    descricao: "Meditação e técnicas de foco para resistir a pressão psicológica.",
-    bonus: "+2 em Presença",
-    restricoes: "Máximo 1 vez por personagem"
-  },
-  {
-    nome: "Liderança Carismática",
-    descricao: "Desenvolvimento de carisma e capacidade de influência.",
-    bonus: "+1 em Ego ou +2 em Intimidação",
-    restricoes: "Máximo 1 vez por personagem"
-  }
-];
+import { trainings } from "@/lib/trainings";
 
 export default function Treinamentos() {
+  const categories = ["Geral", "Especializado", "Avançado"];
+
   return (
     <div className="min-h-screen bg-background pt-20 pb-16">
       <div className="container max-w-4xl">
@@ -68,48 +25,54 @@ export default function Treinamentos() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 mb-16">
-          {treinamentosData.map((treino, idx) => (
-            <motion.div
-              key={treino.nome}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card className="p-6 bl-card hover:bl-border-glow transition-all">
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-12 h-12 rounded-sm flex items-center justify-center flex-shrink-0 font-heading font-bold text-lg"
-                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.52 0.22 260)' }}
-                  >
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-heading text-lg font-semibold text-white mb-2">
-                      {treino.nome}
-                    </h3>
-                    <p className="text-muted-foreground mb-3 text-sm leading-relaxed">
-                      {treino.descricao}
-                    </p>
-                    <div className="flex flex-col gap-2 text-sm">
-                      <div className="flex items-start gap-2">
-                        <span className="font-heading text-xs uppercase tracking-wider" style={{ color: 'oklch(0.52 0.22 260)' }}>Bônus:</span>
-                        <span className="text-muted-foreground">{treino.bonus}</span>
+        <Tabs defaultValue="Geral" className="mb-16">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            {categories.map(cat => (
+              <TabsTrigger key={cat} value={cat} className="font-heading tracking-wider uppercase text-xs">
+                {cat}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {categories.map(cat => (
+            <TabsContent key={cat} value={cat} className="grid gap-6">
+              {trainings.filter(t => t.category === cat).map((treino, idx) => (
+                <motion.div
+                  key={treino.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.05 }}
+                >
+                  <Card className="p-6 bl-card hover:bl-border-glow transition-all">
+                    <div className="flex items-start gap-4">
+                      <div
+                        className="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0 font-heading font-bold text-sm"
+                        style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.52 0.22 260)' }}
+                      >
+                        {idx + 1}
                       </div>
-                      {treino.restricoes && (
-                        <div className="flex items-start gap-2">
-                          <span className="font-heading text-xs uppercase tracking-wider" style={{ color: 'oklch(0.75 0.18 25)' }}>Restrição:</span>
-                          <span className="text-muted-foreground">{treino.restricoes}</span>
+                      <div className="flex-1">
+                        <h3 className="font-heading text-lg font-semibold text-white mb-1">
+                          {treino.name}
+                        </h3>
+                        <p className="text-muted-foreground mb-3 text-xs leading-relaxed italic">
+                          {treino.description}
+                        </p>
+                        <div className="pt-3 border-t border-white/5">
+                          <div className="flex items-start gap-2">
+                            <span className="font-heading text-[10px] uppercase tracking-widest font-bold mt-1" style={{ color: 'oklch(0.52 0.22 260)' }}>Efeito:</span>
+                            <span className="text-sm text-white/90 leading-relaxed">{treino.effect}</span>
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
+                  </Card>
+                </motion.div>
+              ))}
+            </TabsContent>
           ))}
-        </div>
+        </Tabs>
 
         {/* Dicas para Narradores */}
         <section>

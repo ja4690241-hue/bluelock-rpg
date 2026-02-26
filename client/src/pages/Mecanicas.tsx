@@ -1,61 +1,36 @@
 import { motion } from "framer-motion";
 import Accordion from "@/components/Accordion";
+import { mechanics } from "@/lib/data";
+import { Target, Zap, Shield, Ghost, Users, Clock } from "lucide-react";
 
 export default function Mecanicas() {
-  const mecanicasItems = [
-    {
-      id: "passes",
-      title: "Passes e Complicações",
-      icon: "🎯",
-      content: (
-        <div className="space-y-2 text-sm">
-          <p><strong>Distância Próxima:</strong> 5-10 pés com visão limpa não requerem teste.</p>
-          <p><strong>Distância Média:</strong> 15 pés = DT 15. A cada 5 pés adicionais, +5 na DT.</p>
-          <p><strong>Falha (1d4):</strong> 1 = Curto demais, 2 = Distância Média, 3 = Disputa Injusta, 4 = Longo demais.</p>
-          <p><strong>Adversários na Trajetória:</strong> Gera teste de Reflexos para interceptação.</p>
+  const icons: Record<string, any> = {
+    passes: <Target className="w-4 h-4" />,
+    chutes: <Zap className="w-4 h-4" />,
+    dribles: <Zap className="w-4 h-4" />,
+    furtividade: <Ghost className="w-4 h-4" />,
+    flanquear: <Users className="w-4 h-4" />,
+    acoes: <Clock className="w-4 h-4" />
+  };
+
+  const mecanicasItems = Object.entries(mechanics).map(([key, data]) => ({
+    id: key,
+    title: data.title,
+    icon: icons[key] || <Shield className="w-4 h-4" />,
+    content: (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground italic">{data.description}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {data.rules.map((rule, idx) => (
+            <div key={idx} className="p-3 rounded-sm bg-white/5 border border-white/5">
+              <p className="font-bold text-primary text-xs mb-1 uppercase tracking-wider">{rule.title}</p>
+              <p className="text-xs text-white/80 leading-relaxed">{rule.content}</p>
+            </div>
+          ))}
         </div>
-      )
-    },
-    {
-      id: "dribles",
-      title: "Dribles e Fintas",
-      icon: "🌀",
-      content: (
-        <div className="space-y-2 text-sm">
-          <p><strong>Teste de Drible:</strong> Compara Drible do atacante vs Defesa do defensor.</p>
-          <p><strong>Sucesso:</strong> Você passa pelo defensor e pode continuar se movendo.</p>
-          <p><strong>Falha:</strong> Perde a bola ou é derrubado (depende da margem de falha).</p>
-          <p><strong>Crítico (20):</strong> Drible tão bom que o defensor sofre -2 na próxima ação.</p>
-        </div>
-      )
-    },
-    {
-      id: "chutes",
-      title: "Chutes e Finalizações",
-      icon: "⚽",
-      content: (
-        <div className="space-y-2 text-sm">
-          <p><strong>Teste de Chute:</strong> Compara Chute do atacante vs Defesa do goleiro.</p>
-          <p><strong>DT Base:</strong> 12 (goleiro atento). Aumenta com distância e obstáculos.</p>
-          <p><strong>Sucesso:</strong> Gol marcado!</p>
-          <p><strong>Crítico (19-20):</strong> Gol impossível de defender.</p>
-        </div>
-      )
-    },
-    {
-      id: "defesa",
-      title: "Defesa e Bloqueios",
-      icon: "🛡️",
-      content: (
-        <div className="space-y-2 text-sm">
-          <p><strong>Teste de Defesa:</strong> Reação para bloquear chutes ou passes.</p>
-          <p><strong>Bloqueio Bem-Sucedido:</strong> Reduz dano ou intercepta o passe.</p>
-          <p><strong>Posicionamento:</strong> Estar entre o atacante e o alvo concede vantagem.</p>
-          <p><strong>Penalidade:</strong> Estar marcado por múltiplos adversários causa desvantagem.</p>
-        </div>
-      )
-    }
-  ];
+      </div>
+    )
+  }));
 
   return (
     <div className="py-16">

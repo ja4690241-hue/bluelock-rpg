@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { attributes, classes, skillDescriptions } from "@/lib/data";
+import { attributes, classes, skillDescriptions, skills as dataSkills } from "@/lib/data";
 import { trainings } from "@/lib/trainings";
 import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -43,13 +43,7 @@ const initialFicha: FichaData = {
   notas: ""
 };
 
-const allSkills = [
-  "Corpo a Corpo", "Cabeceio", "Chute",
-  "Pontaria", "Domínio", "Passe", "Drible/Finta", "Intuição", "Roubo de Bola", "Furtividade",
-  "Corrida a Longa Distância", "Explosão",
-  "Acrobacias", "Reflexos", "Defesa",
-  "Intimidação", "Presença", "Diplomacia", "Enganação"
-];
+const allSkills = dataSkills.map(s => s.name);
 
 export default function Ficha() {
   const [ficha, setFicha] = useState<FichaData>(initialFicha);

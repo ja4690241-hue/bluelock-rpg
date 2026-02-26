@@ -6,15 +6,18 @@ export default function Atributos() {
   const atributosItems = attributes.map(attr => ({
     id: attr.id,
     title: attr.name,
-    icon: "⚡",
+    icon: attr.icon || "⚡",
+    color: attr.color,
     content: (
       <div className="space-y-4">
         <p className="italic text-muted-foreground">{attr.description}</p>
         
-        <div>
-          <p className="font-bold text-white mb-2">Propósito:</p>
-          <p className="text-sm">{attr.purpose}</p>
-        </div>
+        {attr.purpose && (
+          <div>
+            <p className="font-bold text-white mb-2">Propósito:</p>
+            <p className="text-sm">{attr.purpose}</p>
+          </div>
+        )}
 
         <div>
           <p className="font-bold text-white mb-2">Perícias Relacionadas:</p>
@@ -55,7 +58,17 @@ export default function Atributos() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Accordion items={atributosItems} allowMultiple={true} />
+          <div className="space-y-4">
+          {atributosItems.map((item) => (
+            <Accordion 
+              key={item.id} 
+              items={[item]} 
+              allowMultiple={true} 
+              className="border-l-4"
+              style={{ borderLeftColor: item.color || 'var(--primary)' }}
+            />
+          ))}
+        </div>
         </motion.div>
 
         {/* Info Box */}

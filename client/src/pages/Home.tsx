@@ -87,7 +87,7 @@ export default function Home() {
                 Crie seu atleta egoísta, escolha sua classe e conquiste o título de melhor centroavante do mundo. Um sistema de RPG de futebol baseado no universo de Blue Lock.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/criacao" className="bl-btn-primary">
+                <Link href="/ficha" className="bl-btn-primary">
                   Criar Personagem
                   <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -106,9 +106,9 @@ export default function Home() {
             >
               {[
                 { value: "20", label: "Classes" },
-                { value: "6", label: "Atributos" },
-                { value: "24+", label: "Perícias" },
-                { value: "80+", label: "Habilidades" }
+                { value: "5", label: "Atributos" },
+                { value: "19", label: "Perícias" },
+                { value: "100+", label: "Habilidades" }
               ].map((stat) => (
                 <div key={stat.label}>
                   <div className="font-display text-4xl text-white bl-glow">{stat.value}</div>

@@ -3,41 +3,10 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-
-interface ClassBonus {
-  nome: string;
-  potencia: number;
-  tecnica: number;
-  velocidade: number;
-  agilidade: number;
-  ego: number;
-}
-
-const classes: ClassBonus[] = [
-  { nome: "PlayMaker", potencia: 0, tecnica: 2, velocidade: 1, agilidade: 1, ego: 1 },
-  { nome: "Dominador Superior", potencia: 2, tecnica: 1, velocidade: 0, agilidade: 1, ego: 2 },
-  { nome: "Velocista", potencia: 0, tecnica: 1, velocidade: 3, agilidade: 1, ego: 0 },
-  { nome: "Especialista Espacial", potencia: 0, tecnica: 2, velocidade: 1, agilidade: 1, ego: 1 },
-  { nome: "Finalizador Clínico", potencia: 3, tecnica: 1, velocidade: 0, agilidade: 0, ego: 1 },
-  { nome: "Driblador", potencia: 0, tecnica: 2, velocidade: 1, agilidade: 2, ego: 0 },
-  { nome: "Atacante Completo", potencia: 0, tecnica: 0, velocidade: 0, agilidade: 0, ego: 0 },
-  { nome: "Caçador de Gols", potencia: 2, tecnica: 1, velocidade: 1, agilidade: 0, ego: 2 },
-  { nome: "Atacante Controlador", potencia: 1, tecnica: 2, velocidade: 0, agilidade: 1, ego: 1 },
-  { nome: "Multi-Funções", potencia: 1, tecnica: 1, velocidade: 1, agilidade: 1, ego: 0 },
-  { nome: "Atacante Saltador", potencia: 1, tecnica: 1, velocidade: 1, agilidade: 1, ego: 0 },
-  { nome: "Defensor Espacial", potencia: 1, tecnica: 1, velocidade: 0, agilidade: 2, ego: 0 },
-  { nome: "Louco da Estamina", potencia: 1, tecnica: 1, velocidade: 2, agilidade: 1, ego: 0 },
-  { nome: "Vilão do Campo", potencia: 2, tecnica: 1, velocidade: 1, agilidade: 0, ego: 1 },
-  { nome: "Goleiro", potencia: 1, tecnica: 1, velocidade: 0, agilidade: 1, ego: 1 },
-  { nome: "Ninja", potencia: 0, tecnica: 2, velocidade: 1, agilidade: 2, ego: 0 },
-  { nome: "Imperador", potencia: 1, tecnica: 1, velocidade: 1, agilidade: 1, ego: 3 },
-  { nome: "Devorador de Ás", potencia: 2, tecnica: 1, velocidade: 1, agilidade: 1, ego: 0 },
-  { nome: "Analista", potencia: 0, tecnica: 1, velocidade: 0, agilidade: 1, ego: 2 },
-  { nome: "Cachorro Louco", potencia: 1, tecnica: 1, velocidade: 2, agilidade: 1, ego: 0 },
-];
+import { classes as dataClasses, attributes as dataAttributes } from "@/lib/data";
 
 export default function Calculadora() {
-  const [selectedClass, setSelectedClass] = useState<ClassBonus>(classes[0]);
+  const [selectedClass, setSelectedClass] = useState(dataClasses[0]);
   const [baseAttributes, setBaseAttributes] = useState({
     potencia: 3,
     tecnica: 3,
@@ -46,12 +15,18 @@ export default function Calculadora() {
     ego: 3,
   });
 
+  // Mapear bônus de classe para os atributos
+  const getClassBonus = (attrName: string) => {
+    const bonus = selectedClass.attributeBonus.find(b => b.attr.toLowerCase() === attrName.toLowerCase());
+    return bonus ? bonus.value : 0;
+  };
+
   const finalAttributes = {
-    potencia: baseAttributes.potencia + selectedClass.potencia,
-    tecnica: baseAttributes.tecnica + selectedClass.tecnica,
-    velocidade: baseAttributes.velocidade + selectedClass.velocidade,
-    agilidade: baseAttributes.agilidade + selectedClass.agilidade,
-    ego: baseAttributes.ego + selectedClass.ego,
+    potencia: baseAttributes.potencia + getClassBonus("Potência"),
+    tecnica: baseAttributes.tecnica + getClassBonus("Técnica"),
+    velocidade: baseAttributes.velocidade + getClassBonus("Velocidade"),
+    agilidade: baseAttributes.agilidade + getClassBonus("Agilidade"),
+    ego: baseAttributes.ego + getClassBonus("Ego"),
   };
 
   const totalFolego = Math.floor((finalAttributes.potencia + finalAttributes.tecnica + finalAttributes.velocidade + finalAttributes.agilidade + finalAttributes.ego) * 1.5);
@@ -102,19 +77,19 @@ export default function Calculadora() {
           >
             <Card className="p-6 bl-card sticky top-24">
               <h2 className="font-display text-2xl text-white mb-4">ESCOLHA SUA CLASSE</h2>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {classes.map((cls) => (
+              <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar pr-2">
+                {dataClasses.map((cls) => (
                   <button
-                    key={cls.nome}
+                    key={cls.id}
                     onClick={() => setSelectedClass(cls)}
                     className="w-full text-left px-4 py-2 rounded-sm text-sm font-heading tracking-wider transition-all"
                     style={{
-                      background: selectedClass.nome === cls.nome ? 'oklch(0.52 0.22 260 / 0.3)' : 'oklch(0.12 0.015 260)',
-                      border: selectedClass.nome === cls.nome ? '1px solid oklch(0.52 0.22 260)' : '1px solid oklch(0.22 0.03 260)',
-                      color: selectedClass.nome === cls.nome ? 'oklch(0.75 0.15 230)' : 'text-muted-foreground'
+                      background: selectedClass.id === cls.id ? 'oklch(0.52 0.22 260 / 0.3)' : 'oklch(0.12 0.015 260)',
+                      border: selectedClass.id === cls.id ? '1px solid oklch(0.52 0.22 260)' : '1px solid oklch(0.22 0.03 260)',
+                      color: selectedClass.id === cls.id ? 'oklch(0.75 0.15 230)' : 'text-muted-foreground'
                     }}
                   >
-                    {cls.nome}
+                    {cls.name}
                   </button>
                 ))}
               </div>
@@ -156,6 +131,7 @@ export default function Calculadora() {
                         max={8}
                         step={1}
                         className="w-full"
+                        style={{ "--primary": color } as React.CSSProperties}
                       />
                     </div>
                   );
@@ -166,24 +142,18 @@ export default function Calculadora() {
             {/* Resumo da Classe */}
             <Card className="p-8 bl-card" style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.52 0.22 260 / 0.3)' }}>
               <h2 className="font-display text-2xl text-white mb-4" style={{ color: 'oklch(0.52 0.22 260)' }}>
-                {selectedClass.nome}
+                {selectedClass.name}
               </h2>
               <div className="grid grid-cols-5 gap-3 mb-6">
-                {Object.entries(selectedClass).map(([key, value]) => {
-                  if (key === 'nome') return null;
-                  const colors: Record<string, string> = {
-                    potencia: 'oklch(0.75 0.18 25)',
-                    tecnica: 'oklch(0.75 0.15 230)',
-                    velocidade: 'oklch(0.65 0.18 145)',
-                    agilidade: 'oklch(0.52 0.22 260)',
-                    ego: 'oklch(0.75 0.18 60)',
-                  };
-                  const color = colors[key];
+                {["Potência", "Técnica", "Velocidade", "Agilidade", "Ego"].map((attrName) => {
+                  const attrData = dataAttributes.find(a => a.name === attrName);
+                  const color = attrData?.color || 'var(--primary)';
+                  const value = getClassBonus(attrName);
 
                   return (
-                    <div key={key} className="text-center p-3 rounded-sm" style={{ background: `${color}/10` }}>
-                      <div className="font-heading text-xs uppercase tracking-wider" style={{ color }}>
-                        {key.slice(0, 3)}
+                    <div key={attrName} className="text-center p-3 rounded-sm" style={{ background: `${color}/10` }}>
+                      <div className="font-heading text-[10px] uppercase tracking-wider" style={{ color }}>
+                        {attrName.slice(0, 3)}
                       </div>
                       <div className="font-display text-2xl" style={{ color }}>
                         +{value}
@@ -192,7 +162,8 @@ export default function Calculadora() {
                   );
                 })}
               </div>
-              <p className="text-muted-foreground text-sm">Bônus de classe adicionados aos seus atributos base</p>
+              <p className="text-muted-foreground text-xs italic mb-4">{selectedClass.subtitle}</p>
+              <p className="text-muted-foreground text-sm line-clamp-2">{selectedClass.description}</p>
             </Card>
 
             {/* Atributos Finais */}
