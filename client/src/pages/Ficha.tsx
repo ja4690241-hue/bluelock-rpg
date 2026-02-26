@@ -314,7 +314,7 @@ export default function Ficha() {
                           ))}
                         </div>
                       </div>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
                 <div className="flex gap-3">
