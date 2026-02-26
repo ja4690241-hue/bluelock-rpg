@@ -55,12 +55,11 @@ export default function Ficha() {
   const selectedClass = classes.find(c => c.id === ficha.classId);
   const overallData = calculateOverall(ficha.atributos, ficha.pericias);
   const radarData = [
-    { subject: 'VELOCIDADE', A: overallData.categories.speed, fullMark: 100 },
-    { subject: 'DEFESA', A: overallData.categories.defense, fullMark: 100 },
-    { subject: 'PASSE', A: overallData.categories.pass, fullMark: 100 },
-    { subject: 'DRIBLE', A: overallData.categories.dribble, fullMark: 100 },
-    { subject: 'CHUTE', A: overallData.categories.shoot, fullMark: 100 },
-    { subject: 'ATAQUE', A: overallData.categories.offense, fullMark: 100 },
+    { subject: 'POTÊNCIA', A: ficha.atributos.potencia || 0, fullMark: 10 },
+    { subject: 'TÉCNICA', A: ficha.atributos.tecnica || 0, fullMark: 10 },
+    { subject: 'EGO', A: ficha.atributos.ego || 0, fullMark: 10 },
+    { subject: 'AGILIDADE', A: ficha.atributos.agilidade || 0, fullMark: 10 },
+    { subject: 'VELOCIDADE', A: ficha.atributos.velocidade || 0, fullMark: 10 },
   ];
 
   const rollFolego = () => {
