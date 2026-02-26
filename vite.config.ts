@@ -166,20 +166,10 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    chunkSizeWarningLimit: 1000, // Increase from default 500KB to 1MB
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@radix-ui')) {
-              return 'vendor-ui';
-            }
-            if (id.includes('recharts') || id.includes('d3')) {
-              return 'vendor-charts';
-            }
-            return 'vendor';
-          }
-        }
+        manualChunks: undefined // Desabilitar manualChunks personalizado para evitar problemas de dependência
       },
     },
   },
