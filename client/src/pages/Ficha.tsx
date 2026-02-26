@@ -271,25 +271,55 @@ export default function Ficha() {
             {step === 2 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
                 <h2 className="font-display text-3xl text-white tracking-wider mb-6">CLASSE</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                  {classes.map(c => (
-                    <button
+                <div className="space-y-4 mb-8 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                  {classes.map((c, idx) => (
+                    <motion.button
                       key={c.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05 }}
                       onClick={() => setFicha(prev => ({ ...prev, classId: c.id }))}
-                      className={`p-4 rounded-sm border-2 transition-all text-left ${
+                      className={`w-full p-6 rounded-sm border-2 transition-all text-left ${
                         ficha.classId === c.id
                           ? 'border-primary bg-primary/10'
                           : 'border-border bg-white/5 hover:border-primary/50'
                       }`}
                     >
-                      <p className="font-heading text-sm font-bold text-white">{c.name}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{c.description}</p>
+                      <div className="mb-4">
+                        <p className="font-display text-lg font-bold text-white mb-1">{c.name}</p>
+                        <p className="text-xs text-muted-foreground italic">{c.subtitle}</p>
+                        <p className="text-xs text-muted-foreground mt-2">{c.description}</p>
+                      </div>
+
+                      <div className="mb-4 pt-4 border-t border-white/10">
+                        <p className="font-heading text-[10px] uppercase tracking-widest text-primary mb-2">Bonus de Atributos</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {c.attributeBonus.map(bonus => (
+                            <div key={bonus.attr} className="px-2 py-1 rounded-sm bg-white/5 border border-white/10">
+                              <div className="text-[10px] text-muted-foreground">{bonus.attr}</div>
+                              <div className="font-mono-stats text-sm text-primary font-bold">+{bonus.value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-white/10">
+                        <p className="font-heading text-[10px] uppercase tracking-widest text-primary mb-2">Bonus de Pericias</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {c.skillBonus.map(bonus => (
+                            <div key={bonus.skill} className="px-2 py-1 rounded-sm bg-white/5 border border-white/10">
+                              <div className="text-[10px] text-muted-foreground truncate">{bonus.skill}</div>
+                              <div className="font-mono-stats text-sm text-primary font-bold">+{bonus.value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
                 <div className="flex gap-3">
                   <button onClick={() => setStep(1)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(3)} className="bl-btn-primary">Próximo: Atributos</button>
+                  <button onClick={() => setStep(3)} className="bl-btn-primary">Proximo: Atributos</button>
                 </div>
               </motion.div>
             )}
