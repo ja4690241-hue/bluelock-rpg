@@ -25,6 +25,7 @@ import Calculadora from "./pages/Calculadora";
 import FluxoDetalhado from "./pages/FluxoDetalhado";
 import ItensCondicoes from "./pages/ItensCondicoes";
 import GuiaNarrador from "./pages/GuiaNarrador";
+import Regras from "./pages/Regras";
 
 function Router() {
   return (
@@ -49,6 +50,7 @@ function Router() {
         <Route path="/fluxo-detalhado" component={FluxoDetalhado} />
         <Route path="/itens-condicoes" component={ItensCondicoes} />
         <Route path="/guia-narrador" component={GuiaNarrador} />
+        <Route path="/regras" component={Regras} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

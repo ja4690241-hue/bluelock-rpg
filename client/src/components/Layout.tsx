@@ -18,6 +18,7 @@ const navCategories = [
   {
     label: "REGRAS",
     links: [
+      { href: "/regras", label: "Todas as Regras" },
       { href: "/atributos", label: "Atributos" },
       { href: "/pericias", label: "Perícias" },
       { href: "/classes", label: "Classes" },
