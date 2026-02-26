@@ -492,6 +492,36 @@ export default function Ficha() {
                       <p className="text-sm text-white leading-relaxed">{ficha.notas}</p>
                     </div>
                   )}
+
+                  {/* Radar Chart - Official Blue Lock Style */}
+                  <div className="pt-6 border-t border-white/5">
+                    <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-6 text-center">GRÁFICO DE ATRIBUTOS</p>
+                    <div className="h-[300px] w-full flex items-center justify-center relative">
+                      {/* Background Circle Effect like the manga */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-48 h-48 rounded-full border border-white/5" />
+                        <div className="w-32 h-32 rounded-full border border-white/5" />
+                        <div className="w-16 h-16 rounded-full border border-white/5" />
+                      </div>
+                      
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                          <PolarGrid stroke="rgba(255,255,255,0.1)" gridType="polygon" />
+                          <PolarAngleAxis 
+                            dataKey="subject" 
+                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 700, fontFamily: 'Rajdhani' }}
+                          />
+                          <Radar
+                            name="Atleta"
+                            dataKey="A"
+                            stroke="oklch(0.52 0.22 260)"
+                            fill="oklch(0.52 0.22 260)"
+                            fillOpacity={0.4}
+                          />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3 mt-8 no-print">
