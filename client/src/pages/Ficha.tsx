@@ -417,20 +417,34 @@ export default function Ficha() {
             {step === 5 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
                 <h2 className="font-display text-3xl text-white tracking-wider mb-6">TREINAMENTOS</h2>
-                <div className="space-y-2 mb-6">
-                  {trainings.map(training => (
-                    <button
+                <div className="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                  {trainings.map((training, idx) => (
+                    <motion.button
                       key={training.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.02 }}
                       onClick={() => toggleTraining(training.id)}
-                      className={`w-full p-3 rounded-sm border-2 transition-all text-left ${
+                      className={`w-full p-4 rounded-sm border-2 transition-all text-left ${
                         ficha.treinamentos.includes(training.id)
                           ? 'border-primary bg-primary/10'
                           : 'border-border bg-white/5 hover:border-primary/50'
                       }`}
                     >
-                      <p className="font-heading text-sm font-bold text-white">{training.name}</p>
-                      <div className="text-[10px] text-muted-foreground mt-1">{training.description}</div>
-                    </button>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <p className="font-heading text-sm font-bold text-white">{training.name}</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">{training.description}</p>
+                        </div>
+                        <span className="text-[9px] font-heading uppercase tracking-widest px-2 py-0.5 rounded-sm ml-2 flex-shrink-0" style={{ background: training.category === 'Avancado' ? 'oklch(0.75 0.18 25 / 0.2)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.75 0.15 230 / 0.2)', color: training.category === 'Avancado' ? 'oklch(0.75 0.18 25)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260)' : 'oklch(0.75 0.15 230)' }}>
+                          {training.category}
+                        </span>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-white/10">
+                        <div className="text-[10px] text-muted-foreground mb-1 font-heading uppercase tracking-widest">Efeito:</div>
+                        <p className="text-xs text-white leading-relaxed">{training.effect}</p>
+                      </div>
+                    </motion.button>
                   ))}
                 </div>
 
