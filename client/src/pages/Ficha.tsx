@@ -260,8 +260,7 @@ export default function Ficha() {
                 </div>
                 <button
                   onClick={() => setStep(2)}
-                  className="bl-btn-primary mt-6"
-                  disabled={!ficha.nome}
+                  className="bl-btn-primary w-full mt-6"
                 >
                   Próximo: Classe
                 </button>
@@ -271,34 +270,26 @@ export default function Ficha() {
             {/* Step 2: Class */}
             {step === 2 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-6">ESCOLHA SUA CLASSE</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                  {classes.map((cls) => (
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">CLASSE</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                  {classes.map(c => (
                     <button
-                      key={cls.id}
-                      onClick={() => setFicha(prev => ({ ...prev, classId: cls.id }))}
-                      className="p-4 rounded-sm text-left transition-all"
-                      style={{
-                        background: ficha.classId === cls.id ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.12 0.015 260)',
-                        border: `1px solid ${ficha.classId === cls.id ? 'oklch(0.52 0.22 260)' : 'oklch(0.22 0.03 260)'}`,
-                      }}
+                      key={c.id}
+                      onClick={() => setFicha(prev => ({ ...prev, classId: c.id }))}
+                      className={`p-4 rounded-sm border-2 transition-all text-left ${
+                        ficha.classId === c.id
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-white/5 hover:border-primary/50'
+                      }`}
                     >
-                      <div className="font-heading text-sm font-bold text-white uppercase italic">{cls.name}</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">{cls.subtitle}</div>
-                      <div className="bl-tag mt-2 text-[10px]">{cls.role}</div>
+                      <p className="font-heading text-sm font-bold text-white">{c.name}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{c.description}</p>
                     </button>
                   ))}
                 </div>
-                {selectedClass && (
-                  <div className="mt-4 p-4 rounded-sm" style={{ background: 'oklch(0.52 0.22 260 / 0.1)', border: '1px solid oklch(0.52 0.22 260 / 0.3)' }}>
-                    <p className="text-xs text-muted-foreground leading-relaxed italic">"{selectedClass.description}"</p>
-                  </div>
-                )}
-                <div className="flex gap-3 mt-6">
+                <div className="flex gap-3">
                   <button onClick={() => setStep(1)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(3)} className="bl-btn-primary" disabled={!ficha.classId}>
-                    Próximo: Atributos
-                  </button>
+                  <button onClick={() => setStep(3)} className="bl-btn-primary">Próximo: Atributos</button>
                 </div>
               </motion.div>
             )}
@@ -306,41 +297,26 @@ export default function Ficha() {
             {/* Step 3: Attributes */}
             {step === 3 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-2 uppercase italic">ATRIBUTOS</h2>
-                <p className="text-xs text-muted-foreground mb-6 italic">Distribua seus pontos (máx. 10 por atributo). Considere os bônus da sua classe.</p>
-                
-                {selectedClass && (
-                  <div className="mb-6 p-4 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
-                    <p className="font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Bônus da classe {selectedClass.name}:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedClass.attributeBonus.map(b => (
-                        <span key={b.attr} className="bl-badge-folego">+{b.value} {b.attr}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-4">
-                  {attributes.map(attr => (
-                    <div key={attr.id}>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="font-heading text-sm text-white uppercase tracking-wider">{attr.name}</label>
-                        <span className="font-mono-stats text-lg" style={{ color: attr.color }}>{ficha.atributos[attr.id] || 0}</span>
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">ATRIBUTOS</h2>
+                <div className="space-y-4 mb-6">
+                  {Object.entries(ficha.atributos).map(([key, val]) => (
+                    <div key={key}>
+                      <div className="flex justify-between mb-2">
+                        <label className="font-heading text-sm uppercase text-white">{key}</label>
+                        <span className="text-primary font-bold">{val}/10</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="10"
-                        value={ficha.atributos[attr.id] || 0}
-                        onChange={(e) => updateAttr(attr.id, parseInt(e.target.value))}
+                        value={val}
+                        onChange={(e) => updateAttr(key, parseInt(e.target.value))}
                         className="w-full"
-                        style={{ accentColor: attr.color }}
                       />
                     </div>
                   ))}
                 </div>
-
-                <div className="flex gap-3 mt-6">
+                <div className="flex gap-3">
                   <button onClick={() => setStep(2)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={() => setStep(4)} className="bl-btn-primary">Próximo: Perícias</button>
                 </div>
@@ -350,30 +326,26 @@ export default function Ficha() {
             {/* Step 4: Skills */}
             {step === 4 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-2 uppercase italic">PERÍCIAS</h2>
-                <p className="text-xs text-muted-foreground mb-6 italic">Distribua suas perícias (máx. 20 por perícia).</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  {allSkills.map(skill => (
-                    <div key={skill}>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="font-heading text-xs text-white uppercase tracking-wider">{skill}</label>
-                        <span className="font-mono-stats text-sm text-primary">{ficha.pericias[skill] || 0}</span>
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">PERÍCIAS</h2>
+                <div className="space-y-4 mb-6 max-h-96 overflow-y-auto custom-scrollbar">
+                  {dataSkills.map(skill => (
+                    <div key={skill.name}>
+                      <div className="flex justify-between mb-2">
+                        <label className="font-heading text-sm text-white">{skill.name}</label>
+                        <span className="text-primary font-bold">{ficha.pericias[skill.name] || 0}/20</span>
                       </div>
                       <input
                         type="range"
                         min="0"
                         max="20"
-                        value={ficha.pericias[skill] || 0}
-                        onChange={(e) => updatePericia(skill, parseInt(e.target.value))}
+                        value={ficha.pericias[skill.name] || 0}
+                        onChange={(e) => updatePericia(skill.name, parseInt(e.target.value))}
                         className="w-full"
-                        style={{ accentColor: 'oklch(0.52 0.22 260)' }}
                       />
                     </div>
                   ))}
                 </div>
-
-                <div className="flex gap-3 mt-6">
+                <div className="flex gap-3">
                   <button onClick={() => setStep(3)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={() => setStep(5)} className="bl-btn-primary">Próximo: Treinos</button>
                 </div>
@@ -383,21 +355,19 @@ export default function Ficha() {
             {/* Step 5: Trainings */}
             {step === 5 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-2 uppercase italic">TREINAMENTOS</h2>
-                <p className="text-xs text-muted-foreground mb-6 italic">Selecione até 3 treinamentos para sua ficha.</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">TREINAMENTOS</h2>
+                <div className="space-y-2 mb-6">
                   {trainings.map(training => (
                     <button
                       key={training.id}
                       onClick={() => toggleTraining(training.id)}
-                      className="p-4 rounded-sm text-left transition-all"
-                      style={{
-                        background: ficha.treinamentos.includes(training.id) ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.12 0.015 260)',
-                        border: `1px solid ${ficha.treinamentos.includes(training.id) ? 'oklch(0.52 0.22 260)' : 'oklch(0.22 0.03 260)'}`,
-                      }}
+                      className={`w-full p-3 rounded-sm border-2 transition-all text-left ${
+                        ficha.treinamentos.includes(training.id)
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-white/5 hover:border-primary/50'
+                      }`}
                     >
-                      <div className="font-heading text-sm font-bold text-white uppercase">{training.name}</div>
+                      <p className="font-heading text-sm font-bold text-white">{training.name}</p>
                       <div className="text-[10px] text-muted-foreground mt-1">{training.description}</div>
                     </button>
                   ))}
@@ -442,66 +412,95 @@ export default function Ficha() {
               </motion.div>
             )}
 
-            {/* Step 7: Final Sheet */}
+            {/* Step 7: Final Sheet - NOVO LAYOUT */}
             {step === 7 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-6 uppercase italic">FICHA FINAL</h2>
-
-                <div className="space-y-6">
-                  {ficha.imagemUrl && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                {/* Header com Nome e Número */}
+                <div className="bl-card p-6">
+                  <div className="flex items-start justify-between mb-4">
                     <div>
-                      <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-64 object-cover rounded-sm border border-border/50" />
+                      <h2 className="font-display text-4xl text-white tracking-wider uppercase italic">{ficha.nome || "Novo Atleta"}</h2>
+                      <p className="text-primary font-heading text-sm mt-2">#{ficha.numero || "00"}</p>
                     </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Nome</p>
-                      <p className="text-xl font-bold text-white">{ficha.nome}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Número</p>
-                      <p className="text-xl font-bold text-primary">#{ficha.numero}</p>
-                    </div>
+                    {selectedClass && (
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Classe</p>
+                        <p className="text-lg font-bold text-white">{selectedClass.name}</p>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  {/* Overall & Rank Display */}
-                  <div className="p-6 rounded-sm bg-gradient-to-r from-white/5 to-white/10 border border-white/20" style={{
-                    boxShadow: `0 0 20px ${overallData.rankColor}33, inset 0 0 20px ${overallData.rankColor}11`
-                  }}>
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Overall</div>
-                        <div className="text-6xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 20px ${overallData.rankColor}66` }}>
-                          {overallData.total}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-px h-16 bg-white/10 mb-2" />
-                      </div>
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Rank</div>
-                        <div className="text-6xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 20px ${overallData.rankColor}66` }}>
-                          {overallData.rank}
-                        </div>
+                {/* Imagem do Atleta */}
+                {ficha.imagemUrl && (
+                  <div className="bl-card p-0 overflow-hidden">
+                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-80 object-cover" />
+                  </div>
+                )}
+
+                {/* Overall & Rank Display - Destaque */}
+                <div className="bl-card p-8" style={{
+                  background: `linear-gradient(135deg, ${overallData.rankColor}15 0%, ${overallData.rankColor}08 100%)`,
+                  border: `2px solid ${overallData.rankColor}`,
+                  boxShadow: `0 0 30px ${overallData.rankColor}33, inset 0 0 30px ${overallData.rankColor}11`
+                }}>
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Overall</div>
+                      <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                        {overallData.total}
                       </div>
                     </div>
-                    <div className="pt-4 border-t border-white/10">
-                      <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-2">Status</div>
-                      <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
-                        {overallData.description}
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="w-px h-20 bg-white/20" />
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Rank</div>
+                      <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                        {overallData.rank}
                       </div>
                     </div>
                   </div>
-
-                  {selectedClass && (
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Classe</p>
-                      <p className="text-lg font-bold text-white">{selectedClass.name}</p>
+                  <div className="mt-6 pt-6 border-t border-white/20 text-center">
+                    <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
+                      {overallData.description}
                     </div>
-                  )}
+                  </div>
+                </div>
 
-                  <div className="grid grid-cols-3 gap-2">
+                {/* Gráfico de Atributos - Destaque Principal */}
+                <div className="bl-card p-8">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-8 text-center">GRÁFICO DE ATRIBUTOS</p>
+                  <div className="h-[350px] w-full flex items-center justify-center relative">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-48 h-48 rounded-full border border-white/5" />
+                      <div className="w-32 h-32 rounded-full border border-white/5" />
+                      <div className="w-16 h-16 rounded-full border border-white/5" />
+                    </div>
+                    
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                        <PolarGrid stroke="rgba(255,255,255,0.1)" gridType="polygon" />
+                        <PolarAngleAxis 
+                          dataKey="subject" 
+                          tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 700, fontFamily: 'Rajdhani' }}
+                        />
+                        <Radar
+                          name="Atleta"
+                          dataKey="A"
+                          stroke="oklch(0.52 0.22 260)"
+                          fill="oklch(0.52 0.22 260)"
+                          fillOpacity={0.4}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Atributos Base */}
+                <div className="bl-card p-6">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
+                  <div className="grid grid-cols-5 gap-2">
                     {Object.entries(ficha.atributos).map(([key, val]) => (
                       <div key={key} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
                         <div className="text-2xl font-black text-white">{val}</div>
@@ -509,51 +508,24 @@ export default function Ficha() {
                       </div>
                     ))}
                   </div>
-
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Fôlego</p>
-                    <div className="text-3xl font-black text-primary">{ficha.folego} pontos</div>
-                  </div>
-
-                  {ficha.notas && (
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Notas</p>
-                      <p className="text-sm text-white leading-relaxed">{ficha.notas}</p>
-                    </div>
-                  )}
-
-                  {/* Radar Chart - Official Blue Lock Style */}
-                  <div className="pt-6 border-t border-white/5">
-                    <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-6 text-center">GRÁFICO DE ATRIBUTOS</p>
-                    <div className="h-[300px] w-full flex items-center justify-center relative">
-                      {/* Background Circle Effect like the manga */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-48 h-48 rounded-full border border-white/5" />
-                        <div className="w-32 h-32 rounded-full border border-white/5" />
-                        <div className="w-16 h-16 rounded-full border border-white/5" />
-                      </div>
-                      
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                          <PolarGrid stroke="rgba(255,255,255,0.1)" gridType="polygon" />
-                          <PolarAngleAxis 
-                            dataKey="subject" 
-                            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 700, fontFamily: 'Rajdhani' }}
-                          />
-                          <Radar
-                            name="Atleta"
-                            dataKey="A"
-                            stroke="oklch(0.52 0.22 260)"
-                            fill="oklch(0.52 0.22 260)"
-                            fillOpacity={0.4}
-                          />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3 mt-8 no-print">
+                {/* Fôlego */}
+                <div className="bl-card p-6">
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Fôlego</p>
+                  <div className="text-3xl font-black text-primary">{ficha.folego} pontos</div>
+                </div>
+
+                {/* Notas */}
+                {ficha.notas && (
+                  <div className="bl-card p-6">
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Notas</p>
+                    <p className="text-sm text-white leading-relaxed">{ficha.notas}</p>
+                  </div>
+                )}
+
+                {/* Botões de Ação */}
+                <div className="flex flex-wrap gap-3 no-print">
                   <button onClick={() => setStep(6)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={saveFicha} className="bl-btn-primary flex items-center gap-2">
                     <Save className="w-4 h-4" /> SALVAR
