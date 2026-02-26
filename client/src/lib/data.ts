@@ -49,6 +49,14 @@ export const attributes = [
     color: "oklch(0.52 0.22 260)",
     description: "Diferentemente dos outros atributos, funciona como 'mana' para o personagem. Define quantos pontos ele possui para usar habilidades. Para definir os pontos, role 2d15. Para aventuras, o narrador deve conceder no mínimo 12 pontos.",
     skills: []
+  },
+  {
+    id: "inteligencia",
+    name: "Inteligência",
+    icon: "🧠",
+    color: "oklch(0.75 0.15 280)",
+    description: "Mede a capacidade intelectual e analítica do personagem. Essencial para o Analista, permite compreender estratégias, analisar adversários e coordenar ações táticas.",
+    skills: ["Análise Individual", "Intuição", "Diplomacia"]
   }
 ];
 
@@ -71,7 +79,8 @@ export const skillDescriptions: Record<string, string> = {
   "Intimidação": "Impor medo ou sentimento de ameaça.",
   "Presença": "Resiliência mental. Representa o quão bom o personagem é em lidar com estresse psicológico.",
   "Diplomacia": "Pode ser usada para livrar jogadores intimidados.",
-  "Enganação": "Pode ser usada dentro do jogo para enganar oponentes."
+  "Enganação": "Pode ser usada dentro do jogo para enganar oponentes.",
+  "Análise Individual": "Usada pelo Analista para estudar adversários, entender seus padrões de jogo e anular suas habilidades."
 };
 
 export const classes = [
