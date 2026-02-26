@@ -465,6 +465,29 @@ export default function Ficha() {
                     </div>
                   </div>
 
+                  {/* Overall & Rank Display */}
+                  <div className="flex items-center gap-6 p-4 rounded-sm bg-white/5 border border-white/10">
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Overall</div>
+                      <div className="text-5xl font-black italic leading-none" style={{ color: overallData.rankColor }}>
+                        {overallData.total}
+                      </div>
+                    </div>
+                    <div className="w-px h-12 bg-white/10" />
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Rank</div>
+                      <div className="text-5xl font-black italic leading-none" style={{ color: overallData.rankColor }}>
+                        {overallData.rank}
+                      </div>
+                    </div>
+                    <div className="flex-1 text-right">
+                      <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Status</div>
+                      <div className="text-sm font-bold italic uppercase" style={{ color: overallData.rankColor }}>
+                        {overallData.description}
+                      </div>
+                    </div>
+                  </div>
+
                   {selectedClass && (
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Classe</p>
