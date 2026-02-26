@@ -466,23 +466,29 @@ export default function Ficha() {
                   </div>
 
                   {/* Overall & Rank Display */}
-                  <div className="flex items-center gap-6 p-4 rounded-sm bg-white/5 border border-white/10">
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Overall</div>
-                      <div className="text-5xl font-black italic leading-none" style={{ color: overallData.rankColor }}>
-                        {overallData.total}
+                  <div className="p-6 rounded-sm bg-gradient-to-r from-white/5 to-white/10 border border-white/20" style={{
+                    boxShadow: `0 0 20px ${overallData.rankColor}33, inset 0 0 20px ${overallData.rankColor}11`
+                  }}>
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Overall</div>
+                        <div className="text-6xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 20px ${overallData.rankColor}66` }}>
+                          {overallData.total}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-px h-16 bg-white/10 mb-2" />
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Rank</div>
+                        <div className="text-6xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 20px ${overallData.rankColor}66` }}>
+                          {overallData.rank}
+                        </div>
                       </div>
                     </div>
-                    <div className="w-px h-12 bg-white/10" />
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Rank</div>
-                      <div className="text-5xl font-black italic leading-none" style={{ color: overallData.rankColor }}>
-                        {overallData.rank}
-                      </div>
-                    </div>
-                    <div className="flex-1 text-right">
-                      <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Status</div>
-                      <div className="text-sm font-bold italic uppercase" style={{ color: overallData.rankColor }}>
+                    <div className="pt-4 border-t border-white/10">
+                      <div className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-2">Status</div>
+                      <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
                         {overallData.description}
                       </div>
                     </div>
