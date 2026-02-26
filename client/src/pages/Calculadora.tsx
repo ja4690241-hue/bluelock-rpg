@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { classes as dataClasses, attributes as dataAttributes } from "@/lib/data";
+import { calculateOverall } from "@/lib/overall";
 
 export default function Calculadora() {
   const [selectedClass, setSelectedClass] = useState(dataClasses[0]);
@@ -30,6 +31,7 @@ export default function Calculadora() {
   };
 
   const totalFolego = Math.floor((finalAttributes.potencia + finalAttributes.tecnica + finalAttributes.velocidade + finalAttributes.agilidade + finalAttributes.ego) * 1.5);
+  const overallData = calculateOverall(finalAttributes, {});
 
   const handleAttributeChange = (attr: keyof typeof baseAttributes, value: number) => {
     setBaseAttributes(prev => ({
@@ -195,16 +197,28 @@ export default function Calculadora() {
                 })}
               </div>
 
-              <div className="p-4 rounded-sm mb-6" style={{ background: 'oklch(0.12 0.015 260)' }}>
-                <div className="flex items-center justify-between">
-                  <span className="font-heading text-sm uppercase tracking-wider text-muted-foreground">Fôlego Total</span>
-                  <span className="font-display text-4xl" style={{ color: 'oklch(0.52 0.22 260)' }}>
-                    {totalFolego}
-                  </span>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="p-4 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading text-[10px] uppercase tracking-wider text-muted-foreground">Fôlego</span>
+                    <span className="font-display text-3xl" style={{ color: 'oklch(0.52 0.22 260)' }}>
+                      {totalFolego}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Calculado como: (Soma de Atributos) × 1.5
-                </p>
+                <div className="p-4 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                  <div className="flex items-center justify-between">
+                    <span className="font-heading text-[10px] uppercase tracking-wider text-muted-foreground">Overall</span>
+                    <div className="text-right">
+                      <span className="font-display text-3xl block leading-none" style={{ color: overallData.rankColor }}>
+                        {overallData.total}
+                      </span>
+                      <span className="text-[10px] font-bold" style={{ color: overallData.rankColor }}>
+                        RANK {overallData.rank}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <Button

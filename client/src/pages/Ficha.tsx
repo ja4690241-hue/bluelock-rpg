@@ -54,7 +54,6 @@ export default function Ficha() {
 
   const selectedClass = classes.find(c => c.id === ficha.classId);
   const overallData = calculateOverall(ficha.atributos, ficha.pericias);
-  
   const radarData = [
     { subject: 'Potência', A: (ficha.atributos.potencia || 0) * 10, fullMark: 100 },
     { subject: 'Técnica', A: (ficha.atributos.tecnica || 0) * 10, fullMark: 100 },
@@ -183,7 +182,7 @@ export default function Ficha() {
         </motion.div>
 
         {/* Step Indicator */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 custom-scrollbar">
+        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 custom-scrollbar no-print">
           {steps.map((s, i) => (
             <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
               <button
@@ -207,7 +206,7 @@ export default function Ficha() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form */}
-          <div className="lg:col-span-2">
+          <div className={`lg:col-span-2 ${step === 7 ? 'print:lg:col-span-3' : ''}`}>
             {/* Step 1: Identity */}
             {step === 1 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
@@ -490,13 +489,20 @@ export default function Ficha() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 mt-8">
+                <div className="flex flex-wrap gap-3 mt-8 no-print">
                   <button onClick={() => setStep(6)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={saveFicha} className="bl-btn-primary flex items-center gap-2">
-                    <Save className="w-4 h-4" /> SALVAR FICHA
+                    <Save className="w-4 h-4" /> SALVAR
+                  </button>
+                  <button 
+                    onClick={printFicha} 
+                    className="bl-btn-secondary flex items-center gap-2"
+                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', borderColor: 'oklch(0.52 0.22 260)' }}
+                  >
+                    <Download className="w-4 h-4" /> IMPRIMIR PDF
                   </button>
                   <button onClick={exportCurrentFicha} className="bl-btn-secondary flex items-center gap-2">
-                    <Download className="w-4 h-4" /> EXPORTAR
+                    <Folder className="w-4 h-4" /> JSON
                   </button>
                   <button onClick={resetFicha} className="bl-btn-secondary flex items-center gap-2">
                     <RotateCcw className="w-4 h-4" /> NOVA FICHA
@@ -507,7 +513,7 @@ export default function Ficha() {
           </div>
 
           {/* Sidebar */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block no-print">
             <div className="sticky top-24 space-y-6">
               {/* Preview Card */}
               <div className="bl-card p-6 border-primary/20">
