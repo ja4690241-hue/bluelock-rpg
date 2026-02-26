@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Zap, Home, BookOpen, Cog, Users, ChevronDown } from "lucide-react";
+import CommandPalette from "./CommandPalette";
 
 const CONTACT_EMAIL = "ja4690241@gmail.com";
 const DEVELOPER_NAME = "oja/sado";
@@ -110,8 +111,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            {/* CTA Button */}
+            {/* Search & CTA Button */}
             <div className="hidden lg:flex items-center gap-3">
+              <CommandPalette />
               <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 flex-shrink-0">
                 Criar Ficha
               </Link>
