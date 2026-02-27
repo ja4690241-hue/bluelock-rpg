@@ -31,7 +31,14 @@ export default function Calculadora() {
   };
 
   const totalFolego = Math.floor((finalAttributes.potencia + finalAttributes.tecnica + finalAttributes.velocidade + finalAttributes.agilidade + finalAttributes.ego) * 1.5);
-  const overallData = calculateOverall(finalAttributes, {});
+  
+  // Mapear para o formato esperado pelo calculateOverall (incluindo inteligência se necessário)
+  const attributesForOverall = {
+    ...finalAttributes,
+    inteligencia: 3 // Valor padrão para inteligência na calculadora
+  };
+  
+  const overallData = calculateOverall(attributesForOverall, {});
 
   const handleAttributeChange = (attr: keyof typeof baseAttributes, value: number) => {
     setBaseAttributes(prev => ({

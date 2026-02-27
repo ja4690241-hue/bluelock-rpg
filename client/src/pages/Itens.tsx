@@ -8,9 +8,9 @@ import { ShoppingBag, Zap, Shield, Star } from "lucide-react";
 export default function Itens() {
   // Organizar itens por categorias lógicas baseadas no nome/descrição
   const categorizedItems = {
-    "Equipamentos": items.filter(i => i.name.includes("Chuteira") || i.name.includes("Caneleira")),
-    "Consumíveis": items.filter(i => i.name.includes("Garrafa") || i.name.includes("Bebida") || i.name.includes("Refeição") || i.name.includes("Remédio")),
-    "Especiais": items.filter(i => !i.name.includes("Chuteira") && !i.name.includes("Caneleira") && !i.name.includes("Garrafa") && !i.name.includes("Bebida") && !i.name.includes("Refeição") && !i.name.includes("Remédio"))
+    "Equipamentos": items.filter(i => i.name.includes("Chuteira") || i.name.includes("Caneleira") || i.name.includes("Munhequeira") || i.name.includes("Joelheira") || i.name.includes("Óculos")),
+    "Consumíveis": items.filter(i => i.name.includes("Garrafa") || i.name.includes("Bebida") || i.name.includes("Refeição") || i.name.includes("Remédio") || i.name.includes("Bandagem") || i.name.includes("Kit Médico")),
+    "Especiais": items.filter(i => !i.name.includes("Chuteira") && !i.name.includes("Caneleira") && !i.name.includes("Munhequeira") && !i.name.includes("Joelheira") && !i.name.includes("Óculos") && !i.name.includes("Garrafa") && !i.name.includes("Bebida") && !i.name.includes("Refeição") && !i.name.includes("Remédio") && !i.name.includes("Bandagem") && !i.name.includes("Kit Médico"))
   };
 
   return (
@@ -97,13 +97,13 @@ export default function Itens() {
             <div>
               <h3 className="font-heading text-lg font-bold text-white mb-3">Sinergia de Itens</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Alguns itens trabalham bem juntos. Braçadeira de Capitão + Anel de Concentração criam um líder poderoso. Experimente combinações para descobrir sinergias.
+                Alguns itens trabalham bem juntos. Faixa de Capitão + Munhequeira de Foco criam um líder poderoso. Experimente combinações para descobrir sinergias.
               </p>
             </div>
             <div>
               <h3 className="font-heading text-lg font-bold text-white mb-3">Combinações Estratégicas</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Combine itens para criar sinergia. Braçadeira de Capitão + Anel de Concentração criam um líder poderoso. Experimente diferentes combinações.
+                Combine itens para criar sinergia. Chuteira Profissional + Caneleira Especial garantem proteção e velocidade nas alas. Experimente diferentes combinações.
               </p>
             </div>
             <div>
