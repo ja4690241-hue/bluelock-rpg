@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { attributes, classes, skillDescriptions, skills as dataSkills } from "@/lib/data";
 import { trainings } from "@/lib/trainings";
-import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon } from "lucide-react";
+import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon, Sword } from "lucide-react";
 import { toast } from "sonner";
 import { calculateOverall } from "@/lib/overall";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
@@ -22,6 +22,9 @@ interface FichaData {
   folego: number;
   treinamentos: string[];
   notas: string;
+  armaNome: string;
+  armaDescricao: string;
+  armaBonus: string;
 }
 
 const initialFicha: FichaData = {
@@ -40,7 +43,10 @@ const initialFicha: FichaData = {
   pericias: {},
   folego: 0,
   treinamentos: [],
-  notas: ""
+  notas: "",
+  armaNome: "",
+  armaDescricao: "",
+  armaBonus: ""
 };
 
 const allSkills = dataSkills.map(s => s.name);
@@ -116,6 +122,9 @@ export default function Ficha() {
       folego: loadedFicha.folego,
       treinamentos: loadedFicha.treinamentos,
       notas: loadedFicha.notas,
+      armaNome: loadedFicha.armaNome || "",
+      armaDescricao: loadedFicha.armaDescricao || "",
+      armaBonus: loadedFicha.armaBonus || ""
     });
     setShowSavedFichas(false);
     setStep(1);
@@ -162,8 +171,9 @@ export default function Ficha() {
     { id: 3, label: "Atributos" },
     { id: 4, label: "Perícias" },
     { id: 5, label: "Treinos" },
-    { id: 6, label: "Fôlego" },
-    { id: 7, label: "Ficha Final" }
+    { id: 6, label: "Arma" },
+    { id: 7, label: "Fôlego" },
+    { id: 8, label: "Ficha Final" }
   ];
 
   return (
@@ -210,7 +220,7 @@ export default function Ficha() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form */}
-          <div className={`lg:col-span-2 ${step === 7 ? 'print:lg:col-span-3' : ''}`}>
+          <div className={`lg:col-span-2 ${step === 8 ? 'print:lg:col-span-3' : ''}`}>
             {/* Step 1: Identity */}
             {step === 1 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
@@ -261,64 +271,34 @@ export default function Ficha() {
                   onClick={() => setStep(2)}
                   className="bl-btn-primary w-full mt-6"
                 >
-                  Próximo: Classe
+                  PRÓXIMO PASSO
                 </button>
               </motion.div>
             )}
 
             {/* Step 2: Class */}
             {step === 2 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-6">CLASSE</h2>
-                <div className="space-y-4 mb-8 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                  {classes.map((c, idx) => (
-                    <motion.button
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">ESCOLHA SUA CLASSE</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {classes.map((c) => (
+                    <button
                       key={c.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
                       onClick={() => setFicha(prev => ({ ...prev, classId: c.id }))}
-                      className={`w-full p-6 rounded-sm border-2 transition-all text-left ${
-                        ficha.classId === c.id
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border bg-white/5 hover:border-primary/50'
-                      }`}
+                      className={`text-left p-4 rounded-sm border transition-all ${ficha.classId === c.id ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
                     >
-                      <div className="mb-4">
-                        <p className="font-display text-lg font-bold text-white mb-1">{c.name}</p>
-                        <p className="text-xs text-muted-foreground italic">{c.subtitle}</p>
-                        <p className="text-xs text-muted-foreground mt-2">{c.description}</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-display text-xl text-white italic">{c.name}</h3>
+                        {ficha.classId === c.id && <Star className="w-4 h-4 text-primary fill-primary" />}
                       </div>
-
-                      <div className="mb-4 pt-4 border-t border-white/10">
-                        <p className="font-heading text-[10px] uppercase tracking-widest text-primary mb-2">Bonus de Atributos</p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {c.attributeBonus.map(bonus => (
-                            <div key={bonus.attr} className="px-2 py-1 rounded-sm bg-white/5 border border-white/10">
-                              <div className="text-[10px] text-muted-foreground">{bonus.attr}</div>
-                              <div className="font-mono-stats text-sm text-primary font-bold">+{bonus.value}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="pt-4 border-t border-white/10">
-                        <p className="font-heading text-[10px] uppercase tracking-widest text-primary mb-2">Bonus de Pericias</p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                          {c.skillBonus.map(bonus => (
-                            <div key={bonus.skill} className="px-2 py-1 rounded-sm bg-white/5 border border-white/10">
-                              <div className="text-[10px] text-muted-foreground truncate">{bonus.skill}</div>
-                              <div className="font-mono-stats text-sm text-primary font-bold">+{bonus.value}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </motion.button>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{c.subtitle}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>
+                    </button>
                   ))}
                 </div>
-                <div className="flex gap-3">
-                  <button onClick={() => setStep(1)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(3)} className="bl-btn-primary">Proximo: Atributos</button>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep(1)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(3)} className="bl-btn-primary flex-1" disabled={!ficha.classId}>PRÓXIMO PASSO</button>
                 </div>
               </motion.div>
             )}
@@ -326,19 +306,14 @@ export default function Ficha() {
             {/* Step 3: Attributes */}
             {step === 3 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-display text-3xl text-white tracking-wider">ATRIBUTOS</h2>
-                  <div className="px-3 py-1 rounded-sm bg-primary/10 border border-primary/20 text-primary font-heading text-xs uppercase tracking-widest">
-                    Máx 10 por Atributo
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  {attributes.filter(a => a.id !== 'folego').map(attr => (
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">DISTRIBUIR ATRIBUTOS</h2>
+                <div className="space-y-8">
+                  {attributes.filter(a => a.id !== 'folego' && a.id !== 'inteligencia').map(attr => (
                     <div key={attr.id} className="space-y-3">
-                      <div className="flex items-center justify-between">
+                      <div className="flex justify-between items-end">
                         <div className="flex items-center gap-2">
                           <span className="text-xl">{attr.icon}</span>
-                          <span className="font-heading text-sm font-bold text-white uppercase tracking-wider">{attr.name}</span>
+                          <label className="font-heading text-xs tracking-widest uppercase text-white">{attr.name}</label>
                         </div>
                         <span className="font-mono-stats text-2xl text-primary">{ficha.atributos[attr.id] || 0}</span>
                       </div>
@@ -348,66 +323,73 @@ export default function Ficha() {
                         max="10"
                         value={ficha.atributos[attr.id] || 0}
                         onChange={(e) => updateAttr(attr.id, parseInt(e.target.value))}
-                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
                       />
                       <p className="text-[10px] text-muted-foreground leading-relaxed">{attr.description}</p>
                     </div>
                   ))}
+                  
+                  {/* Inteligência (Especial para Analista) */}
+                  {ficha.classId === 'analista' && (
+                    <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">🧠</span>
+                          <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
+                        </div>
+                        <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value={ficha.atributos.inteligencia || 0}
+                        onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
+                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                      />
+                      <p className="text-[10px] text-muted-foreground leading-relaxed">Atributo especial do Analista para estratégias e anulação de habilidades.</p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex gap-3">
-                  <button onClick={() => setStep(2)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(4)} className="bl-btn-primary">Próximo: Perícias</button>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(2)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(4)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 4: Perícias */}
+            {/* Step 4: Skills */}
             {step === 4 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-display text-3xl text-white tracking-wider">PERÍCIAS</h2>
-                  <div className="px-3 py-1 rounded-sm bg-primary/10 border border-primary/20 text-primary font-heading text-xs uppercase tracking-widest">
-                    Limitado pelo Atributo
-                  </div>
-                </div>
-                
-                <div className="space-y-8 mb-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">PERÍCIAS</h2>
+                <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
                   {attributes.filter(a => a.id !== 'folego').map(attr => (
                     <div key={attr.id} className="space-y-4">
                       <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                        <span className="text-lg">{attr.icon}</span>
-                        <h3 className="font-heading text-sm font-bold text-white uppercase tracking-wider">{attr.name}</h3>
-                        <span className="text-[10px] text-muted-foreground ml-auto">Máx: {ficha.atributos[attr.id] || 0}</span>
+                        <span className="text-sm">{attr.icon}</span>
+                        <h3 className="font-heading text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{attr.name}</h3>
                       </div>
-                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {attr.skills.map(skill => (
-                          <div key={skill} className="space-y-2 p-3 rounded-sm bg-white/5 border border-white/5">
-                            <div className="flex items-center justify-between">
-                              <span className="font-heading text-xs text-white uppercase">{skill}</span>
-                              <span className="font-mono-stats text-lg text-primary">+{ficha.pericias[skill] || 0}</span>
+                          <div key={skill} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <label className="text-xs text-white">{skill}</label>
+                              <input
+                                type="number"
+                                value={ficha.pericias[skill] || 0}
+                                onChange={(e) => updatePericia(skill, parseInt(e.target.value))}
+                                className="w-12 bg-white/5 border border-white/10 rounded-sm text-center font-mono-stats text-sm text-primary py-1"
+                              />
                             </div>
-                            <input
-                              type="range"
-                              min="0"
-                              max={ficha.atributos[attr.id] || 0}
-                              value={ficha.pericias[skill] || 0}
-                              onChange={(e) => updatePericia(skill, parseInt(e.target.value))}
-                              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
-                            />
-                            <p className="text-[9px] text-muted-foreground leading-tight italic">
-                              {skillDescriptions[skill]}
-                            </p>
                           </div>
                         ))}
                       </div>
                     </div>
                   ))}
                 </div>
-
-                <div className="flex gap-3">
-                  <button onClick={() => setStep(3)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(5)} className="bl-btn-primary">Próximo: Treinos</button>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(3)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(5)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
                 </div>
               </motion.div>
             )}
@@ -416,89 +398,156 @@ export default function Ficha() {
             {step === 5 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
                 <h2 className="font-display text-3xl text-white tracking-wider mb-6">TREINAMENTOS</h2>
-                <div className="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  {trainings.map((training, idx) => (
-                    <motion.button
-                      key={training.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.02 }}
-                      onClick={() => toggleTraining(training.id)}
-                      className={`w-full p-4 rounded-sm border-2 transition-all text-left ${
-                        ficha.treinamentos.includes(training.id)
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border bg-white/5 hover:border-primary/50'
-                      }`}
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
+                  {trainings.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => toggleTraining(t.id)}
+                      className={`w-full text-left p-4 rounded-sm border transition-all ${ficha.treinamentos.includes(t.id) ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <p className="font-heading text-sm font-bold text-white">{training.name}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">{training.description}</p>
-                        </div>
-                        <span className="text-[9px] font-heading uppercase tracking-widest px-2 py-0.5 rounded-sm ml-2 flex-shrink-0" style={{ background: training.category === 'Avançado' ? 'oklch(0.75 0.18 25 / 0.2)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.75 0.15 230 / 0.2)', color: training.category === 'Avançado' ? 'oklch(0.75 0.18 25)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260)' : 'oklch(0.75 0.15 230)' }}>
-                          {training.category}
-                        </span>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-heading text-sm text-white uppercase tracking-wider">{t.name}</h3>
+                        {ficha.treinamentos.includes(t.id) && <Star className="w-4 h-4 text-primary fill-primary" />}
                       </div>
-                      <div className="mt-3 pt-3 border-t border-white/10">
-                        <div className="text-[10px] text-muted-foreground mb-1 font-heading uppercase tracking-widest">Efeito:</div>
-                        <p className="text-xs text-white leading-relaxed">{training.effect}</p>
+                      <div className="flex gap-2 mb-2">
+                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/10 text-muted-foreground uppercase font-bold">{t.category}</span>
                       </div>
-                    </motion.button>
+                      <p className="text-xs text-muted-foreground">{t.description}</p>
+                    </button>
                   ))}
                 </div>
-
-                <div className="flex gap-3 mt-6">
-                  <button onClick={() => setStep(4)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(6)} className="bl-btn-primary">Próximo: Fôlego</button>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(4)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(6)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 6: Folego */}
+            {/* Step 6: Arma Blue Lock */}
             {step === 6 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
-                <h2 className="font-display text-3xl text-white tracking-wider mb-2 uppercase italic">FÔLEGO</h2>
-                <p className="text-xs text-muted-foreground mb-6 italic">Role 2d15 para determinar seus pontos de fôlego. Mínimo de 12 pontos.</p>
+                <div className="flex items-center gap-3 mb-6">
+                  <Sword className="w-8 h-8 text-primary" />
+                  <h2 className="font-display text-3xl text-white tracking-wider">ARMA BLUE LOCK</h2>
+                </div>
+                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
+                  Todo atacante de elite no Blue Lock possui uma "Arma" — uma habilidade ou característica física única que o torna um monstro em campo. Defina a sua agora.
+                </p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Nome da Arma</label>
+                    <input
+                      type="text"
+                      value={ficha.armaNome}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaNome: e.target.value }))}
+                      placeholder="Ex: Chute Direto, Meta-Visão, Drible Elástico..."
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Descrição da Arma</label>
+                    <textarea
+                      value={ficha.armaDescricao}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaDescricao: e.target.value }))}
+                      placeholder="Como sua arma funciona? Em que momento ela é ativada?"
+                      rows={4}
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
 
-                <div className="bg-primary/10 border border-primary/30 rounded-sm p-6 text-center mb-6">
-                  <button
-                    onClick={rollFolego}
-                    className="bl-btn-primary mx-auto mb-4"
-                  >
-                    ROLAR FÔLEGO
-                  </button>
-                  {folegoDice.length > 0 && (
-                    <div>
-                      <div className="text-4xl font-black italic text-primary mb-2">
-                        {folegoDice[0]} + {folegoDice[1]} = {ficha.folego}
-                      </div>
-                      <p className="text-xs text-muted-foreground">Pontos de Fôlego</p>
-                    </div>
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Bônus da Arma</label>
+                    <input
+                      type="text"
+                      value={ficha.armaBonus}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaBonus: e.target.value }))}
+                      placeholder="Ex: +5 em Pontaria, Vantagem em Drible..."
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(5)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(7)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 7: Fôlego */}
+            {step === 7 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-8 text-center">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">DEFINIR FÔLEGO</h2>
+                <p className="text-muted-foreground text-sm mb-10 max-w-md mx-auto">
+                  O fôlego é sua energia para usar habilidades. Role 2d15 para definir seus pontos. O sistema garante um mínimo de 12 pontos.
+                </p>
+                
+                <div className="flex justify-center gap-4 mb-10">
+                  {folegoDice.length > 0 ? (
+                    folegoDice.map((d, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        className="w-20 h-20 flex items-center justify-center bg-primary text-white text-3xl font-black italic rounded-sm shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]"
+                      >
+                        {d}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="w-20 h-20 flex items-center justify-center bg-white/5 border border-white/10 text-muted-foreground text-3xl font-black italic rounded-sm">?</div>
                   )}
                 </div>
 
-                <div className="flex gap-3 mt-6">
-                  <button onClick={() => setStep(5)} className="bl-btn-secondary">Voltar</button>
-                  <button onClick={() => setStep(7)} className="bl-btn-primary" disabled={ficha.folego === 0}>
-                    Próximo: Ficha Final
-                  </button>
+                {ficha.folego > 0 && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Total de Fôlego</div>
+                    <div className="text-6xl font-black text-white italic">{ficha.folego}</div>
+                  </motion.div>
+                )}
+
+                <button
+                  onClick={rollFolego}
+                  className="bl-btn-primary px-12 py-4 flex items-center gap-3 mx-auto"
+                >
+                  <Zap className="w-5 h-5" /> ROLAR DADOS
+                </button>
+
+                <div className="flex gap-3 mt-12">
+                  <button onClick={() => setStep(6)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(8)} className="bl-btn-primary flex-1" disabled={ficha.folego === 0}>VER FICHA FINAL</button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 7: Final Sheet - NOVO LAYOUT */}
-            {step === 7 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                {/* Header com Nome e Número */}
-                <div className="bl-card p-6">
-                  <div className="flex items-start justify-between mb-4">
+            {/* Step 8: Final Sheet */}
+            {step === 8 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                {/* Header da Ficha */}
+                <div className="bl-card p-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                      <h2 className="font-display text-4xl text-white tracking-wider uppercase italic">{ficha.nome || "Novo Atleta"}</h2>
-                      <p className="text-primary font-heading text-sm mt-2">#{ficha.numero || "00"}</p>
+                      <div className="bl-tag mb-4">Atleta Blue Lock</div>
+                      <h2 className="font-display text-6xl text-white tracking-tighter italic uppercase leading-none mb-2">
+                        {ficha.nome || "Sem Nome"}
+                      </h2>
+                      <div className="flex items-center gap-4">
+                        <span className="text-primary font-mono-stats text-2xl">#{ficha.numero || "00"}</span>
+                        <div className="w-1 h-1 rounded-full bg-white/20" />
+                        <span className="text-muted-foreground font-heading text-xs uppercase tracking-widest">
+                          {selectedClass?.role || "Posição não definida"}
+                        </span>
+                      </div>
                     </div>
                     {selectedClass && (
                       <div className="text-right">
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Classe</p>
+                        <p className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Classe Selecionada</p>
                         <p className="text-lg font-bold text-white">{selectedClass.name}</p>
                       </div>
                     )}
@@ -542,6 +591,23 @@ export default function Ficha() {
                   </div>
                 </div>
 
+                {/* Arma Blue Lock - Destaque */}
+                {(ficha.armaNome || ficha.armaDescricao) && (
+                  <div className="bl-card p-8 border-primary/30 bg-primary/5">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Sword className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">ARMA BLUE LOCK</p>
+                    </div>
+                    <h3 className="font-display text-3xl text-white italic uppercase mb-4">{ficha.armaNome || "Arma Sem Nome"}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-6">{ficha.armaDescricao}</p>
+                    {ficha.armaBonus && (
+                      <div className="inline-block px-4 py-2 bg-primary/20 border border-primary/30 rounded-sm">
+                        <span className="text-xs font-bold text-primary uppercase tracking-wider">BÔNUS: {ficha.armaBonus}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Gráfico de Atributos - Destaque Principal */}
                 <div className="bl-card p-8">
                   <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-8 text-center">GRÁFICO DE ATRIBUTOS</p>
@@ -575,7 +641,7 @@ export default function Ficha() {
                 <div className="bl-card p-6">
                   <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
                   <div className="grid grid-cols-5 gap-2">
-                    {attributes.filter(a => a.id !== 'folego').map(attr => (
+                    {attributes.filter(a => a.id !== 'folego' && a.id !== 'inteligencia').map(attr => (
                       <div key={attr.id} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
                         <div className="text-2xl font-black text-white">{ficha.atributos[attr.id] || 0}</div>
                         <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{attr.name}</div>
@@ -623,7 +689,7 @@ export default function Ficha() {
 
                 {/* Botões de Ação */}
                 <div className="flex flex-wrap gap-3 no-print">
-                  <button onClick={() => setStep(6)} className="bl-btn-secondary">Voltar</button>
+                  <button onClick={() => setStep(7)} className="bl-btn-secondary">Voltar</button>
                   <button onClick={saveFicha} className="bl-btn-primary flex items-center gap-2">
                     <Save className="w-4 h-4" /> SALVAR
                   </button>
@@ -681,6 +747,13 @@ export default function Ficha() {
                     <div className="pt-2">
                       <div className="text-[10px] font-heading uppercase text-muted-foreground mb-1">CLASSE</div>
                       <div className="text-xs font-bold text-white uppercase italic">{selectedClass.name}</div>
+                    </div>
+                  )}
+
+                  {ficha.armaNome && (
+                    <div className="pt-2 border-t border-white/5">
+                      <div className="text-[10px] font-heading uppercase text-primary mb-1">ARMA</div>
+                      <div className="text-xs font-bold text-white uppercase italic truncate">{ficha.armaNome}</div>
                     </div>
                   )}
                 </div>

@@ -11,6 +11,9 @@ export interface FichaData {
   folego: number;
   treinamentos: string[];
   notas: string;
+  armaNome?: string;
+  armaDescricao?: string;
+  armaBonus?: string;
   criadoEm: string;
   atualizadoEm: string;
 }
