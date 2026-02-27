@@ -106,11 +106,11 @@ export const classes = [
     ],
     abilities: [
       {
-        name: "Percepção Espacial",
+        name: "Percepção Espacial – Armador",
         cost: "13 FO",
         duration: "3 Rodadas (5 FO para manter)",
         type: "Ativo",
-        description: "Seu olhar aguçado reunido com sua genialidade lhe concede uma visão praticamente divina para analisar possíveis passes.",
+        description: "Visão divina para analisar passes e rotas de infiltração.",
         bonus: "+8 para passes, +4 para pontaria e +2 para dribles."
       },
       {
@@ -118,7 +118,7 @@ export const classes = [
         cost: "9 FO",
         duration: "2 Rodadas",
         type: "Ativo",
-        description: "O playmaker cria uma sincronização com um jogador do time, adquirindo precisão entre seus passes.",
+        description: "Cria uma sincronização com um jogador do time para passes precisos.",
         bonus: "+15 em passes apenas entre esses dois jogadores."
       },
       {
@@ -126,7 +126,7 @@ export const classes = [
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Usando de uma aura intensa o playmaker implanta uma ideia na mente de um companheiro.",
+        description: "Implanta uma ideia na mente de um companheiro.",
         bonus: "+5 em Diplomacia ou Intimidação contra um companheiro."
       },
       {
@@ -134,8 +134,8 @@ export const classes = [
         cost: "10 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Com um chute extremamente preciso o playmaker é capaz de matar um lance.",
-        bonus: "+5 em Pontaria e não recebe penalidade de -2 por chutar das laterais."
+        description: "Chute extremamente preciso de ângulos improváveis.",
+        bonus: "+5 em Pontaria e ignora penalidade de -2 das laterais."
       }
     ]
   },
@@ -164,15 +164,15 @@ export const classes = [
         cost: "9 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um domínio preciso que mata o giro e impacto da bola perfeitamente ainda no ar.",
-        bonus: "+5 em Domínio, +5 em Acrobacia."
+        description: "Mata o giro e impacto da bola perfeitamente ainda no ar.",
+        bonus: "+5 em Domínio, +5 em Acrobacia e vantagem no próximo teste."
       },
       {
         name: "Armadilha de Domínio",
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um domínio que redireciona a bola e quebra as pernas de qualquer marcador.",
+        description: "Redireciona a bola e quebra as pernas do marcador.",
         bonus: "Teste de enganação vs Intuição. Sucesso: abre 5 pés de espaço."
       },
       {
@@ -180,15 +180,15 @@ export const classes = [
         cost: "12 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Mesmo sendo marcado, é capaz de ser perigoso com extremo nível de eficiência.",
-        bonus: "+10 em testes de domínio mesmo sendo pressionado."
+        description: "Extrema eficiência em domínios mesmo sob marcação.",
+        bonus: "+10 em testes de domínio sob pressão."
       },
       {
         name: "Impulso do Gênio",
         cost: "16 FO",
         duration: "2 Rodadas",
         type: "Ativo",
-        description: "O jogador desperta em um estado de concentração extrema.",
+        description: "Estado de concentração extrema para marcar o gol.",
         bonus: "+5 em Drible, +5 em Pontaria e +5 em Roubo de Bola."
       }
     ]
@@ -219,32 +219,32 @@ export const classes = [
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um drible rápido que cria espaço.",
-        bonus: "+5 em Drible e ganha 5 pés de movimento extra."
+        description: "Arrancada com todo o potencial da velocidade.",
+        bonus: "+5 em Explosão para driblar."
       },
       {
         name: "Voo pelo Campo",
         cost: "13 FO",
         duration: "2 Rodadas",
         type: "Ativo",
-        description: "Velocidade extrema que permite atravessar o campo.",
-        bonus: "+8 em Corrida a Longa Distância."
+        description: "Dispara como uma pantera avassaladora.",
+        bonus: "+10 em Corrida a longa distância e +5 pés de deslocamento."
       },
       {
         name: "Chute Veloz",
         cost: "15 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um chute executado com extrema velocidade.",
-        bonus: "+6 em Chute."
+        description: "Chute destrutivo aproveitando a velocidade.",
+        bonus: "Soma o atributo de Velocidade na finalização de Chute."
       },
       {
         name: "Fora da Bola",
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você se move sem que a bola o acompanhe.",
-        bonus: "+3 em Corrida a Longa Distância e Explosão."
+        description: "Excelente constância em sua velocidade sem a bola.",
+        bonus: "+5 pés de deslocamento enquanto não estiver em posse da bola."
       }
     ]
   },
@@ -252,7 +252,7 @@ export const classes = [
     id: "especialista-espacial",
     name: "O Especialista Espacial",
     subtitle: "O Mestre da Percepção",
-    description: "Um jogador que domina a percepção espacial e consegue ver oportunidades onde outros não veem.",
+    description: "Um jogador oportunista extremamente tático capaz de criar brechas através de seus passes.",
     role: "Ataque / Meio-Campo",
     difficulty: "Médio",
     attributeBonus: [
@@ -273,26 +273,26 @@ export const classes = [
       {
         name: "Percepção Espacial Básica",
         cost: "11 FO",
-        duration: "3 Rodadas",
+        duration: "3 Rodadas (7 FO para manter)",
         type: "Ativo",
-        description: "Você vê o espaço de forma diferente.",
-        bonus: "+6 em Intuição e Passe."
+        description: "Líder tático capaz de conduzir o jogo ao seu favor.",
+        bonus: "+5 em Intuição e bônus de +10 em Chute/Pontaria para o aliado melhor posicionado."
       },
       {
         name: "Tiro Direto",
         cost: "5 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um chute direto e preciso.",
-        bonus: "+4 em Pontaria."
+        description: "Chute direto calibrado sem necessidade de domínio.",
+        bonus: "+5 em Chute ou Pontaria e pode chutar como reação."
       },
       {
         name: "Gênio da Adaptação",
         cost: "12 FO",
-        duration: "2 Rodadas",
+        duration: "2 Rodadas (3 FO para manter)",
         type: "Ativo",
-        description: "Você se adapta à situação do jogo.",
-        bonus: "+5 em qualquer perícia à escolha."
+        description: "Capacidade de se desconstruir e adaptar-se perfeitamente.",
+        bonus: "+5 em qualquer perícia que não possua proficiência."
       }
     ]
   },
@@ -300,7 +300,7 @@ export const classes = [
     id: "finalizador-clinico",
     name: "O Finalizador Clínico",
     subtitle: "O Matador Preciso",
-    description: "Um finalizador que combina força bruta com precisão técnica, capaz de finalizar em qualquer situação.",
+    description: "Um jogador extremamente destrutivo, possivelmente o melhor para a função de centroavante.",
     role: "Ataque",
     difficulty: "Médio",
     attributeBonus: [
@@ -321,16 +321,40 @@ export const classes = [
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você chuta com ambos os pés com igual eficiência.",
-        bonus: "+2 em Chute com qualquer pé."
+        description: "Capaz de finalizar com qualquer uma das pernas.",
+        bonus: "+6 em todos os seus chutes."
+      },
+      {
+        name: "Sai De Cima",
+        cost: "8 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Físico monstruoso capaz de subjugar marcadores.",
+        bonus: "+5 em Corpo a Corpo para se desvencilhar."
+      },
+      {
+        name: "Finalizador De Longa Distância",
+        cost: "12 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Finalização destrutiva a uma distância muito maior.",
+        bonus: "Chuta da zona A ou laterais sem penalidade e ganha +3."
+      },
+      {
+        name: "Finalização Oportunista",
+        cost: "14 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Cria sua própria sorte de qualquer ponto da grande área.",
+        bonus: "Reação para corrigir trajetória de chute errado com -2."
       }
     ]
   },
   {
-    id: "dribblador",
-    name: "O Dribblador",
+    id: "driblador",
+    name: "O Driblador",
     subtitle: "O Mestre do Drible",
-    description: "Um jogador especializado em drible, capaz de deixar defensores para trás com movimentos acrobáticos.",
+    description: "Um jogador livre, imprevisível e fluído que segue seus instintos como uma fera.",
     role: "Ataque",
     difficulty: "Médio",
     attributeBonus: [
@@ -351,40 +375,40 @@ export const classes = [
         cost: "15 FO",
         duration: "2 Rodadas (5 FO para manter)",
         type: "Ativo",
-        description: "Você desperta seu monstro interior para driblar com maestria.",
-        bonus: "+8 em Drible."
+        description: "Estilo individualista que clama por jogadas assombrosas.",
+        bonus: "+10 para passe e drible; aliado ganha +3 na finalização se dominar."
       },
       {
-        name: "Pico de Dopamina",
+        name: "Pico De Dopamina",
         cost: "18 FO",
         duration: "2 Rodadas (4 FO para manter)",
         type: "Ativo",
-        description: "Você atinge um pico de adrenalina.",
-        bonus: "+10 em Drible e +5 em Acrobacia."
+        description: "Estado de alegria e motivação que destrói a lógica do esporte.",
+        bonus: "+10 em drible, +3 em Pontaria, +2 em Intuição e Acrobacia."
       },
       {
         name: "Passe Rápido",
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um passe executado com velocidade.",
-        bonus: "+5 em Passe."
+        description: "Passe de primeira que quebra o sistema defensivo.",
+        bonus: "+5 para passe e alvo pode se mover 5 pés antes de receber."
       },
       {
         name: "Pedalada",
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um movimento de drible rápido.",
-        bonus: "+5 em Drible."
+        description: "Drible guiado por ego e instinto com velocidade explosiva.",
+        bonus: "+5 em drible."
       },
       {
         name: "Chute Acrobático",
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um chute executado em movimento.",
-        bonus: "+4 em Chute."
+        description: "Finalizações extravagantes e acrobáticas.",
+        bonus: "+5 em Pontaria."
       }
     ]
   },
@@ -392,14 +416,11 @@ export const classes = [
     id: "atacante-completo",
     name: "O Atacante Completo",
     subtitle: "O Camaleão",
-    description: "Um jogador versátil capaz de atuar em múltiplas posições com eficiência.",
+    description: "Um jogador capaz de atuar na defesa, no meio campo e no ataque com igual efetividade.",
     role: "Universal",
     difficulty: "Difícil",
     attributeBonus: [
-      { attr: "Técnica", value: 3 },
-      { attr: "Agilidade", value: 2 },
-      { attr: "Velocidade", value: 1 },
-      { attr: "Potência", value: 1 }
+      { attr: "Atributos Livres", value: 7 }
     ],
     skillBonus: [
       { skill: "6 perícias à escolha", value: 5 }
@@ -410,16 +431,73 @@ export const classes = [
         cost: "6 FO",
         duration: "2 Rodadas (5 FO para manter)",
         type: "Ativo",
-        description: "Você se sincroniza com um companheiro.",
-        bonus: "+5 em Passe para o jogador sincronizado."
+        description: "Adapta-se a qualquer jogador e seu estilo de jogo.",
+        bonus: "+5 em Passes para o sincronizado; aliado ganha +3 em duas perícias."
       },
       {
         name: "Camaleão Imperfeito",
-        cost: "Variável",
+        cost: "Igual à original",
         duration: "Variável",
         type: "Ativo",
-        description: "Você copia uma habilidade física de um atleta.",
-        bonus: "Pode copiar qualquer habilidade vendo-a ser usada."
+        description: "Copia qualquer habilidade física de um atleta em campo.",
+        bonus: "Copia técnica vista com -2 no bônus original."
+      }
+    ]
+  },
+  {
+    id: "cacador-de-gols",
+    name: "O Caçador de Gols",
+    subtitle: "O Astro do Time",
+    description: "Um extremo egoísta focado em marcar gols belos que intensificam a atmosfera.",
+    role: "Ataque",
+    difficulty: "Médio",
+    attributeBonus: [
+      { attr: "Potência", value: 3 },
+      { attr: "Velocidade", value: 2 },
+      { attr: "Ego", value: 3 },
+      { attr: "Técnica", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Chute", value: 5 },
+      { skill: "Acrobacia", value: 5 },
+      { skill: "Explosão", value: 5 },
+      { skill: "Intimidação", value: 5 },
+      { skill: "Enganação", value: 5 },
+      { skill: "Corpo a Corpo", value: 5 },
+      { skill: "Pontaria", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Chute Big Bang",
+        cost: "10 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Voleio forte que intimida adversários à volta.",
+        bonus: "+5 em acrobacia e Chute; adversários intimidados têm -2."
+      },
+      {
+        name: "Posicionamento do Às",
+        cost: "8 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Encontra o ponto adequado para a finalização perfeita.",
+        bonus: "+5 em Corpo a Corpo para espaço; sucesso dá +10 em Pontaria."
+      },
+      {
+        name: "Drible Agressivo",
+        cost: "8 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Atravessa o inimigo através de ferocidade e hostilidade.",
+        bonus: "Dribla com Corpo a Corpo +6; DT para falta aumenta para 21."
+      },
+      {
+        name: "Início Destrutivo",
+        cost: "Passiva",
+        duration: "4 Rodadas",
+        type: "Passivo",
+        description: "Inicia a partida em 200% da sua capacidade.",
+        bonus: "+8 em chute, +5 em Corpo a Corpo e Explosão nas 4 primeiras rodadas."
       }
     ]
   },
@@ -427,7 +505,7 @@ export const classes = [
     id: "atacante-controlador",
     name: "O Atacante Controlador",
     subtitle: "O Maestro",
-    description: "Um jogador que controla o jogo através de passes e movimentos calculados.",
+    description: "Usa o campo como um palco e todos como marionetes para abrir caminho para seu gol.",
     role: "Ataque / Meio-Campo",
     difficulty: "Difícil",
     attributeBonus: [
@@ -452,32 +530,40 @@ export const classes = [
         cost: "14 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você controla os movimentos de seus companheiros.",
-        bonus: "+5 em Passe e aliados ganham +3 em ações."
+        description: "Induz a movimentação de aliados ou adversários.",
+        bonus: "+10 em Intimidação/Diplomacia para mover alvo em 10 pés."
       },
       {
         name: "Chute Sofisticado",
         cost: "13 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um chute refinado e preciso.",
-        bonus: "+5 em Pontaria."
+        description: "Chute com curva alta que dificulta a defesa.",
+        bonus: "+3 em Pontaria e defensores têm -2 para reagir."
       },
       {
         name: "Enganador de Percepções",
         cost: "11 FO",
         duration: "2 Rodadas (7 FO para manter)",
         type: "Ativo",
-        description: "Você engana a percepção do adversário.",
-        bonus: "+5 em Enganação."
+        description: "Confunde as percepções espaciais dos adversários.",
+        bonus: "Corta pela metade os benefícios de Percepção Espacial dos oponentes."
+      },
+      {
+        name: "Fator Sorte Aprimorado",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Jogador escolhido capaz de controlar a sorte no campo.",
+        bonus: "Vantagem em testes de Sorte e soma +3."
       },
       {
         name: "Fake Shot",
         cost: "10 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você finge chutar para passar.",
-        bonus: "+5 em Enganação e Passe."
+        description: "Finge um chute para anular a reação dos defensores.",
+        bonus: "Vantagem em Pontaria; se > 17, defensores perdem reação."
       }
     ]
   },
@@ -485,7 +571,7 @@ export const classes = [
     id: "multi-funcoes",
     name: "O Multi-Funções",
     subtitle: "O Coringa",
-    description: "Um jogador versátil capaz de atuar em múltiplas posições.",
+    description: "Jogador com pouco destaque geral, mas extremamente versátil e esforçado.",
     role: "Universal",
     difficulty: "Médio",
     attributeBonus: [
@@ -512,8 +598,24 @@ export const classes = [
         cost: "8 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você reage rapidamente a qualquer situação.",
-        bonus: "+5 em Reflexos."
+        description: "Reage com mais vontade e velocidade que a maioria.",
+        bonus: "Vantagem em testes de Reflexo."
+      },
+      {
+        name: "Corpo Tipo Mola",
+        cost: "10 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Corpo flexível capaz de esticar músculos ao limite.",
+        bonus: "+5 em Acrobacia e +3 no teste decorrente."
+      },
+      {
+        name: "Última Defesa",
+        cost: "12 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Último pilar que mantém o sonho do time vivo.",
+        bonus: "+5 em Reflexo, Acrobacia, Roubo de Bola e Defesa como último homem."
       }
     ]
   },
@@ -521,7 +623,7 @@ export const classes = [
     id: "atacante-saltador",
     name: "O Atacante Saltador",
     subtitle: "O Rei do Ar",
-    description: "Um jogador especializado em jogadas aéreas e finalizações de cabeça.",
+    description: "Destaca-se por sua altura ou impulsão, dominando os céus com jogadas aéreas.",
     role: "Ataque",
     difficulty: "Fácil",
     attributeBonus: [
@@ -534,26 +636,33 @@ export const classes = [
       { skill: "Corpo a Corpo", value: 5 },
       { skill: "Domínio", value: 5 },
       { skill: "Reflexos", value: 3 },
-      { skill: "Roubo de Bola", value: 3 },
       { skill: "Passe", value: 5 },
-      { skill: "Acrobacia", value: 5 }
+      { skill: "Roubo De Bola", value: 3 }
     ],
     abilities: [
       {
-        name: "Pressão do Gigante",
+        name: "Pressão Do Gigante",
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Sua presença é intimidadora.",
-        bonus: "+3 em Cabeceio."
+        description: "Anula jogadores mais frágeis e menores através da altura.",
+        bonus: "Vantagem em Corpo a Corpo contra jogadores mais baixos."
       },
       {
         name: "Impulso Aprimorado",
         cost: "12 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um salto explosivo.",
-        bonus: "+5 em Cabeceio e Acrobacia."
+        description: "Aperfeiçoamento de impulsão e potência de cabeça.",
+        bonus: "+10 em testes de impulso (acrobacia) e +5 em Cabeceio."
+      },
+      {
+        name: "Grandes Proporções",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Corpo maior que a maioria para marcar e roubar bolas.",
+        bonus: "Anula metade do bônus de Domínio sob Pressão e chuta como reação após roubo (+8)."
       }
     ]
   },
@@ -561,7 +670,7 @@ export const classes = [
     id: "defensor-espacial",
     name: "O Defensor Espacial",
     subtitle: "O Guardião",
-    description: "Um defensor inteligente que usa o posicionamento para neutralizar ameaças.",
+    description: "Abdicou de qualidades ofensivas para destruir o ego de atacantes monstruosos.",
     role: "Defesa",
     difficulty: "Difícil",
     attributeBonus: [
@@ -572,39 +681,39 @@ export const classes = [
     ],
     skillBonus: [
       { skill: "Defesa", value: 7 },
-      { skill: "Roubo de Bola", value: 7 },
+      { skill: "Roubo De Bola", value: 7 },
       { skill: "Acrobacia", value: 5 },
       { skill: "Reflexos", value: 5 },
-      { skill: "Passe", value: 5 },
-      { skill: "Corrida a Longa Distância", value: 5 },
+      { skill: "Passes", value: 5 },
+      { skill: "Corridas a Longas Distâncias", value: 5 },
       { skill: "Intuição", value: 5 },
       { skill: "Corpo a Corpo", value: 5 },
       { skill: "Chute", value: 2 }
     ],
     abilities: [
       {
-        name: "Bote da Serpente",
+        name: "Bote Da Serpente",
         cost: "15 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Um movimento defensivo rápido.",
-        bonus: "+8 em Defesa e Roubo de Bola."
+        description: "Assassino de atacantes capaz de ler e matar o lance.",
+        bonus: "+6 em Roubo De Bola e Acrobacia; pode isolar a bola após o bote."
       },
       {
-        name: "Defesa Impenetrável",
+        name: "Defesa Impenetrável (v1)",
         cost: "15 FO",
         duration: "2 Rodadas (6 FO para manter)",
         type: "Ativo",
-        description: "Você cria uma defesa quase impenetrável.",
-        bonus: "+10 em Defesa."
+        description: "Cria um círculo de efetividade de 10 pés para interceptar passes.",
+        bonus: "Intercepta passes na área com Reflexos e ganha +5 em Reflexos."
       },
       {
-        name: "Troca de Mentalidade",
+        name: "Troca De Mentalidade",
         cost: "18 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você muda sua mentalidade defensiva.",
-        bonus: "+5 em qualquer perícia defensiva."
+        description: "Adapta seu estilo para ser decisivo na zona ofensiva.",
+        bonus: "Troca valor de Defesa para Chute (total ou metade conforme gols)."
       }
     ]
   },
@@ -612,7 +721,7 @@ export const classes = [
     id: "louco-da-estamina",
     name: "O Louco da Estamina",
     subtitle: "A Máquina Incansável",
-    description: "Um jogador com resistência física absurda.",
+    description: "Jogador persistente com corpo coberto por músculos, alicerce de defesa e ataque.",
     role: "Universal",
     difficulty: "Médio",
     attributeBonus: [
@@ -623,7 +732,7 @@ export const classes = [
       { skill: "Corpo a Corpo", value: 7 },
       { skill: "Chute", value: 5 },
       { skill: "Reflexos", value: 3 },
-      { skill: "Corrida a Longa Distância", value: 2 },
+      { skill: "Corridas a Longa distâncias", value: 2 },
       { skill: "Explosão", value: 1 }
     ],
     abilities: [
@@ -632,8 +741,24 @@ export const classes = [
         cost: "10 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você se torna praticamente imóvel.",
-        bonus: "+8 em Corpo a Corpo e Defesa."
+        description: "Imbatível em força física pura, terror para jogadores ágeis.",
+        bonus: "+10 em Corpo a Corpo para imobilizar adversário."
+      },
+      {
+        name: "Perseguidor Insistente",
+        cost: "12 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Usa teimosia para voltar a marcar após ser driblado.",
+        bonus: "+5 em Reflexo e Explosão; reação para reposicionar à frente do atleta."
+      },
+      {
+        name: "Marcação Monstruosa",
+        cost: "14 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Afunila a visão do adversário através de força amedrontadora.",
+        bonus: "Impõe condição de flanqueado (-3 ou -6 se houver outro marcador)."
       }
     ]
   },
@@ -641,7 +766,7 @@ export const classes = [
     id: "vilao-do-campo",
     name: "O Vilão do Campo",
     subtitle: "O Provocador",
-    description: "Um jogador que usa a psicologia como arma.",
+    description: "Egoísta incontrolável que impõe sua presença e vontade absoluta.",
     role: "Ataque",
     difficulty: "Médio",
     attributeBonus: [
@@ -663,32 +788,32 @@ export const classes = [
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você possui uma área de domínio.",
-        bonus: "+8 em Chute dentro de sua área."
+        description: "Área de domínio onde sua finalização é extremamente elevada.",
+        bonus: "+8 em Chute dentro de um círculo de 5 pés estipulado."
       },
       {
-        name: "Imprevisibilidade do Rei",
+        name: "Imprevisibilidade Do Rei",
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você é imprevisível.",
-        bonus: "Adversários não são afetados por habilidades que obrigam movimento."
+        description: "Move-se por caminhos que ninguém entende ou prevê.",
+        bonus: "Não é afetado por habilidades que obriguem movimento contra vontade."
       },
       {
-        name: "Olho do Predador",
+        name: "Olho Do Predador",
         cost: "15 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você vê como um predador.",
-        bonus: "+3 em Chute e +2 em Vantagem."
+        description: "Capacidade racional para finalizar no momento certo.",
+        bonus: "Causa desvantagem no goleiro e ganha +2 em Chute."
       },
       {
         name: "Filosofia Imperial",
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você possui uma filosofia pessoal.",
-        bonus: "+3 em Chute enquanto mantiver sua filosofia."
+        description: "Disciplina que fortalece sua força enquanto seguida.",
+        bonus: "+3 em Chute enquanto se mantiver leal à filosofia definida."
       }
     ]
   },
@@ -696,7 +821,7 @@ export const classes = [
     id: "goleiro",
     name: "O Goleiro",
     subtitle: "A Última Barreira",
-    description: "O goleiro é a última linha de defesa do time.",
+    description: "A última linha de defesa, capaz de impedir o gol quando tudo parece perdido.",
     role: "Defesa",
     difficulty: "Difícil",
     attributeBonus: [
@@ -708,7 +833,7 @@ export const classes = [
     skillBonus: [
       { skill: "Defesa", value: 10 },
       { skill: "Passe", value: 5 },
-      { skill: "Reflexos", value: 5 },
+      { skill: "Reflexo", value: 5 },
       { skill: "Acrobacia", value: 5 },
       { skill: "Intimidação", value: 5 },
       { skill: "Intuição", value: 8 }
@@ -719,15 +844,15 @@ export const classes = [
         cost: "14 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você induz o adversário a chutar em um ângulo específico.",
-        bonus: "Adversário recebe desvantagem em seu teste de Chute."
+        description: "Induz o adversário a chutar em um ângulo específico.",
+        bonus: "Adversário recebe desvantagem no teste de Chute."
       },
       {
         name: "Coordenar Contra-Ataque",
         cost: "10 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você coordena um contra-ataque.",
+        description: "Direciona um alvo a uma posição perfeita para o contra-golpe.",
         bonus: "Concede 10 pés de deslocamento a um aliado e +5 em Passe."
       },
       {
@@ -735,8 +860,165 @@ export const classes = [
         cost: "17 FO",
         duration: "Instantâneo",
         type: "Ativo",
-        description: "Você faz uma última tentativa de defesa.",
-        bonus: "Pode rolar novamente e somar +10."
+        description: "Alongamento no último nível para bloquear o chute.",
+        bonus: "Pode rolar novamente o dado e somar +10."
+      }
+    ]
+  },
+  {
+    id: "ninja",
+    name: "O Ninja",
+    subtitle: "O Invisível",
+    description: "Capaz de camuflar sua presença para auxiliar armadores ou achar chances de gol.",
+    role: "Ataque / Suporte",
+    difficulty: "Médio",
+    attributeBonus: [
+      { attr: "Agilidade", value: 2 },
+      { attr: "Técnica", value: 2 },
+      { attr: "Ego", value: 1 },
+      { attr: "Velocidade", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Furtividade", value: 8 },
+      { skill: "Pontaria", value: 5 },
+      { skill: "Presença", value: 5 },
+      { skill: "Passe", value: 5 },
+      { skill: "Roubo de Bola", value: 5 },
+      { skill: "Reflexo", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Caminhar Fantasma",
+        cost: "Passivo",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Extremamente hábil em ficar invisível para os demais.",
+        bonus: "+10 em Furtividade com vantagem; não gera reações ao se mover."
+      },
+      {
+        name: "Roubo Fantasma",
+        cost: "8 FO",
+        duration: "3 Rodadas (5 FO para manter)",
+        type: "Ativo",
+        description: "Aproxima-se sem ser notado para roubar a posse agilmente.",
+        bonus: "Ganha +7 em Roubo de Bola."
+      },
+      {
+        name: "Chute Sombrio",
+        cost: "7 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Chega à grande área sem ser notado para finalizar.",
+        bonus: "+5 em Pontaria desde que esteja furtivo."
+      },
+      {
+        name: "Tabela com a Sombra",
+        cost: "6 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Age tão rápido que não é detectado mesmo tocando na bola.",
+        bonus: "Reação para dar 5 pés de movimento ao passador; mantém furtividade e +5 em Passe."
+      }
+    ]
+  },
+  {
+    id: "imperador",
+    name: "O Imperador",
+    subtitle: "O Jogador Sublime",
+    description: "Comanda o campo através de seu egoísmo e objetividade das suas jogadas.",
+    role: "Ataque",
+    difficulty: "Difícil",
+    attributeBonus: [
+      { attr: "Potência", value: 4 },
+      { attr: "Ego", value: 4 },
+      { attr: "Técnica", value: 3 }
+    ],
+    skillBonus: [
+      { skill: "Drible", value: 5 },
+      { skill: "Chute", value: 5 },
+      { skill: "Passe", value: 5 },
+      { skill: "Intimidação", value: 5 },
+      { skill: "Presença", value: 5 },
+      { skill: "Roubo De Bola", value: 5 },
+      { skill: "Corpo a Corpo", value: 5 },
+      { skill: "Reflexos", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Meta Visão (Inicial)",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Percepção além do comum para controlar o fluxo do jogo.",
+        bonus: "Não gera testes de reflexos; +1 em todas as perícias e modificadores."
+      },
+      {
+        name: "Impact",
+        cost: "17 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Chute extremamente veloz e potente com precisão de outro mundo.",
+        bonus: "Sem penalidade a 10 pés da área; +3 em Chute com Vantagem."
+      },
+      {
+        name: "Ajoelhe-se",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Dribles mortais capazes de destruir o equilíbrio do oponente.",
+        bonus: "Derruba adversário se dado for 19 ou 20; +2 na próxima perícia."
+      },
+      {
+        name: "Zona de Perigo",
+        cost: "14 FO",
+        duration: "2 Rodadas",
+        type: "Ativo",
+        description: "Presença amedrontadora que dilacera adversários em uma área.",
+        bonus: "Aura de 5 pés; falha no teste de Presença impede entrada ou dá -1."
+      }
+    ]
+  },
+  {
+    id: "devorador-de-as",
+    name: "O Devorador de Ás",
+    subtitle: "O Perseguidor",
+    description: "Extremamente focado em dizimar o jogador artilheiro do time adversário.",
+    role: "Defesa",
+    difficulty: "Médio",
+    attributeBonus: [
+      { attr: "Potência", value: 3 },
+      { attr: "Técnica", value: 4 },
+      { attr: "Velocidade", value: 2 },
+      { attr: "Ego", value: 1 }
+    ],
+    skillBonus: [
+      { skill: "Roubo De Bola", value: 5 },
+      { skill: "Presença", value: 5 },
+      { skill: "Intimidação", value: 5 },
+      { skill: "Corpo a Corpo", value: 5 },
+      { skill: "Reflexos", value: 5 },
+      { skill: "passes", value: 5 },
+      { skill: "Explosão", value: 5 },
+      { skill: "Corrida a Longa distância", value: 5 },
+      { skill: "Cabeceio", value: 5 },
+      { skill: "Defesa", value: 5 }
+    ],
+    abilities: [
+      {
+        name: "Você é Meu",
+        cost: "13 FO",
+        duration: "3 Rodadas (5 FO para manter)",
+        type: "Ativo",
+        description: "Perseguidor irritante que caçará sua presa constantemente.",
+        bonus: "Alvo tem desvantagem para se desvencilhar; você se move junto ao alvo."
+      },
+      {
+        name: "Devorador de Ás",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Caçador de Ás problemático para times de um único jogador.",
+        bonus: "+5 em perícias defensivas contra o artilheiro; alvo tem -2 em testes."
       }
     ]
   },
@@ -744,7 +1026,7 @@ export const classes = [
     id: "analista",
     name: "O Analista",
     subtitle: "O Estrategista",
-    description: "Um jogador extremamente excêntrico capaz de ajudar de dentro ou de fora do campo.",
+    description: "Capaz de anular por inteiro um adversário através de seu QI e estratégias.",
     role: "Suporte",
     difficulty: "Difícil",
     attributeBonus: [
@@ -758,82 +1040,54 @@ export const classes = [
       { skill: "Passe", value: 5 },
       { skill: "Explosão", value: 5 },
       { skill: "Intuição", value: 5 },
-      { skill: "Análise Individual", value: 8 },
+      { skill: "Analise Individual", value: 8 },
       { skill: "Diplomacia", value: 5 },
-      { skill: "Roubo de Bola", value: 5 },
+      { skill: "Roubo De Bola", value: 5 },
       { skill: "Drible", value: 5 },
-      { skill: "Reflexos", value: 5 },
+      { skill: "Reflexo", value: 5 },
       { skill: "Defesa", value: 5 },
       { skill: "Pontaria", value: 5 }
     ],
     abilities: [
       {
-        name: "Inteligência Acima de Todos",
+        name: "Inteligência Acima De Todos",
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você possui inteligência superior.",
-        bonus: "+1 em todas as perícias que você possui ou venha a aprender."
+        description: "Base para o funcionamento de muitas habilidades da classe.",
+        bonus: "Concede o atributo Inteligência e a perícia Análise Individual."
       },
       {
-        name: "Desista de Jogar",
+        name: "Desista De Jogar",
         cost: "12 FO",
         duration: "3 Rodadas (6 FO para manter)",
         type: "Ativo",
-        description: "Você analisa um adversário e o anula.",
-        bonus: "Adversário perde bônus passivos e ativos."
+        description: "Analisa o adversário para impossibilitar seu estilo de jogo.",
+        bonus: "Anula uma habilidade qualquer do adversário (passiva ou ativa)."
       },
       {
-        name: "Auxílio Ofensivo/Defensivo",
+        name: "Auxilio Ofensivo/Defensivo",
+        cost: "Passiva",
+        duration: "Permanente",
+        type: "Passivo",
+        description: "Torre de comando que coordena ataque e defesa do time.",
+        bonus: "+2 em testes e +5 pés de deslocamento para aliados na área."
+      },
+      {
+        name: "Auxilio De Jogada",
         cost: "12 FO",
-        duration: "Variável",
+        duration: "Instantâneo",
         type: "Ativo",
-        description: "Você auxilia seu time ofensiva ou defensivamente.",
-        bonus: "+2 em testes para aliados a até 15 pés."
+        description: "Suporte perfeito para que um aliado jogue livremente.",
+        bonus: "+3 em qualquer perícia para reagir ao que o alvo solicitar."
       },
       {
-        name: "Análise Prolongada",
+        name: "Analise Prolongada",
         cost: "13 FO",
         duration: "4 Rodadas (8 FO para manter)",
         type: "Ativo",
-        description: "Você analisa um adversário prolongadamente.",
-        bonus: "+4 em testes contra esse adversário."
-      }
-    ]
-  },
-  {
-    id: "devorador-de-as",
-    name: "O Devorador de Ás",
-    subtitle: "O Perseguidor",
-    description: "Um defensor extremamente focado em dizimar o artilheiro do time.",
-    role: "Defesa",
-    difficulty: "Médio",
-    attributeBonus: [
-      { attr: "Potência", value: 3 },
-      { attr: "Técnica", value: 4 },
-      { attr: "Velocidade", value: 2 },
-      { attr: "Ego", value: 1 }
-    ],
-    skillBonus: [
-      { skill: "Roubo de Bola", value: 5 },
-      { skill: "Presença", value: 5 },
-      { skill: "Intimidação", value: 5 },
-      { skill: "Corpo a Corpo", value: 5 },
-      { skill: "Reflexos", value: 5 },
-      { skill: "Passe", value: 5 },
-      { skill: "Explosão", value: 5 },
-      { skill: "Corrida a Longa Distância", value: 5 },
-      { skill: "Cabeceio", value: 5 },
-      { skill: "Defesa", value: 5 }
-    ],
-    abilities: [
-      {
-        name: "Você é Meu",
-        cost: "13 FO",
-        duration: "3 Rodadas (5 FO para manter)",
-        type: "Ativo",
-        description: "Você marca um adversário constantemente.",
-        bonus: "Adversário marcado tem -2 em testes e você ganha +3 em testes contra ele."
+        description: "Repara métodos de jogo para anular aptidões com excelência.",
+        bonus: "Anula valor de perícia do alvo igual a metade da Inteligência."
       }
     ]
   },
@@ -841,7 +1095,7 @@ export const classes = [
     id: "cachorro-louco",
     name: "O Cachorro Louco",
     subtitle: "A Fera da Defesa",
-    description: "Um defensor extremamente agressivo e intenso.",
+    description: "Extremamente agressivo e intenso, esmagando adversários com brutalidade.",
     role: "Defesa",
     difficulty: "Médio",
     attributeBonus: [
@@ -854,8 +1108,8 @@ export const classes = [
       { skill: "Cabeceio", value: 5 },
       { skill: "Passe", value: 5 },
       { skill: "Defesa", value: 8 },
-      { skill: "Reflexos", value: 7 },
-      { skill: "Roubo de Bola", value: 6 },
+      { skill: "Reflexo", value: 7 },
+      { skill: "Roubo De Bola", value: 6 },
       { skill: "Explosão", value: 5 },
       { skill: "Corpo a Corpo", value: 6 }
     ],
@@ -865,8 +1119,24 @@ export const classes = [
         cost: "Passiva",
         duration: "Permanente",
         type: "Passivo",
-        description: "Você é um cão monstruoso em campo.",
+        description: "Cão monstruoso capaz de marcar com extrema gana.",
         bonus: "+3 em Defesa, Roubo de Bola, Reflexos, Cabeceio e Explosão."
+      },
+      {
+        name: "Continuem o ataque!",
+        cost: "10 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Mantém a posse da bola mesmo em situações impossíveis.",
+        bonus: "Rebote milagroso com vantagem para devolver a bola ao aliado."
+      },
+      {
+        name: "Corta Luz",
+        cost: "8 FO",
+        duration: "Instantâneo",
+        type: "Ativo",
+        description: "Interpõe-se com o corpo para proteger o drible do aliado.",
+        bonus: "Vantagem em Corpo a Corpo para impedir roubo de bola do aliado."
       }
     ]
   }
