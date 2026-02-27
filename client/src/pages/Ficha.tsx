@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { attributes, classes, skillDescriptions, skills as dataSkills } from "@/lib/data";
 import { trainings } from "@/lib/trainings";
-import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon, Sword } from "lucide-react";
+import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon, Sword, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { calculateOverall } from "@/lib/overall";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
@@ -402,12 +402,26 @@ export default function Ficha() {
                           <div key={skill} className="space-y-2">
                             <div className="flex justify-between items-center">
                               <label className="text-xs text-white">{skill}</label>
-                              <input
-                                type="number"
-                                value={ficha.pericias[skill] || 0}
-                                onChange={(e) => updatePericia(skill, parseInt(e.target.value))}
-                                className="w-12 bg-white/5 border border-white/10 rounded-sm text-center font-mono-stats text-sm text-primary py-1"
-                              />
+                              <div className="flex items-center gap-1">
+                                <button 
+                                  onClick={() => updatePericia(skill, (ficha.pericias[skill] || 0) - 1)}
+                                  className="w-6 h-6 flex items-center justify-center rounded-sm bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <input
+                                  type="number"
+                                  value={ficha.pericias[skill] || 0}
+                                  onChange={(e) => updatePericia(skill, parseInt(e.target.value) || 0)}
+                                  className="w-10 bg-transparent text-center font-mono-stats text-sm text-primary focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button 
+                                  onClick={() => updatePericia(skill, (ficha.pericias[skill] || 0) + 1)}
+                                  className="w-6 h-6 flex items-center justify-center rounded-sm bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -651,11 +665,11 @@ export default function Ficha() {
                     </div>
                     
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                      <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
                         <PolarGrid stroke="rgba(255,255,255,0.1)" gridType="polygon" />
                         <PolarAngleAxis 
                           dataKey="subject" 
-                          tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10, fontWeight: 700, fontFamily: 'Rajdhani' }}
+                          tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, fontFamily: 'Rajdhani' }}
                         />
                         <Radar
                           name="Atleta"
