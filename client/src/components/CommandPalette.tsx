@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -66,11 +66,17 @@ const searchItems: SearchItem[] = [
   { id: "treino-defesa", title: "Treino de Defesa", category: "Treinamentos", description: "+1 em Roubo de Bola" },
 ];
 
-export default function CommandPalette() {
+interface CommandPaletteProps {
+  isMobile?: boolean;
+  showFull?: boolean;
+}
+
+export default function CommandPalette({ isMobile = false, showFull = false }: CommandPaletteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [, navigate] = useLocation();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const filteredItems = searchItems.filter(item =>
     item.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -91,11 +97,11 @@ export default function CommandPalette() {
       if (isOpen) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          setSelectedIndex(prev => (prev + 1) % filteredItems.length);
+          setSelectedIndex(prev => (prev + 1) % Math.max(1, filteredItems.length));
         }
         if (e.key === "ArrowUp") {
           e.preventDefault();
-          setSelectedIndex(prev => (prev - 1 + filteredItems.length) % filteredItems.length);
+          setSelectedIndex(prev => (prev - 1 + filteredItems.length) % Math.max(1, filteredItems.length));
         }
         if (e.key === "Enter") {
           e.preventDefault();
@@ -116,44 +122,79 @@ export default function CommandPalette() {
     setSelectedIndex(0);
   }, [search]);
 
+  // Scroll automatico para o item selecionado
+  useEffect(() => {
+    if (isOpen && scrollContainerRef.current) {
+      const selectedElement = scrollContainerRef.current.children[0]?.children[selectedIndex] as HTMLElement;
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [selectedIndex, isOpen]);
+
+  if (isMobile && showFull) {
+    return (
+      <div className="w-full">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar no sistema..."
+            className="w-full bg-white/5 border border-border/50 rounded-sm py-2 pl-10 pr-4 text-sm font-heading outline-none focus:border-primary/50 transition-colors"
+            onClick={() => setIsOpen(true)}
+            readOnly
+          />
+        </div>
+        {renderModal()}
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* Button no Header */}
       <button
         onClick={() => setIsOpen(true)}
-        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-sm text-sm font-heading tracking-wider uppercase text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
+        className={`${isMobile ? 'flex' : 'hidden lg:flex'} items-center gap-2 px-3 py-2 rounded-sm text-sm font-heading tracking-wider uppercase text-muted-foreground hover:text-white hover:bg-white/5 transition-colors`}
         title="Pressione Ctrl+K para buscar"
       >
         <Search className="w-4 h-4" />
-        <span className="text-xs">Buscar</span>
-        <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 border border-white/20 ml-auto">Ctrl K</kbd>
+        {!isMobile && (
+          <>
+            <span className="text-xs">Buscar</span>
+            <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 border border-white/20 ml-auto">Ctrl K</kbd>
+          </>
+        )}
       </button>
+      {renderModal()}
+    </>
+  );
 
-      {/* Modal de Busca */}
+  function renderModal() {
+    return (
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-start justify-center pt-20"
-            style={{ background: "rgba(0, 0, 0, 0.5)" }}
+            className="fixed inset-0 z-[100] flex items-start justify-center pt-4 md:pt-20 px-4"
+            style={{ background: "rgba(0, 0, 0, 0.75)", backdropFilter: "blur(4px)" }}
             onClick={() => setIsOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0, y: -20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: -20 }}
               onClick={e => e.stopPropagation()}
-              className="w-full max-w-2xl rounded-lg border border-border/50 overflow-hidden shadow-2xl"
+              className="w-full max-w-2xl rounded-lg border border-border/50 overflow-hidden shadow-2xl flex flex-col max-h-[80vh]"
               style={{ background: "oklch(0.08 0.01 260)" }}
             >
               {/* Search Input */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50">
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-border/50">
                 <Search className="w-5 h-5 text-primary flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="Busque itens, treinamentos, condições, regras..."
+                  placeholder="Busque itens, treinamentos, regras..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   autoFocus
@@ -161,22 +202,28 @@ export default function CommandPalette() {
                 />
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-muted-foreground hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-white transition-colors p-1"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
               {/* Results */}
-              <div className="max-h-[400px] overflow-y-auto">
+              <div 
+                ref={scrollContainerRef}
+                className="flex-1 overflow-y-auto custom-scrollbar"
+              >
                 {filteredItems.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-muted-foreground">
-                    Nenhum resultado encontrado para "{search}"
+                  <div className="px-4 py-12 text-center">
+                    <div className="text-4xl mb-4">⚽</div>
+                    <div className="text-muted-foreground font-heading">
+                      Nenhum resultado para "{search}"
+                    </div>
                   </div>
                 ) : (
                   <div className="py-2">
                     {filteredItems.map((item, index) => (
-                      <motion.button
+                      <button
                         key={item.id}
                         onClick={() => {
                           if (item.href) {
@@ -184,7 +231,7 @@ export default function CommandPalette() {
                           }
                           setIsOpen(false);
                         }}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-start justify-between ${
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-start justify-between group ${
                           index === selectedIndex
                             ? "bg-primary/20 border-l-2 border-primary"
                             : "hover:bg-white/5"
@@ -192,33 +239,37 @@ export default function CommandPalette() {
                         onMouseEnter={() => setSelectedIndex(index)}
                       >
                         <div className="flex-1">
-                          <div className="font-heading text-sm font-bold text-white">{item.title}</div>
+                          <div className={`font-heading text-sm font-bold transition-colors ${index === selectedIndex ? 'text-primary' : 'text-white'}`}>
+                            {item.title}
+                          </div>
                           {item.description && (
-                            <div className="text-xs text-muted-foreground mt-1">{item.description}</div>
+                            <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{item.description}</div>
                           )}
                         </div>
-                        <span className="text-[10px] text-muted-foreground ml-4 flex-shrink-0 uppercase tracking-wider">
+                        <span className="text-[10px] text-muted-foreground ml-4 flex-shrink-0 uppercase tracking-wider bg-white/5 px-2 py-1 rounded-sm">
                           {item.category}
                         </span>
-                      </motion.button>
+                      </button>
                     ))}
                   </div>
                 )}
               </div>
 
               {/* Footer com dicas */}
-              <div className="px-4 py-3 border-t border-border/50 bg-white/2 flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex gap-4">
-                  <span><kbd className="text-[9px] px-1 py-0.5 rounded bg-white/10 border border-white/20">↑↓</kbd> Navegar</span>
-                  <span><kbd className="text-[9px] px-1 py-0.5 rounded bg-white/10 border border-white/20">Enter</kbd> Selecionar</span>
-                  <span><kbd className="text-[9px] px-1 py-0.5 rounded bg-white/10 border border-white/20">Esc</kbd> Fechar</span>
+              <div className="px-4 py-3 border-t border-border/50 bg-black/40 flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest font-heading">
+                <div className="hidden sm:flex gap-4">
+                  <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded bg-white/10 border border-white/20">↑↓</kbd> Navegar</span>
+                  <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded bg-white/10 border border-white/20">Enter</kbd> Selecionar</span>
                 </div>
-                <span>{filteredItems.length} resultados</span>
+                <div className="flex sm:hidden gap-2">
+                  <span>Toque para selecionar</span>
+                </div>
+                <span className="text-primary/80">{filteredItems.length} resultados</span>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
-  );
+    );
+  }
 }

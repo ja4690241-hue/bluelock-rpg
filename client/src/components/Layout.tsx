@@ -120,14 +120,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2 rounded-sm transition-colors"
-              style={{ color: 'oklch(0.75 0.15 230)' }}
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Menu"
-            >
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <div className="flex lg:hidden items-center gap-2">
+              <CommandPalette isMobile />
+              <button
+                className="p-2 rounded-sm transition-colors"
+                style={{ color: 'oklch(0.75 0.15 230)' }}
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Menu"
+              >
+                {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -135,6 +138,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {mobileOpen && (
           <div className="lg:hidden border-t border-border/50 bg-gradient-to-b from-black/50 to-black/20" style={{ background: 'oklch(0.08 0.01 260)' }}>
             <div className="container py-4 max-h-[calc(100vh-64px)] overflow-y-auto">
+              <div className="mb-6 lg:hidden">
+                <CommandPalette isMobile showFull />
+              </div>
               {navCategories.map((category) => {
                 const Icon = category.icon;
                 const isExpanded = expandedCategory === category.label;
