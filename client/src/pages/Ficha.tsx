@@ -292,7 +292,35 @@ export default function Ficha() {
                         {ficha.classId === c.id && <Star className="w-4 h-4 text-primary fill-primary" />}
                       </div>
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{c.subtitle}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2 mb-4">{c.description}</p>
+                      
+                      <div className="space-y-3 pt-3 border-t border-white/5">
+                        {c.attributeBonus && c.attributeBonus.length > 0 && (
+                          <div>
+                            <p className="text-[9px] font-heading uppercase tracking-widest text-primary mb-1.5">Bônus de Atributos</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {c.attributeBonus.map((ab, idx) => (
+                                <span key={idx} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-white font-medium">
+                                  {ab.attr} +{ab.value}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {c.skillBonus && c.skillBonus.length > 0 && (
+                          <div>
+                            <p className="text-[9px] font-heading uppercase tracking-widest text-primary mb-1.5">Bônus de Perícias</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {c.skillBonus.map((sb, idx) => (
+                                <span key={idx} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-muted-foreground">
+                                  {sb.skill} +{sb.value}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
