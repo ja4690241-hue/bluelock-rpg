@@ -100,19 +100,22 @@ export function calculateOverall(
   } else if (total >= 40) {
     rank = "E";
     rankColor = "oklch(0.5 0.1 260)"; // Cinza Claro
+    description = "Jogador em Evolução";
   } else if (total >= 30) {
     rank = "F";
     rankColor = "oklch(0.4 0.08 260)"; // Cinza
+    description = "Jogador em Evolução";
   } else {
     rank = "G";
     rankColor = "oklch(0.3 0.05 260)"; // Cinza Escuro
+    description = "Jogador em Evolução";
   }
 
   return {
     total,
     rank,
     rankColor,
-    description: description || "Jogador em Evolução",
+    description: description,
     categories: {
       speed,
       defense,

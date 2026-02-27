@@ -435,7 +435,7 @@ export default function Ficha() {
                           <p className="font-heading text-sm font-bold text-white">{training.name}</p>
                           <p className="text-[10px] text-muted-foreground mt-1">{training.description}</p>
                         </div>
-                        <span className="text-[9px] font-heading uppercase tracking-widest px-2 py-0.5 rounded-sm ml-2 flex-shrink-0" style={{ background: training.category === 'Avancado' ? 'oklch(0.75 0.18 25 / 0.2)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.75 0.15 230 / 0.2)', color: training.category === 'Avancado' ? 'oklch(0.75 0.18 25)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260)' : 'oklch(0.75 0.15 230)' }}>
+                        <span className="text-[9px] font-heading uppercase tracking-widest px-2 py-0.5 rounded-sm ml-2 flex-shrink-0" style={{ background: training.category === 'Avançado' ? 'oklch(0.75 0.18 25 / 0.2)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.75 0.15 230 / 0.2)', color: training.category === 'Avançado' ? 'oklch(0.75 0.18 25)' : training.category === 'Especializado' ? 'oklch(0.52 0.22 260)' : 'oklch(0.75 0.15 230)' }}>
                           {training.category}
                         </span>
                       </div>

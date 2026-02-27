@@ -67,13 +67,12 @@ export default function Pericias() {
           className="space-y-4"
         >
           {atributosItems.map((item) => (
-            <Accordion 
-              key={item.id} 
-              items={[item]} 
-              allowMultiple={true} 
-              className="border-l-4"
-              style={{ borderLeftColor: item.color }}
-            />
+            <div key={item.id} className="border-l-4" style={{ borderLeftColor: item.color }}>
+              <Accordion 
+                items={[item]} 
+                allowMultiple={true} 
+              />
+            </div>
           ))}
         </motion.div>
 

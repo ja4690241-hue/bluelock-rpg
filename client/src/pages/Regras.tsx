@@ -1,9 +1,107 @@
 import { motion } from "framer-motion";
 import Accordion from "@/components/Accordion";
 import { attributes, classes, mechanics, items, glossary } from "@/lib/data";
-import { Zap, Target, Shield, Star, Book, Info } from "lucide-react";
+import { Zap, Target, Shield, Star, Book, Info, TrendingUp } from "lucide-react";
 
 export default function Regras() {
+  const fluxoItems = [
+    {
+      id: "fluxo-1",
+      title: "Entrada em Fluxo",
+      icon: "🌀",
+      content: (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground italic">O início do estado de concentração extrema.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Requisitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>2 ações bem-sucedidas consecutivas</li>
+                <li>Estar em situação de pressão</li>
+                <li>Declarar no início do turno</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Efeitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>+3 em todos os testes</li>
+                <li>+2 em iniciativa</li>
+                <li>Vantagem em Reflexos</li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-white/5 flex justify-between text-[10px]">
+            <span><span className="text-primary font-bold">CUSTO:</span> 8 FO</span>
+            <span><span className="text-primary font-bold">DURAÇÃO:</span> 3 Rodadas</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "fluxo-2",
+      title: "Fluxo Intenso",
+      icon: "⚡",
+      content: (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground italic">Aprofundando a conexão com o jogo.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Requisitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>Estar em Fluxo por 2 rodadas</li>
+                <li>1 ação bem-sucedida no turno</li>
+                <li>Gastar fôlego adicional</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Efeitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>+5 em todos os testes</li>
+                <li>Vantagem em Chute/Pontaria</li>
+                <li>Crítico em 19-20</li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-white/5 flex justify-between text-[10px]">
+            <span><span className="text-primary font-bold">CUSTO:</span> +5 FO</span>
+            <span><span className="text-primary font-bold">DURAÇÃO:</span> 2 Rodadas</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "fluxo-3",
+      title: "Fluxo Absoluto",
+      icon: "👑",
+      content: (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground italic">O ápice do desempenho humano.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Requisitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>Estar em Fluxo Intenso por 2 rodadas</li>
+                <li>Marcar gol ou ação extraordinária</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Efeitos:</p>
+              <ul className="text-[11px] space-y-1 list-disc list-inside text-muted-foreground">
+                <li>+8 em todos os testes</li>
+                <li>Imunidade a condições negativas</li>
+                <li>Crítico em 18-20</li>
+                <li>2 ações padrão no turno</li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-white/5 flex justify-between text-[10px]">
+            <span><span className="text-primary font-bold">CUSTO:</span> 15 FO</span>
+            <span><span className="text-primary font-bold">DURAÇÃO:</span> 1 Rodada</span>
+          </div>
+        </div>
+      )
+    }
+  ];
   const atributosItems = attributes.map(attr => ({
     id: attr.id,
     title: attr.name,

@@ -12,9 +12,11 @@ export default function Atributos() {
       <div className="space-y-4">
         <p className="italic text-muted-foreground">{attr.description}</p>
         
+        {/* @ts-ignore */}
         {attr.purpose && (
           <div>
             <p className="font-bold text-white mb-2">Propósito:</p>
+            {/* @ts-ignore */}
             <p className="text-sm">{attr.purpose}</p>
           </div>
         )}
@@ -60,13 +62,12 @@ export default function Atributos() {
         >
           <div className="space-y-4">
           {atributosItems.map((item) => (
-            <Accordion 
-              key={item.id} 
-              items={[item]} 
-              allowMultiple={true} 
-              className="border-l-4"
-              style={{ borderLeftColor: item.color || 'var(--primary)' }}
-            />
+            <div key={item.id} className="border-l-4" style={{ borderLeftColor: item.color || 'var(--primary)' }}>
+              <Accordion 
+                items={[item]} 
+                allowMultiple={true} 
+              />
+            </div>
           ))}
         </div>
         </motion.div>
