@@ -440,7 +440,11 @@ export default function Ficha() {
                       <div className="flex gap-2 mb-2">
                         <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/10 text-muted-foreground uppercase font-bold">{t.category}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{t.description}</p>
+                      <p className="text-xs text-muted-foreground mb-3">{t.description}</p>
+                      <div className="p-2 rounded-sm bg-primary/5 border border-primary/10">
+                        <p className="text-[10px] font-heading uppercase tracking-widest text-primary mb-1">Efeito</p>
+                        <p className="text-[11px] text-white leading-relaxed">{t.effect}</p>
+                      </div>
                     </button>
                   ))}
                 </div>
