@@ -49,6 +49,9 @@ interface FichaData {
   classePersonalizadaDescricao?: string;
   classePersonalizadaRole?: string;
   classePersonalizadaPoderes?: PoderPersonalizado[];
+  classePersonalizadaBonusAtributos?: Array<{ attr: string; value: number }>;
+  classePersonalizadaBonusPericia?: Array<{ skill: string; value: number }>;
+  classePersonalizadaArma?: { nome: string; descricao: string; bonus: string };
   historico?: RegistroEvolucao[];
 }
 
@@ -85,6 +88,9 @@ const initialFicha: FichaData = {
   classePersonalizadaDescricao: "",
   classePersonalizadaRole: "",
   classePersonalizadaPoderes: [],
+  classePersonalizadaBonusAtributos: [],
+  classePersonalizadaBonusPericia: [],
+  classePersonalizadaArma: { nome: "", descricao: "", bonus: "" },
   historico: []
 };
 
@@ -152,13 +158,30 @@ export default function Ficha() {
       return { ...prev, historico };
     });
   };
-  const overallData = calculateOverall(ficha.atributos, ficha.pericias);
+  // Calcular atributos com bônus da classe personalizada
+  const atributosComBonus = { ...ficha.atributos };
+  if (ficha.modoPersonalizado && ficha.classePersonalizadaBonusAtributos) {
+    ficha.classePersonalizadaBonusAtributos.forEach(bonus => {
+      const attrKey = bonus.attr as keyof typeof atributosComBonus;
+      atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+    });
+  }
+
+  // Calcular perícias com bônus da classe personalizada
+  const periciasComBonus = { ...ficha.pericias };
+  if (ficha.modoPersonalizado && ficha.classePersonalizadaBonusPericia) {
+    ficha.classePersonalizadaBonusPericia.forEach(bonus => {
+      periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
+    });
+  }
+
+  const overallData = calculateOverall(atributosComBonus, periciasComBonus);
   const radarData = [
-    { subject: 'POTÊNCIA', A: ficha.atributos.potencia || 0, fullMark: 10 },
-    { subject: 'TÉCNICA', A: ficha.atributos.tecnica || 0, fullMark: 10 },
-    { subject: 'EGO', A: ficha.atributos.ego || 0, fullMark: 10 },
-    { subject: 'AGILIDADE', A: ficha.atributos.agilidade || 0, fullMark: 10 },
-    { subject: 'VELOCIDADE', A: ficha.atributos.velocidade || 0, fullMark: 10 },
+    { subject: 'POTÊNCIA', A: atributosComBonus.potencia || 0, fullMark: 10 },
+    { subject: 'TÉCNICA', A: atributosComBonus.tecnica || 0, fullMark: 10 },
+    { subject: 'EGO', A: atributosComBonus.ego || 0, fullMark: 10 },
+    { subject: 'AGILIDADE', A: atributosComBonus.agilidade || 0, fullMark: 10 },
+    { subject: 'VELOCIDADE', A: atributosComBonus.velocidade || 0, fullMark: 10 },
   ];
 
   const rollFolego = () => {
@@ -498,6 +521,184 @@ export default function Ficha() {
 
                     {/* Poderes personalizados */}
                     <div className="bl-card p-6">
+                    {/* Bônus de Atributos */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl text-white tracking-wider">BÔNUS DE ATRIBUTOS</h3>
+                        <button
+                          onClick={() => {
+                            setFicha(prev => ({
+                              ...prev,
+                              classePersonalizadaBonusAtributos: [...(prev.classePersonalizadaBonusAtributos || []), { attr: 'potencia', value: 1 }]
+                            }));
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                          style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Adicionar Bônus
+                        </button>
+                      </div>
+                      {(!ficha.classePersonalizadaBonusAtributos || ficha.classePersonalizadaBonusAtributos.length === 0) ? (
+                        <p className="text-xs text-muted-foreground italic">Nenhum bônus de atributo adicionado ainda.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {ficha.classePersonalizadaBonusAtributos.map((bonus, idx) => (
+                            <div key={idx} className="flex items-center gap-2 p-3 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                              <select
+                                value={bonus.attr}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusAtributos || [])];
+                                  newBonus[idx].attr = e.target.value;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusAtributos: newBonus }));
+                                }}
+                                className="flex-1 px-2 py-1 rounded-sm text-xs font-heading"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              >
+                                <option value="potencia">Potência</option>
+                                <option value="tecnica">Técnica</option>
+                                <option value="velocidade">Velocidade</option>
+                                <option value="agilidade">Agilidade</option>
+                                <option value="resistencia">Resistência</option>
+                              </select>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={bonus.value}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusAtributos || [])];
+                                  newBonus[idx].value = parseInt(e.target.value) || 0;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusAtributos: newBonus }));
+                                }}
+                                className="w-16 px-2 py-1 rounded-sm text-xs font-heading text-center"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              />
+                              <span className="text-xs text-muted-foreground">pontos</span>
+                              <button
+                                onClick={() => {
+                                  setFicha(prev => ({
+                                    ...prev,
+                                    classePersonalizadaBonusAtributos: (prev.classePersonalizadaBonusAtributos || []).filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {/* Bônus de Perícias */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl text-white tracking-wider">BÔNUS DE PERÍCIAS</h3>
+                        <button
+                          onClick={() => {
+                            setFicha(prev => ({
+                              ...prev,
+                              classePersonalizadaBonusPericia: [...(prev.classePersonalizadaBonusPericia || []), { skill: 'Chute', value: 1 }]
+                            }));
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                          style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Adicionar Bônus
+                        </button>
+                      </div>
+                      {(!ficha.classePersonalizadaBonusPericia || ficha.classePersonalizadaBonusPericia.length === 0) ? (
+                        <p className="text-xs text-muted-foreground italic">Nenhum bônus de perícia adicionado ainda.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {ficha.classePersonalizadaBonusPericia.map((bonus, idx) => (
+                            <div key={idx} className="flex items-center gap-2 p-3 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                              <select
+                                value={bonus.skill}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusPericia || [])];
+                                  newBonus[idx].skill = e.target.value;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusPericia: newBonus }));
+                                }}
+                                className="flex-1 px-2 py-1 rounded-sm text-xs font-heading"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              >
+                                {allSkills.map(skill => (
+                                  <option key={skill} value={skill}>{skill}</option>
+                                ))}
+                              </select>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={bonus.value}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusPericia || [])];
+                                  newBonus[idx].value = parseInt(e.target.value) || 0;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusPericia: newBonus }));
+                                }}
+                                className="w-16 px-2 py-1 rounded-sm text-xs font-heading text-center"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              />
+                              <span className="text-xs text-muted-foreground">pontos</span>
+                              <button
+                                onClick={() => {
+                                  setFicha(prev => ({
+                                    ...prev,
+                                    classePersonalizadaBonusPericia: (prev.classePersonalizadaBonusPericia || []).filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {/* Arma Personalizada */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Sword className="w-5 h-5 text-primary" />
+                        <h3 className="font-display text-xl text-white tracking-wider">ARMA BLUE LOCK</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Nome da Arma</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaArma?.nome || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, nome: e.target.value } }))}
+                            placeholder="Ex: Remate Diagonal"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Bônus da Arma</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaArma?.bonus || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, bonus: e.target.value } }))}
+                            placeholder="Ex: +2 em Chute"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Descrição da Arma</label>
+                          <textarea
+                            value={ficha.classePersonalizadaArma?.descricao || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, descricao: e.target.value } }))}
+                            placeholder="Descreva como funciona sua arma Blue Lock..."
+                            rows={3}
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-display text-xl text-white tracking-wider">PODERES / HABILIDADES</h3>
                         <button
