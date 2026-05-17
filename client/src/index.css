@@ -331,7 +331,7 @@
 
 /* Print styles - Optimized for Character Sheet Export */
 @media print {
-  header, footer, nav, .no-print {
+  header, footer, nav, .no-print, .sidebar {
     display: none !important;
   }
   body {
@@ -339,6 +339,8 @@
     color: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0.5cm !important;
   }
   .container {
     max-width: 100% !important;
@@ -349,5 +351,25 @@
   .bl-card {
     border: 1px solid oklch(0.22 0.03 260) !important;
     background: oklch(0.10 0.015 260) !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 1rem !important;
+  }
+  svg {
+    max-height: 200px !important;
+  }
+  .space-y-8 > * + * {
+    margin-top: 1rem !important;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  td, th {
+    border: 1px solid oklch(0.22 0.03 260) !important;
+    padding: 0.5rem !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

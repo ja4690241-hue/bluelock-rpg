@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { attributes, classes, skillDescriptions, skills as dataSkills } from "@/lib/data";
 import { trainings } from "@/lib/trainings";
 import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon, Sword, Plus, Minus, Wand2, Trash2 } from "lucide-react";
+import Tooltip, { TooltipText } from "@/components/Tooltip";
 import { toast } from "sonner";
 import { calculateOverall } from "@/lib/overall";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
@@ -17,6 +18,15 @@ interface PoderPersonalizado {
   tipo: string;
   descricao: string;
   bonus: string;
+}
+
+interface RegistroEvolucao {
+  data: string;
+  partidas: number;
+  gols: number;
+  assists: number;
+  notas: string;
+  atributosNaEpoca: Record<string, number>;
 }
 
 interface FichaData {
@@ -39,6 +49,7 @@ interface FichaData {
   classePersonalizadaDescricao?: string;
   classePersonalizadaRole?: string;
   classePersonalizadaPoderes?: PoderPersonalizado[];
+  historico?: RegistroEvolucao[];
 }
 
 const initialPoderPersonalizado = (): PoderPersonalizado => ({
@@ -73,7 +84,8 @@ const initialFicha: FichaData = {
   classePersonalizadaSubtitulo: "",
   classePersonalizadaDescricao: "",
   classePersonalizadaRole: "",
-  classePersonalizadaPoderes: []
+  classePersonalizadaPoderes: [],
+  historico: []
 };
 
 const allSkills = dataSkills.map(s => s.name);
@@ -109,6 +121,36 @@ export default function Ficha() {
       ...prev,
       classePersonalizadaPoderes: (prev.classePersonalizadaPoderes || []).filter((_, i) => i !== idx)
     }));
+  };
+
+  const addRegistroEvolucao = () => {
+    const novoRegistro: RegistroEvolucao = {
+      data: new Date().toLocaleDateString('pt-BR'),
+      partidas: 0,
+      gols: 0,
+      assists: 0,
+      notas: '',
+      atributosNaEpoca: { ...ficha.atributos }
+    };
+    setFicha(prev => ({
+      ...prev,
+      historico: [...(prev.historico || []), novoRegistro]
+    }));
+  };
+
+  const removeRegistroEvolucao = (idx: number) => {
+    setFicha(prev => ({
+      ...prev,
+      historico: (prev.historico || []).filter((_, i) => i !== idx)
+    }));
+  };
+
+  const updateRegistroEvolucao = (idx: number, field: keyof RegistroEvolucao, value: any) => {
+    setFicha(prev => {
+      const historico = [...(prev.historico || [])];
+      historico[idx] = { ...historico[idx], [field]: value };
+      return { ...prev, historico };
+    });
   };
   const overallData = calculateOverall(ficha.atributos, ficha.pericias);
   const radarData = [
@@ -814,8 +856,17 @@ export default function Ficha() {
             {step === 8 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                 {/* Header da Ficha */}
-                <div className="bl-card p-8 relative overflow-hidden">
+                <div className="bl-card p-8 relative overflow-hidden" style={{
+                  background: overallData.rank === 'S' ? 'linear-gradient(135deg, oklch(0.52 0.22 260 / 0.15) 0%, oklch(0.08 0.01 260) 100%)' : undefined,
+                  boxShadow: overallData.rank === 'S' ? '0 0 40px oklch(0.52 0.22 260 / 0.3), inset 0 0 40px oklch(0.52 0.22 260 / 0.1)' : undefined
+                }}>
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+                  {overallData.rank === 'S' && (
+                    <div className="absolute inset-0 animate-pulse" style={{
+                      background: 'radial-gradient(circle at 50% 0%, oklch(0.52 0.22 260 / 0.1) 0%, transparent 70%)',
+                      animation: 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                  )}
                   <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
                       <div className="bl-tag mb-4">Atleta Blue Lock</div>
@@ -852,31 +903,39 @@ export default function Ficha() {
                 )}
 
                 {/* Overall & Rank Display - Destaque */}
-                <div className="bl-card p-8" style={{
+                <div className="bl-card p-8 relative overflow-hidden" style={{
                   background: `linear-gradient(135deg, ${overallData.rankColor}15 0%, ${overallData.rankColor}08 100%)`,
                   border: `2px solid ${overallData.rankColor}`,
                   boxShadow: `0 0 30px ${overallData.rankColor}33, inset 0 0 30px ${overallData.rankColor}11`
                 }}>
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Overall</div>
-                      <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
-                        {overallData.total}
+                  {overallData.rank === 'S' && (
+                    <div className="absolute inset-0 animate-pulse" style={{
+                      background: `radial-gradient(circle at 50% 50%, ${overallData.rankColor}20 0%, transparent 70%)`,
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                  )}
+                  <div className="relative z-10">
+                    <div className="grid grid-cols-3 gap-6">
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Overall</div>
+                        <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                          {overallData.total}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-px h-20 bg-white/20" />
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Rank</div>
+                        <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                          {overallData.rank}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="w-px h-20 bg-white/20" />
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Rank</div>
-                      <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
-                        {overallData.rank}
+                    <div className="mt-6 pt-6 border-t border-white/20 text-center">
+                      <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
+                        {overallData.description}
                       </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 pt-6 border-t border-white/20 text-center">
-                    <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
-                      {overallData.description}
                     </div>
                   </div>
                 </div>
@@ -965,7 +1024,11 @@ export default function Ficha() {
 
                 {/* Fôlego */}
                 <div className="bl-card p-6">
-                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Fôlego</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <Tooltip term="FO" definition="Fôlego — Energia necessária para usar habilidades e realizar ações especiais durante a partida.">
+                      <span className="font-bold text-primary underline decoration-dotted cursor-help">Fôlego</span>
+                    </Tooltip>
+                  </p>
                   <div className="text-3xl font-black text-primary">{ficha.folego} pontos</div>
                 </div>
 
@@ -1049,6 +1112,60 @@ export default function Ficha() {
                     </div>
                   </div>
                 )}
+                {/* Histórico de Evolução */}
+                <div className="bl-card p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Trophy className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">Histórico de Evolução</p>
+                    </div>
+                    <button
+                      onClick={addRegistroEvolucao}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                      style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Adicionar Partida
+                    </button>
+                  </div>
+                  {(!ficha.historico || ficha.historico.length === 0) ? (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      <Trophy className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                      <p>Nenhuma partida registrada ainda.</p>
+                      <p className="text-xs mt-1">Clique em "Adicionar Partida" para começar a registrar sua evolução.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {ficha.historico.map((registro, idx) => (
+                        <div key={idx} className="p-4 rounded-sm border border-white/10" style={{ background: 'oklch(0.10 0.015 260)' }}>
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <p className="text-xs font-bold text-white">{registro.data}</p>
+                              <p className="text-[10px] text-muted-foreground">Partidas: <span className="text-primary font-bold">{registro.partidas}</span> | Gols: <span className="text-primary font-bold">{registro.gols}</span> | Assistências: <span className="text-primary font-bold">{registro.assists}</span></p>
+                            </div>
+                            <button
+                              onClick={() => removeRegistroEvolucao(idx)}
+                              className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              title="Remover registro"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          {registro.notas && (
+                            <p className="text-[10px] text-white/70 italic border-l-2 border-primary/30 pl-2 mb-2">{registro.notas}</p>
+                          )}
+                          <div className="grid grid-cols-5 gap-2 text-[9px]">
+                            {Object.entries(registro.atributosNaEpoca).map(([attr, valor]) => (
+                              <div key={attr} className="text-center p-1.5 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                                <div className="font-bold text-primary">{valor}</div>
+                                <div className="text-muted-foreground uppercase tracking-wider">{attr.substring(0, 3)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Botões de Ação */}
                 <div className="flex flex-wrap gap-3 no-print">
