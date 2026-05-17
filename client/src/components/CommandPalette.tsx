@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { classes } from "@/lib/data";
 
 interface SearchItem {
   id: string;
@@ -12,7 +13,27 @@ interface SearchItem {
   action?: () => void;
 }
 
-const searchItems: SearchItem[] = [
+// Gera itens de busca para todas as habilidades de todas as classes
+const classAbilityItems: SearchItem[] = classes.flatMap(cls =>
+  (cls.abilities || []).map((ab, idx) => ({
+    id: `ability-${cls.id}-${idx}`,
+    title: ab.name,
+    category: `Habilidade · ${cls.name}`,
+    description: `${ab.description} — ${ab.bonus} (${ab.cost})`,
+    href: `/classes#${cls.id}`
+  }))
+);
+
+// Itens de busca para as próprias classes
+const classItems: SearchItem[] = classes.map(cls => ({
+  id: `class-${cls.id}`,
+  title: cls.name,
+  category: "Classes",
+  description: `${cls.subtitle} · ${cls.role} · ${cls.difficulty}`,
+  href: `/classes#${cls.id}`
+}));
+
+const staticSearchItems: SearchItem[] = [
   // Navegação
   { id: "home", title: "Página Inicial", category: "Navegação", href: "/" },
   { id: "ficha", title: "Criar Ficha", category: "Navegação", href: "/ficha" },
@@ -31,25 +52,25 @@ const searchItems: SearchItem[] = [
   { id: "exemplo", title: "Exemplo de Partida", category: "Navegação", href: "/exemplo" },
 
   // Itens
-  { id: "item-chuteira", title: "Chuteira Profissional", category: "Itens", description: "+1 em Chute" },
-  { id: "item-munhequeira", title: "Munhequeira de Foco", category: "Itens", description: "+1 em Passe" },
-  { id: "item-faixa", title: "Faixa de Capitão", category: "Itens", description: "Liderança" },
-  { id: "item-garrafa", title: "Garrafa Térmica Energética", category: "Itens", description: "Recuperação de Fôlego" },
-  { id: "item-joelheira", title: "Joelheira Reforçada", category: "Itens", description: "+1 em Defesa" },
-  { id: "item-oculos", title: "Óculos de Visão Tática", category: "Itens", description: "+1 em Intuição" },
-  { id: "item-bandagem", title: "Bandagem de Recuperação", category: "Itens", description: "Recuperação de Lesões" },
-  { id: "item-caneleira", title: "Caneleira Especial", category: "Itens", description: "+1 em Velocidade" },
-  { id: "item-apito", title: "Apito Tático", category: "Itens", description: "Comunicação" },
-  { id: "item-kit", title: "Kit Médico Portátil", category: "Itens", description: "Primeiros Socorros" },
+  { id: "item-chuteira", title: "Chuteira Profissional", category: "Itens", description: "+1 em Chute", href: "/itens" },
+  { id: "item-munhequeira", title: "Munhequeira de Foco", category: "Itens", description: "+1 em Passe", href: "/itens" },
+  { id: "item-faixa", title: "Faixa de Capitão", category: "Itens", description: "Liderança", href: "/itens" },
+  { id: "item-garrafa", title: "Garrafa Térmica Energética", category: "Itens", description: "Recuperação de Fôlego", href: "/itens" },
+  { id: "item-joelheira", title: "Joelheira Reforçada", category: "Itens", description: "+1 em Defesa", href: "/itens" },
+  { id: "item-oculos", title: "Óculos de Visão Tática", category: "Itens", description: "+1 em Intuição", href: "/itens" },
+  { id: "item-bandagem", title: "Bandagem de Recuperação", category: "Itens", description: "Recuperação de Lesões", href: "/itens" },
+  { id: "item-caneleira", title: "Caneleira Especial", category: "Itens", description: "+1 em Velocidade", href: "/itens" },
+  { id: "item-apito", title: "Apito Tático", category: "Itens", description: "Comunicação", href: "/itens" },
+  { id: "item-kit", title: "Kit Médico Portátil", category: "Itens", description: "Primeiros Socorros", href: "/itens" },
 
   // Condições de Campo
-  { id: "campo-ensolarado", title: "Ensolarado", category: "Condições de Campo", description: "Condição padrão" },
-  { id: "campo-chuva", title: "Chuva", category: "Condições de Campo", description: "-2 em Passes e Chutes" },
-  { id: "campo-neve", title: "Neve", category: "Condições de Campo", description: "-5 pés de movimento" },
-  { id: "campo-neblina", title: "Neblina", category: "Condições de Campo", description: "-2 em Intuição" },
-  { id: "campo-ventania", title: "Ventania", category: "Condições de Campo", description: "-2 em passes longos" },
-  { id: "campo-calor", title: "Calor Intenso", category: "Condições de Campo", description: "+1 fôlego por rodada" },
-  { id: "campo-frio", title: "Frio Extremo", category: "Condições de Campo", description: "-1 em Velocidade e Agilidade" },
+  { id: "campo-ensolarado", title: "Ensolarado", category: "Condições de Campo", description: "Condição padrão", href: "/regras" },
+  { id: "campo-chuva", title: "Chuva", category: "Condições de Campo", description: "-2 em Passes e Chutes", href: "/regras" },
+  { id: "campo-neve", title: "Neve", category: "Condições de Campo", description: "-5 pés de movimento", href: "/regras" },
+  { id: "campo-neblina", title: "Neblina", category: "Condições de Campo", description: "-2 em Intuição", href: "/regras" },
+  { id: "campo-ventania", title: "Ventania", category: "Condições de Campo", description: "-2 em passes longos", href: "/regras" },
+  { id: "campo-calor", title: "Calor Intenso", category: "Condições de Campo", description: "+1 fôlego por rodada", href: "/regras" },
+  { id: "campo-frio", title: "Frio Extremo", category: "Condições de Campo", description: "-1 em Velocidade e Agilidade", href: "/regras" },
 
   // Condições de Jogador
   { id: "cond-intimidado", title: "Intimidado", category: "Condições de Jogador", description: "-2 em Defesa e Reflexos" },
@@ -59,11 +80,18 @@ const searchItems: SearchItem[] = [
   { id: "cond-cercado", title: "Cercado", category: "Condições de Jogador", description: "-6 em Passes e Dribles" },
 
   // Treinamentos Populares
-  { id: "treino-finalizacao", title: "Treino de Finalização", category: "Treinamentos", description: "+1 em Chute e Pontaria" },
-  { id: "treino-passe", title: "Treino de Passe", category: "Treinamentos", description: "+1 em Passe" },
-  { id: "treino-drible", title: "Treino de Drible", category: "Treinamentos", description: "+1 em Drible" },
-  { id: "treino-velocidade", title: "Treino de Velocidade", category: "Treinamentos", description: "+1 em Explosão" },
-  { id: "treino-defesa", title: "Treino de Defesa", category: "Treinamentos", description: "+1 em Roubo de Bola" },
+  { id: "treino-finalizacao", title: "Treino de Finalização", category: "Treinamentos", description: "+1 em Chute e Pontaria", href: "/treinamentos" },
+  { id: "treino-passe", title: "Treino de Passe", category: "Treinamentos", description: "+1 em Passe", href: "/treinamentos" },
+  { id: "treino-drible", title: "Treino de Drible", category: "Treinamentos", description: "+1 em Drible", href: "/treinamentos" },
+  { id: "treino-velocidade", title: "Treino de Velocidade", category: "Treinamentos", description: "+1 em Explosão", href: "/treinamentos" },
+  { id: "treino-defesa", title: "Treino de Defesa", category: "Treinamentos", description: "+1 em Roubo de Bola", href: "/treinamentos" },
+];
+
+// Índice completo: estáticos + classes + habilidades
+const searchItems: SearchItem[] = [
+  ...staticSearchItems,
+  ...classItems,
+  ...classAbilityItems,
 ];
 
 interface CommandPaletteProps {
@@ -194,7 +222,7 @@ export default function CommandPalette({ isMobile = false, showFull = false }: C
                 <Search className="w-5 h-5 text-primary flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="Busque itens, treinamentos, regras..."
+                  placeholder="Busque poderes, classes, itens, regras..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   autoFocus
@@ -238,15 +266,15 @@ export default function CommandPalette({ isMobile = false, showFull = false }: C
                         }`}
                         onMouseEnter={() => setSelectedIndex(index)}
                       >
-                        <div className="flex-1">
-                          <div className={`font-heading text-sm font-bold transition-colors ${index === selectedIndex ? 'text-primary' : 'text-white'}`}>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-heading text-sm font-bold transition-colors truncate ${index === selectedIndex ? 'text-primary' : 'text-white'}`}>
                             {item.title}
                           </div>
                           {item.description && (
                             <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{item.description}</div>
                           )}
                         </div>
-                        <span className="text-[10px] text-muted-foreground ml-4 flex-shrink-0 uppercase tracking-wider bg-white/5 px-2 py-1 rounded-sm">
+                        <span className="text-[10px] text-muted-foreground ml-4 flex-shrink-0 uppercase tracking-wider bg-white/5 px-2 py-1 rounded-sm max-w-[140px] truncate text-right">
                           {item.category}
                         </span>
                       </button>

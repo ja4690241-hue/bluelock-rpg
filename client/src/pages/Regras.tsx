@@ -1,7 +1,59 @@
 import { motion } from "framer-motion";
 import Accordion from "@/components/Accordion";
 import { attributes, classes, mechanics, items, glossary } from "@/lib/data";
-import { Zap, Target, Shield, Star, Book, Info, TrendingUp } from "lucide-react";
+import { Zap, Target, Shield, Star, Book, Info, TrendingUp, Cloud } from "lucide-react";
+
+const condicoesCampo = [
+  {
+    nome: "Ensolarado",
+    icone: "☀️",
+    descricao: "Campo em condições ideais. Nenhum efeito negativo.",
+    efeito: "Nenhuma penalidade. Condição padrão de jogo.",
+    cor: "oklch(0.75 0.18 60)"
+  },
+  {
+    nome: "Chuva",
+    icone: "🌧️",
+    descricao: "Campo molhado e escorregadio. Afeta precisão e movimentação.",
+    efeito: "Reduz precisão de passes e chutes. Chance de escorregões (teste de Acrobacia DT 12 ao correr).",
+    cor: "oklch(0.52 0.22 260)"
+  },
+  {
+    nome: "Neve",
+    icone: "❄️",
+    descricao: "Campo coberto de neve. Movimentação prejudicada.",
+    efeito: "Reduz velocidade de movimento em 5 pés. Aumenta custo de fôlego em 1 por ação de movimento.",
+    cor: "oklch(0.85 0.05 230)"
+  },
+  {
+    nome: "Neblina",
+    icone: "🌫️",
+    descricao: "Visibilidade reduzida. Dificulta leitura de jogo.",
+    efeito: "Reduz percepção e visão de jogo. -2 em Intuição e testes de leitura de jogadas.",
+    cor: "oklch(0.65 0.05 260)"
+  },
+  {
+    nome: "Ventania",
+    icone: "💨",
+    descricao: "Vento forte que interfere na trajetória da bola.",
+    efeito: "Pode alterar trajetória da bola. -2 em passes longos e chutes de longa distância.",
+    cor: "oklch(0.75 0.15 160)"
+  },
+  {
+    nome: "Calor Intenso",
+    icone: "🌡️",
+    descricao: "Temperatura elevada que acelera o cansaço.",
+    efeito: "Fôlego reduz mais rapidamente. Perde +1 de fôlego adicional por rodada de ação intensa.",
+    cor: "oklch(0.75 0.18 25)"
+  },
+  {
+    nome: "Frio Extremo",
+    icone: "🥶",
+    descricao: "Temperatura muito baixa que compromete o desempenho físico.",
+    efeito: "Reduz desempenho físico geral. -1 em Velocidade e Agilidade durante toda a partida.",
+    cor: "oklch(0.65 0.15 230)"
+  }
+];
 
 export default function Regras() {
   const fluxoItems = [
@@ -153,6 +205,29 @@ export default function Regras() {
             </div>
           </div>
         </div>
+        {cls.abilities && cls.abilities.length > 0 && (
+          <div>
+            <p className="font-bold text-white mb-2 text-xs uppercase tracking-wider">Habilidades:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {cls.abilities.map((ab, idx) => (
+                <div key={idx} className="p-3 rounded-sm bg-white/5 border border-white/5">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <p className="font-bold text-primary text-[10px] uppercase tracking-wider">{ab.name}</p>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded flex-shrink-0 ${ab.type === 'Passivo' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-primary/20 text-primary border border-primary/30'}`}>
+                      {ab.type}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-white/80 leading-relaxed mb-1">{ab.description}</p>
+                  <p className="text-[10px] text-primary/80 leading-relaxed"><span className="font-bold">Bônus:</span> {ab.bonus}</p>
+                  <div className="flex gap-3 mt-1 text-[9px] text-muted-foreground">
+                    <span><span className="text-primary/70 font-bold">CUSTO:</span> {ab.cost}</span>
+                    <span><span className="text-primary/70 font-bold">DURAÇÃO:</span> {ab.duration}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     )
   }));
@@ -199,6 +274,21 @@ export default function Regras() {
     icon: <Info className="w-4 h-4" />,
     content: (
       <p className="text-sm text-muted-foreground leading-relaxed">{g.definition}</p>
+    )
+  }));
+
+  const climasItems = condicoesCampo.map((c, i) => ({
+    id: `clima-${i}`,
+    title: `${c.icone} ${c.nome}`,
+    icon: <Cloud className="w-4 h-4" />,
+    content: (
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground italic">{c.descricao}</p>
+        <div className="p-3 rounded-sm border" style={{ background: `${c.cor}15`, borderColor: `${c.cor}40` }}>
+          <p className="text-xs font-bold mb-1" style={{ color: c.cor }}>EFEITO NO JOGO:</p>
+          <p className="text-[11px] text-white/80 leading-relaxed">{c.efeito}</p>
+        </div>
+      </div>
     )
   }));
 
@@ -263,6 +353,20 @@ export default function Regras() {
         >
           <h2 className="font-display text-3xl text-white tracking-wider mb-6 uppercase">Fluxo</h2>
           <Accordion items={fluxoItems} allowMultiple={true} />
+        </motion.div>
+
+        {/* Condições de Campo (Climas) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="mb-12"
+        >
+          <h2 className="font-display text-3xl text-white tracking-wider mb-2 uppercase">Condições de Campo</h2>
+          <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+            As condições climáticas afetam diretamente o desempenho dos atletas. O narrador define a condição antes do início da partida.
+          </p>
+          <Accordion items={climasItems} allowMultiple={true} />
         </motion.div>
 
         {/* Itens */}
