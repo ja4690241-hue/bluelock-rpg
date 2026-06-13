@@ -53,9 +53,9 @@ export function calculateOverall(
   const passSkills = ((s('Passe') + s('Domínio') + s('Diplomacia')) / 60) * 100;
   const pass = Math.round(passBase * 0.6 + passSkills * 0.4);
 
-  // 4. DRIBBLE: Técnica + (Drible/Finta + Enganação + Acrobacias)
+  // 4. DRIBBLE: Técnica + (Drible + Enganação + Acrobacia)
   const dribbleBase = a('tecnica') * 10;
-  const dribbleSkills = ((s('Drible/Finta') + s('Enganação') + s('Acrobacias')) / 60) * 100;
+  const dribbleSkills = ((s('Drible') + s('Enganação') + s('Acrobacia')) / 60) * 100;
   const dribble = Math.round(dribbleBase * 0.6 + dribbleSkills * 0.4);
 
   // 5. SHOOT: Potência + (Chute + Pontaria + Cabeceio)
@@ -63,16 +63,16 @@ export function calculateOverall(
   const shootSkills = ((s('Chute') + s('Pontaria') + s('Cabeceio')) / 60) * 100;
   const shoot = Math.round(shootBase * 0.6 + shootSkills * 0.4);
 
-  // 6. OFFENSE: Ego + (Intimidação + Presença + Intuição)
-  const offenseBase = a('ego') * 10;
-  const offenseSkills = ((s('Intimidação') + s('Presença') + s('Intuição')) / 60) * 100;
+  // 6. OFFENSE: Ego/Inteligência + (Intimidação + Presença + Intuição + Análise Individual)
+  // Usamos o maior entre Ego e Inteligência para a base de Offense
+  const offenseBase = Math.max(a('ego'), a('inteligencia')) * 10;
+  const offenseSkills = ((s('Intimidação') + s('Presença') + s('Intuição') + s('Análise Individual')) / 80) * 100;
   const offense = Math.round(offenseBase * 0.6 + offenseSkills * 0.4);
 
-  // TOTAL: Média das 6 categorias (conforme nota na imagem: "Cumulative score is not an average, but a reflection...")
-  // No entanto, para fins de sistema, usaremos a média ponderada para manter consistência.
+  // TOTAL: Média das 6 categorias
   const total = Math.round((speed + defense + pass + dribble + shoot + offense) / 6);
 
-  // Determinar rank (Baseado na legenda da imagem)
+  // Determinar rank
   let rank: "S" | "A" | "B" | "C" | "D" | "E" | "F" | "G";
   let rankColor: string;
   let description: string;

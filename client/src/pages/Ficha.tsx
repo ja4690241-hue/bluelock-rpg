@@ -158,19 +158,32 @@ export default function Ficha() {
       return { ...prev, historico };
     });
   };
-  // Calcular atributos com bônus da classe personalizada
+  // Calcular atributos com bônus (Classe Normal ou Personalizada)
   const atributosComBonus = { ...ficha.atributos };
   if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusAtributos) {
     ficha.classePersonalizadaBonusAtributos.forEach(bonus => {
-      const attrKey = bonus.attr as keyof typeof atributosComBonus;
-      atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
+    });
+  } else if (selectedClass && selectedClass.attributeBonus) {
+    selectedClass.attributeBonus.forEach(bonus => {
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
     });
   }
 
-  // Calcular perícias com bônus da classe personalizada
+  // Calcular perícias com bônus (Classe Normal ou Personalizada)
   const periciasComBonus = { ...ficha.pericias };
   if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusPericia) {
     ficha.classePersonalizadaBonusPericia.forEach(bonus => {
+      periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
+    });
+  } else if (selectedClass && selectedClass.skillBonus) {
+    selectedClass.skillBonus.forEach(bonus => {
       periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
     });
   }
@@ -182,6 +195,7 @@ export default function Ficha() {
     { subject: 'EGO', A: atributosComBonus.ego || 0, fullMark: 10 },
     { subject: 'AGILIDADE', A: atributosComBonus.agilidade || 0, fullMark: 10 },
     { subject: 'VELOCIDADE', A: atributosComBonus.velocidade || 0, fullMark: 10 },
+    { subject: 'INTELIGÊNCIA', A: (atributosComBonus as any).inteligencia || 0, fullMark: 10 },
   ];
 
   const rollFolego = () => {
@@ -839,27 +853,25 @@ export default function Ficha() {
                     </div>
                   ))}
                   
-                  {/* Inteligência (Especial para Analista) */}
-                  {ficha.classId === 'analista' && (
-                    <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
-                      <div className="flex justify-between items-end">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">🧠</span>
-                          <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
-                        </div>
-                        <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
+                  {/* Inteligência */}
+                  <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
+                    <div className="flex justify-between items-end">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🧠</span>
+                        <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
                       </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="10"
-                        value={ficha.atributos.inteligencia || 0}
-                        onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
-                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
-                      />
-                      <p className="text-[10px] text-muted-foreground leading-relaxed">Atributo especial do Analista para estratégias e anulação de habilidades.</p>
+                      <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
                     </div>
-                  )}
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={ficha.atributos.inteligencia || 0}
+                      onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                    />
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">Mede a capacidade analítica e tática. Essencial para entender o jogo.</p>
+                  </div>
                 </div>
                 <div className="flex gap-3 mt-8">
                   <button onClick={() => setStep(2)} className="bl-btn-secondary flex-1">VOLTAR</button>
@@ -1127,8 +1139,8 @@ export default function Ficha() {
 
                 {/* Imagem do Atleta */}
                 {ficha.imagemUrl && (
-                  <div className="bl-card p-0 overflow-hidden">
-                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-80 object-cover" />
+                  <div className="bl-card p-0 overflow-hidden bg-black/40">
+                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-[500px] object-contain" />
                   </div>
                 )}
 
@@ -1219,8 +1231,8 @@ export default function Ficha() {
                 {/* Atributos Base */}
                 <div className="bl-card p-6">
                   <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
-                  <div className="grid grid-cols-5 gap-2">
-                    {attributes.filter(a => a.id !== 'folego' && a.id !== 'inteligencia').map(attr => (
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
                       <div key={attr.id} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
                         <div className="text-2xl font-black text-white">{ficha.atributos[attr.id] || 0}</div>
                         <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{attr.name}</div>
