@@ -160,7 +160,7 @@ export default function Ficha() {
   };
   // Calcular atributos com bônus da classe personalizada
   const atributosComBonus = { ...ficha.atributos };
-  if (ficha.modoPersonalizado && ficha.classePersonalizadaBonusAtributos) {
+  if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusAtributos) {
     ficha.classePersonalizadaBonusAtributos.forEach(bonus => {
       const attrKey = bonus.attr as keyof typeof atributosComBonus;
       atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
@@ -169,7 +169,7 @@ export default function Ficha() {
 
   // Calcular perícias com bônus da classe personalizada
   const periciasComBonus = { ...ficha.pericias };
-  if (ficha.modoPersonalizado && ficha.classePersonalizadaBonusPericia) {
+  if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusPericia) {
     ficha.classePersonalizadaBonusPericia.forEach(bonus => {
       periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
     });
@@ -669,7 +669,7 @@ export default function Ficha() {
                           <input
                             type="text"
                             value={ficha.classePersonalizadaArma?.nome || ''}
-                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, nome: e.target.value } }))}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: e.target.value, descricao: prev.classePersonalizadaArma?.descricao || '', bonus: prev.classePersonalizadaArma?.bonus || '' } }))}
                             placeholder="Ex: Remate Diagonal"
                             className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
                             style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
@@ -680,7 +680,7 @@ export default function Ficha() {
                           <input
                             type="text"
                             value={ficha.classePersonalizadaArma?.bonus || ''}
-                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, bonus: e.target.value } }))}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: prev.classePersonalizadaArma?.nome || '', descricao: prev.classePersonalizadaArma?.descricao || '', bonus: e.target.value } }))}
                             placeholder="Ex: +2 em Chute"
                             className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
                             style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
@@ -690,7 +690,7 @@ export default function Ficha() {
                           <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Descrição da Arma</label>
                           <textarea
                             value={ficha.classePersonalizadaArma?.descricao || ''}
-                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { ...prev.classePersonalizadaArma, descricao: e.target.value } }))}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: prev.classePersonalizadaArma?.nome || '', descricao: e.target.value, bonus: prev.classePersonalizadaArma?.bonus || '' } }))}
                             placeholder="Descreva como funciona sua arma Blue Lock..."
                             rows={3}
                             className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
@@ -1011,11 +1011,11 @@ export default function Ficha() {
             {step === 7 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-8 text-center">
                 <h2 className="font-display text-3xl text-white tracking-wider mb-6">DEFINIR FÔLEGO</h2>
-                <p className="text-muted-foreground text-sm mb-10 max-w-md mx-auto">
-                  O fôlego é sua energia para usar habilidades. Role 2d15 para definir seus pontos. O sistema garante um mínimo de 12 pontos.
+                <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
+                  O fôlego é sua energia para usar habilidades. Role 2d15 para definir seus pontos (mínimo 12), ou insira o valor manualmente. Personagens especiais podem ter 120+ pontos.
                 </p>
                 
-                <div className="flex justify-center gap-4 mb-10">
+                <div className="flex justify-center gap-4 mb-8">
                   {folegoDice.length > 0 ? (
                     folegoDice.map((d, i) => (
                       <motion.div
@@ -1032,21 +1032,47 @@ export default function Ficha() {
                   )}
                 </div>
 
-                {ficha.folego > 0 && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-                    <div className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Total de Fôlego</div>
-                    <div className="text-6xl font-black text-white italic">{ficha.folego}</div>
-                  </motion.div>
-                )}
+                {/* Valor atual com edição manual */}
+                <div className="mb-8">
+                  <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Total de Fôlego</div>
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: Math.max(0, prev.folego - 1) }))}
+                      className="w-10 h-10 flex items-center justify-center rounded-sm text-xl font-bold transition-all hover:text-white text-muted-foreground"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      value={ficha.folego}
+                      onChange={e => {
+                        const v = parseInt(e.target.value);
+                        if (!isNaN(v) && v >= 0) setFicha(prev => ({ ...prev, folego: v }));
+                      }}
+                      className="w-32 text-center text-5xl font-black text-white italic focus:outline-none rounded-sm py-2"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    />
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: prev.folego + 1 }))}
+                      className="w-10 h-10 flex items-center justify-center rounded-sm text-xl font-bold transition-all hover:text-white text-muted-foreground"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Digite diretamente ou use os botões. Sem limite máximo.</p>
+                </div>
 
                 <button
                   onClick={rollFolego}
                   className="bl-btn-primary px-12 py-4 flex items-center gap-3 mx-auto"
                 >
-                  <Zap className="w-5 h-5" /> ROLAR DADOS
+                  <Zap className="w-5 h-5" /> ROLAR 2d15
                 </button>
 
-                <div className="flex gap-3 mt-12">
+                <div className="flex gap-3 mt-8">
                   <button onClick={() => setStep(6)} className="bl-btn-secondary flex-1">VOLTAR</button>
                   <button onClick={() => setStep(8)} className="bl-btn-primary flex-1" disabled={ficha.folego === 0}>VER FICHA FINAL</button>
                 </div>
@@ -1225,12 +1251,37 @@ export default function Ficha() {
 
                 {/* Fôlego */}
                 <div className="bl-card p-6">
-                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Tooltip term="FO" definition="Fôlego — Energia necessária para usar habilidades e realizar ações especiais durante a partida.">
-                      <span className="font-bold text-primary underline decoration-dotted cursor-help">Fôlego</span>
+                      <span className="font-bold text-primary underline decoration-dotted cursor-help">Fôlego (FO)</span>
                     </Tooltip>
                   </p>
-                  <div className="text-3xl font-black text-primary">{ficha.folego} pontos</div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: Math.max(0, prev.folego - 1) }))}
+                      className="w-9 h-9 flex items-center justify-center rounded-sm text-lg font-bold transition-all hover:text-white text-muted-foreground no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >-</button>
+                    <input
+                      type="number"
+                      min="0"
+                      value={ficha.folego}
+                      onChange={e => {
+                        const v = parseInt(e.target.value);
+                        if (!isNaN(v) && v >= 0) setFicha(prev => ({ ...prev, folego: v }));
+                      }}
+                      className="w-28 text-center text-3xl font-black text-primary focus:outline-none rounded-sm py-1 no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    />
+                    <span className="text-3xl font-black text-primary print:block hidden">{ficha.folego}</span>
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: prev.folego + 1 }))}
+                      className="w-9 h-9 flex items-center justify-center rounded-sm text-lg font-bold transition-all hover:text-white text-muted-foreground no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >+</button>
+                    <span className="text-sm text-muted-foreground">pontos</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 no-print">Edite diretamente. Sem limite máximo de fôlego.</p>
                 </div>
 
                                 {/* Notas */}

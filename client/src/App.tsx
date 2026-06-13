@@ -20,6 +20,8 @@ import Pericias from "./pages/Pericias";
 import Atributos from "./pages/Atributos";
 import Calculadora from "./pages/Calculadora";
 import Regras from "./pages/Regras";
+import PainelAdm from "./pages/PainelAdm";
+import NpcsPublico from "./pages/NpcsPublico";
 
 function Router() {
   return (
@@ -40,6 +42,8 @@ function Router() {
         <Route path="/atributos" component={Atributos} />
         <Route path="/calculadora" component={Calculadora} />
         <Route path="/regras" component={Regras} />
+        <Route path="/adm" component={PainelAdm} />
+        <Route path="/campo" component={NpcsPublico} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

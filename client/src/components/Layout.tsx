@@ -48,7 +48,9 @@ const navCategories = [
     icon: Users,
     links: [
       { href: "/mestres", label: "Guia do Mestre" },
-      { href: "/exemplo", label: "Exemplo de Partida" }
+      { href: "/exemplo", label: "Exemplo de Partida" },
+      { href: "/adm", label: "Painel ADM" },
+      { href: "/campo", label: "Campo (NPCs)" }
     ]
   }
 ];
