@@ -1012,7 +1012,7 @@ export default function Ficha() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-8 text-center">
                 <h2 className="font-display text-3xl text-white tracking-wider mb-6">DEFINIR FÔLEGO</h2>
                 <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
-                  O fôlego é sua energia para usar habilidades. Role 2d15 para definir seus pontos (mínimo 12), ou insira o valor manualmente. Personagens especiais podem ter 120+ pontos.
+                  O fôlego é sua energia para usar habilidades. Defina o valor que melhor representa seu personagem. Alguns têm muito, outros pouco. Você tem total liberdade!
                 </p>
                 
                 <div className="flex justify-center gap-4 mb-8">
@@ -1065,12 +1065,15 @@ export default function Ficha() {
                   <p className="text-xs text-muted-foreground mt-2">Digite diretamente ou use os botões. Sem limite máximo.</p>
                 </div>
 
-                <button
-                  onClick={rollFolego}
-                  className="bl-btn-primary px-12 py-4 flex items-center gap-3 mx-auto"
-                >
-                  <Zap className="w-5 h-5" /> ROLAR 2d15
-                </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={rollFolego}
+                    className="bl-btn-secondary px-12 py-3 flex items-center justify-center gap-2 mx-auto"
+                  >
+                    <Zap className="w-4 h-4" /> Sugestão: Rolar 2d15
+                  </button>
+                  <p className="text-[10px] text-muted-foreground">Ou defina manualmente o valor que preferir acima</p>
+                </div>
 
                 <div className="flex gap-3 mt-8">
                   <button onClick={() => setStep(6)} className="bl-btn-secondary flex-1">VOLTAR</button>
@@ -1281,7 +1284,7 @@ export default function Ficha() {
                     >+</button>
                     <span className="text-sm text-muted-foreground">pontos</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2 no-print">Edite diretamente. Sem limite máximo de fôlego.</p>
+                  <p className="text-xs text-muted-foreground mt-2 no-print">Clique nos botões ou digite diretamente. Sem limite máximo.</p>
                 </div>
 
                                 {/* Notas */}
