@@ -11,6 +11,7 @@ import { calculateOverall } from "@/lib/overall";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
 import ImageUpload from "@/components/ImageUpload";
 import { useFichaStorage, FichaData as StoredFichaData } from "@/hooks/useFichaStorage";
+import { useFichaServerSync } from "@/hooks/useFichaServerSync";
 
 interface PoderPersonalizado {
   nome: string;
@@ -102,7 +103,10 @@ export default function Ficha() {
   const [folegoDice, setFolegoDice] = useState<number[]>([]);
   const [showSavedFichas, setShowSavedFichas] = useState(false);
   const [modoClassePersonalizada, setModoClassePersonalizada] = useState(false);
-  const { fichas, isLoaded, saveFicha: saveFichaStorage, deleteFicha, exportFicha: exportFichaStorage, importFicha } = useFichaStorage();
+  // Usar sincronização com servidor (com fallback para localStorage)
+  const { fichas, isLoaded, saveFicha: saveFichaServer, deleteFicha, exportFicha: exportFichaStorage, importFicha } = useFichaServerSync();
+  // Manter compatibilidade com localStorage local
+  const { saveFicha: saveFichaStorage } = useFichaStorage();
 
   const selectedClass = classes.find(c => c.id === ficha.classId);
 
@@ -230,14 +234,22 @@ export default function Ficha() {
     }));
   };
 
-  const saveFicha = () => {
+  const saveFicha = async () => {
     if (!ficha.nome) {
       toast.error('Por favor, defina um nome para a ficha');
       return;
     }
 
-    const fichaSalva = saveFichaStorage(ficha as StoredFichaData);
-    toast.success(`Ficha "${ficha.nome}" salva com sucesso!`);
+    try {
+      // Salvar no servidor (com fallback para localStorage)
+      await saveFichaServer(ficha as any);
+      // Também salvar no localStorage para compatibilidade
+      saveFichaStorage(ficha as StoredFichaData);
+      toast.success(`Ficha "${ficha.nome}" salva com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao salvar ficha:', error);
+      toast.error('Erro ao salvar ficha');
+    }
   };
 
   const loadFicha = (loadedFicha: StoredFichaData) => {
@@ -266,7 +278,7 @@ export default function Ficha() {
       toast.error('Por favor, defina um nome para a ficha');
       return;
     }
-    exportFichaStorage(ficha as StoredFichaData);
+    exportFichaStorage(ficha as any);
     toast.success('Ficha exportada com sucesso!');
   };
 

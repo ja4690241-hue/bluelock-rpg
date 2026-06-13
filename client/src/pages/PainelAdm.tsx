@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { useAdmStorage, NpcData, EstadoPJ, NpcStatus, NpcVisibilidade } from "@/hooks/useAdmStorage";
 import { useFichaStorage } from "@/hooks/useFichaStorage";
+import { useFichaServerSync } from "@/hooks/useFichaServerSync";
 import { attributes, skills as dataSkills } from "@/lib/data";
 import { nanoid } from "nanoid";
 import { useAdmAuth } from "@/contexts/AdmAuthContext";
@@ -957,7 +958,12 @@ export default function PainelAdm() {
     setRodada, resetReacoes, resetAcoesTurno, avancarTurno,
   } = useAdmStorage();
 
+  // Importar o novo hook de sincronização com servidor
+  const { fichas: fichasServidor } = useFichaServerSync();
+  // Manter compatibilidade com localStorage
   const { fichas } = useFichaStorage();
+  // Usar fichas do servidor se disponível, senão usar localStorage
+  const fichasDisponiveis = fichasServidor.length > 0 ? fichasServidor : fichas;
 
   if (!autenticado) {
     return (
@@ -1151,7 +1157,7 @@ export default function PainelAdm() {
       <AnimatePresence>
         {modalPJ && (
           <ModalAdicionarPJ
-            fichas={fichas}
+            fichas={fichasDisponiveis}
             estadosExistentes={admData.estadosPJ}
             onAdd={saveEstadoPJ}
             onClose={() => setModalPJ(false)}
