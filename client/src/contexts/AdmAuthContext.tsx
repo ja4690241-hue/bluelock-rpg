@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AdmAuthContextType {
   autenticado: boolean;
+  carregado: boolean;
   login: (senha: string) => boolean;
   logout: () => void;
 }
@@ -56,12 +57,10 @@ export function AdmAuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  if (!carregado) {
-    return <>{children}</>;
-  }
-
+  // Sempre renderiza os filhos dentro do Provider, mesmo antes de carregar.
+  // Isso garante que useAdmAuth() nunca seja chamado fora do contexto.
   return (
-    <AdmAuthContext.Provider value={{ autenticado, login, logout }}>
+    <AdmAuthContext.Provider value={{ autenticado, carregado, login, logout }}>
       {children}
     </AdmAuthContext.Provider>
   );
