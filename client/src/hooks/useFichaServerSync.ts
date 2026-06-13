@@ -34,7 +34,9 @@ export function useFichaServerSync() {
     setError(null);
     try {
       const response = await axios.get<FichaData[]>(API_BASE);
-      setFichas(response.data || []);
+      // Garantir que os dados recebidos sejam um array
+      const dados = Array.isArray(response.data) ? response.data : [];
+      setFichas(dados);
     } catch (err) {
       console.error('Erro ao carregar fichas do servidor:', err);
       setError('Erro ao carregar fichas');
@@ -42,10 +44,14 @@ export function useFichaServerSync() {
       const stored = localStorage.getItem('bluelock_fichas');
       if (stored) {
         try {
-          setFichas(JSON.parse(stored));
+          const parsed = JSON.parse(stored);
+          setFichas(Array.isArray(parsed) ? parsed : []);
         } catch (e) {
           console.error('Erro ao carregar fichas do localStorage:', e);
+          setFichas([]);
         }
+      } else {
+        setFichas([]);
       }
     } finally {
       setIsLoading(false);
@@ -74,14 +80,15 @@ export function useFichaServerSync() {
         
         // Atualizar estado local
         setFichas((prevFichas) => {
-          const index = prevFichas.findIndex(f => f.id === ficha.id);
+          const listaAtual = Array.isArray(prevFichas) ? prevFichas : [];
+          const index = listaAtual.findIndex(f => f.id === ficha.id);
           let novasFichas: FichaData[];
           
           if (index >= 0) {
-            novasFichas = [...prevFichas];
+            novasFichas = [...listaAtual];
             novasFichas[index] = response.data;
           } else {
-            novasFichas = [...prevFichas, response.data];
+            novasFichas = [...listaAtual, response.data];
           }
           
           // Também salvar no localStorage como backup
@@ -95,14 +102,15 @@ export function useFichaServerSync() {
         
         // Fallback: salvar apenas no localStorage
         setFichas((prevFichas) => {
-          const index = prevFichas.findIndex(f => f.id === ficha.id);
+          const listaAtual = Array.isArray(prevFichas) ? prevFichas : [];
+          const index = listaAtual.findIndex(f => f.id === ficha.id);
           let novasFichas: FichaData[];
           
           if (index >= 0) {
-            novasFichas = [...prevFichas];
+            novasFichas = [...listaAtual];
             novasFichas[index] = fichaSalva;
           } else {
-            novasFichas = [...prevFichas, fichaSalva];
+            novasFichas = [...listaAtual, fichaSalva];
           }
           
           localStorage.setItem('bluelock_fichas', JSON.stringify(novasFichas));
@@ -129,7 +137,8 @@ export function useFichaServerSync() {
 
       // Atualizar estado local
       setFichas((prevFichas) => {
-        const novasFichas = prevFichas.filter(f => f.id !== id);
+        const listaAtual = Array.isArray(prevFichas) ? prevFichas : [];
+        const novasFichas = listaAtual.filter(f => f.id !== id);
         localStorage.setItem('bluelock_fichas', JSON.stringify(novasFichas));
         return novasFichas;
       });
@@ -141,7 +150,7 @@ export function useFichaServerSync() {
 
   // Obter ficha por ID
   const getFicha = useCallback((id: string) => {
-    return fichas.find(f => f.id === id);
+    return Array.isArray(fichas) ? fichas.find(f => f.id === id) : undefined;
   }, [fichas]);
 
   // Exportar ficha como JSON
