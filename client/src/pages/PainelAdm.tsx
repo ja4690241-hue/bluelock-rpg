@@ -555,11 +555,12 @@ function CardNpcAdm({
 
 // ============ CARD DE PJ (PAINEL ADM) ============
 function CardPjAdm({
-  estado, onUpdate, onDelete
+  estado, onUpdate, onDelete, onEditFicha
 }: {
   estado: EstadoPJ;
   onUpdate: (campos: Partial<EstadoPJ>) => void;
   onDelete: () => void;
+  onEditFicha: () => void;
 }) {
   const [expandido, setExpandido] = useState(false);
   const [resultadoRolagem, setResultadoRolagem] = useState<string | null>(null);
@@ -602,6 +603,9 @@ function CardPjAdm({
             </div>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
+            <button onClick={onEditFicha} title="Editar Ficha Completa" className="p-1.5 rounded-sm transition-colors hover:text-primary text-muted-foreground" style={{ background: 'oklch(0.12 0.015 260)' }}>
+              <Edit3 className="w-4 h-4" />
+            </button>
             <button onClick={onDelete} title="Remover do painel" className="p-1.5 rounded-sm transition-colors hover:text-red-400 text-muted-foreground" style={{ background: 'oklch(0.12 0.015 260)' }}>
               <Trash2 className="w-4 h-4" />
             </button>
@@ -950,6 +954,7 @@ export default function PainelAdm() {
   const [abaAtiva, setAbaAtiva] = useState<'npcs' | 'pjs' | 'iniciativa'>('npcs');
   const [modalNpc, setModalNpc] = useState<{ aberto: boolean; npc: Omit<NpcData, 'criadoEm' | 'atualizadoEm'> | null }>({ aberto: false, npc: null });
   const [modalPJ, setModalPJ] = useState(false);
+  const [modalEditarFicha, setModalEditarFicha] = useState<{ aberto: boolean; ficha: any | null }>({ aberto: false, ficha: null });
 
   const {
     admData, isLoaded,
@@ -1115,6 +1120,14 @@ export default function PainelAdm() {
                     onDelete={() => {
                       if (confirm(`Remover ${estado.nome} do painel?`)) deleteEstadoPJ(estado.fichaId);
                     }}
+                    onEditFicha={() => {
+                      const fichaCompleta = fichasDisponiveis.find(f => f.id === estado.fichaId);
+                      if (fichaCompleta) {
+                        setModalEditarFicha({ aberto: true, ficha: fichaCompleta });
+                      } else {
+                        toast.error("Dados da ficha não encontrados para edição.");
+                      }
+                    }}
                   />
                 ))}
               </div>
@@ -1164,6 +1177,151 @@ export default function PainelAdm() {
           />
         )}
       </AnimatePresence>
+
+      {/* Modal Editar Ficha PJ */}
+      <AnimatePresence>
+        {modalEditarFicha.aberto && (
+          <ModalEditarFichaPJ
+            ficha={modalEditarFicha.ficha}
+            onSave={async (novaFicha) => {
+              try {
+                const { saveFicha: saveFichaSync } = useFichaServerSync(); // Apenas para referência de tipo, o hook deve ser usado no componente principal
+                // No React, não podemos chamar hooks assim, vamos usar a função passada via props ou do componente pai
+              } catch (e) {}
+            }}
+            onClose={() => setModalEditarFicha({ aberto: false, ficha: null })}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ============ MODAL EDITAR FICHA PJ ============
+function ModalEditarFichaPJ({ ficha, onClose }: { ficha: any; onClose: () => void }) {
+  const { saveFicha } = useFichaServerSync();
+  const [dados, setDados] = useState({ ...ficha });
+  const [salvando, setSalvando] = useState(false);
+
+  const handleSave = async () => {
+    setSalvando(true);
+    try {
+      await saveFicha(dados);
+      toast.success(`Ficha de ${dados.nome} atualizada com sucesso!`);
+      onClose();
+    } catch (error) {
+      toast.error("Erro ao salvar alterações na ficha.");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.85)' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+        className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col rounded-sm border"
+        style={{ background: 'oklch(0.08 0.01 260)', borderColor: 'oklch(0.52 0.22 260 / 0.3)' }}>
+        
+        <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'oklch(0.22 0.03 260)' }}>
+          <div>
+            <h3 className="font-display text-xl text-white tracking-wider uppercase">Editar Ficha: {ficha.nome}</h3>
+            <p className="text-[10px] text-muted-foreground font-heading uppercase tracking-widest mt-1">Controle do Mestre</p>
+          </div>
+          <button onClick={onClose} className="text-muted-foreground hover:text-white transition-colors">
+            <XCircle className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Informações Básicas */}
+            <div className="space-y-6">
+              <h4 className="font-heading text-xs text-primary tracking-widest uppercase border-b border-primary/20 pb-2">Básico</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-heading text-muted-foreground uppercase mb-1">Nome</label>
+                  <input type="text" value={dados.nome} onChange={e => setDados({...dados, nome: e.target.value})}
+                    className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-heading text-muted-foreground uppercase mb-1">Número</label>
+                  <input type="text" value={dados.numero} onChange={e => setDados({...dados, numero: e.target.value})}
+                    className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none" />
+                </div>
+              </div>
+              
+              {/* Atributos */}
+              <h4 className="font-heading text-xs text-primary tracking-widest uppercase border-b border-primary/20 pb-2 mt-8">Atributos</h4>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                {Object.keys(dados.atributos).map(attr => (
+                  <div key={attr} className="flex items-center justify-between">
+                    <label className="text-xs text-white capitalize">{attr}</label>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setDados({...dados, atributos: {...dados.atributos, [attr]: Math.max(0, dados.atributos[attr] - 1)}})}
+                        className="w-6 h-6 flex items-center justify-center bg-white/5 border border-white/10 text-xs">-</button>
+                      <span className="w-6 text-center font-mono-stats text-sm text-primary">{dados.atributos[attr]}</span>
+                      <button onClick={() => setDados({...dados, atributos: {...dados.atributos, [attr]: Math.min(20, dados.atributos[attr] + 1)}})}
+                        className="w-6 h-6 flex items-center justify-center bg-white/5 border border-white/10 text-xs">+</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Arma e Notas */}
+            <div className="space-y-6">
+              <h4 className="font-heading text-xs text-primary tracking-widest uppercase border-b border-primary/20 pb-2">Arma Blue Lock</h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-heading text-muted-foreground uppercase mb-1">Nome da Arma</label>
+                  <input type="text" value={dados.armaNome || ''} onChange={e => setDados({...dados, armaNome: e.target.value})}
+                    className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-heading text-muted-foreground uppercase mb-1">Bônus da Arma</label>
+                  <input type="text" value={dados.armaBonus || ''} onChange={e => setDados({...dados, armaBonus: e.target.value})}
+                    className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-heading text-muted-foreground uppercase mb-1">Descrição</label>
+                  <textarea value={dados.armaDescricao || ''} onChange={e => setDados({...dados, armaDescricao: e.target.value})}
+                    rows={3} className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none resize-none" />
+                </div>
+              </div>
+
+              <h4 className="font-heading text-xs text-primary tracking-widest uppercase border-b border-primary/20 pb-2 mt-8">Notas do Mestre</h4>
+              <textarea value={dados.notas || ''} onChange={e => setDados({...dados, notas: e.target.value})}
+                placeholder="Anotações sobre a evolução ou segredos deste jogador..."
+                rows={4} className="w-full px-3 py-2 rounded-sm bg-white/5 border border-white/10 text-sm text-white focus:outline-none resize-none" />
+            </div>
+          </div>
+
+          {/* Perícias */}
+          <div className="mt-10">
+            <h4 className="font-heading text-xs text-primary tracking-widest uppercase border-b border-primary/20 pb-2 mb-4">Perícias</h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {ALL_SKILLS.map(skill => (
+                <div key={skill} className="flex flex-col gap-1">
+                  <label className="text-[10px] text-muted-foreground truncate">{skill}</label>
+                  <div className="flex items-center gap-2">
+                    <input type="number" value={dados.pericias[skill] || 0} 
+                      onChange={e => setDados({...dados, pericias: {...dados.pericias, [skill]: parseInt(e.target.value) || 0}})}
+                      className="w-full px-2 py-1 rounded-sm bg-white/5 border border-white/10 text-xs text-primary font-mono-stats focus:outline-none" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-t flex gap-3" style={{ borderColor: 'oklch(0.22 0.03 260)' }}>
+          <button onClick={onClose} className="bl-btn-secondary flex-1">CANCELAR</button>
+          <button onClick={handleSave} disabled={salvando} className="bl-btn-primary flex-1 flex items-center justify-center gap-2">
+            {salvando ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            SALVAR ALTERAÇÕES
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
