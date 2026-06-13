@@ -2,15 +2,14 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
+import { db, initializeDatabase } from "./db/index";
+import { fichasTable } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Caminho para o arquivo de persistência de fichas
-const FICHAS_DB_PATH = path.resolve(__dirname, "..", "fichas.json");
-
-// Interface para Ficha
+// Interface para Ficha (compatível com o cliente)
 interface FichaData {
   id: string;
   nome: string;
@@ -27,34 +26,64 @@ interface FichaData {
   armaBonus?: string;
   criadoEm: string;
   atualizadoEm: string;
-  jogadorId?: string; // ID do navegador/sessão do jogador que criou
+  jogadorId?: string;
 }
 
-// Carregar fichas do arquivo
-function carregarFichas(): FichaData[] {
-  try {
-    if (fs.existsSync(FICHAS_DB_PATH)) {
-      const data = fs.readFileSync(FICHAS_DB_PATH, "utf-8");
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error("Erro ao carregar fichas:", error);
-  }
-  return [];
+// Converter dados do banco para o formato da API
+function dbToFicha(dbRow: any): FichaData {
+  return {
+    id: dbRow.id,
+    nome: dbRow.nome,
+    numero: dbRow.numero,
+    classId: dbRow.classId,
+    imagemUrl: dbRow.imagemUrl,
+    atributos: JSON.parse(dbRow.atributos || "{}"),
+    pericias: JSON.parse(dbRow.pericias || "{}"),
+    folego: dbRow.folego,
+    treinamentos: JSON.parse(dbRow.treinamentos || "[]"),
+    notas: dbRow.notas || "",
+    armaNome: dbRow.armaNome,
+    armaDescricao: dbRow.armaDescricao,
+    armaBonus: dbRow.armaBonus,
+    criadoEm: dbRow.criadoEm,
+    atualizadoEm: dbRow.atualizadoEm,
+    jogadorId: dbRow.jogadorId,
+  };
 }
 
-// Salvar fichas no arquivo
-function salvarFichas(fichas: FichaData[]): void {
-  try {
-    fs.writeFileSync(FICHAS_DB_PATH, JSON.stringify(fichas, null, 2), "utf-8");
-  } catch (error) {
-    console.error("Erro ao salvar fichas:", error);
-  }
+// Converter dados da API para o formato do banco
+function fichaToDb(ficha: FichaData) {
+  return {
+    id: ficha.id,
+    nome: ficha.nome,
+    numero: ficha.numero,
+    classId: ficha.classId,
+    imagemUrl: ficha.imagemUrl,
+    atributos: JSON.stringify(ficha.atributos),
+    pericias: JSON.stringify(ficha.pericias),
+    folego: ficha.folego,
+    treinamentos: JSON.stringify(ficha.treinamentos),
+    notas: ficha.notas,
+    armaNome: ficha.armaNome,
+    armaDescricao: ficha.armaDescricao,
+    armaBonus: ficha.armaBonus,
+    criadoEm: ficha.criadoEm,
+    atualizadoEm: ficha.atualizadoEm,
+    jogadorId: ficha.jogadorId,
+  };
 }
 
 async function startServer() {
   const app = express();
   const server = createServer(app);
+
+  // Inicializar banco de dados
+  try {
+    initializeDatabase();
+  } catch (error) {
+    console.error("Erro ao inicializar banco de dados:", error);
+    process.exit(1);
+  }
 
   // Middleware para parsear JSON
   app.use(express.json({ limit: "50mb" }));
@@ -63,17 +92,19 @@ async function startServer() {
   // ============ API ENDPOINTS ============
 
   // GET /api/fichas - Listar todas as fichas
-  app.get("/api/fichas", (_req, res) => {
+  app.get("/api/fichas", async (_req, res) => {
     try {
-      const fichas = carregarFichas();
-      res.json(fichas);
+      const fichas = await db.select().from(fichasTable);
+      const resultado = fichas.map(dbToFicha);
+      res.json(resultado);
     } catch (error) {
+      console.error("Erro ao listar fichas:", error);
       res.status(500).json({ error: "Erro ao listar fichas" });
     }
   });
 
   // POST /api/fichas - Salvar ou atualizar ficha
-  app.post("/api/fichas", (req, res) => {
+  app.post("/api/fichas", async (req, res) => {
     try {
       const ficha: FichaData = req.body;
 
@@ -81,61 +112,77 @@ async function startServer() {
         return res.status(400).json({ error: "ID e nome são obrigatórios" });
       }
 
-      const fichas = carregarFichas();
-      const index = fichas.findIndex((f) => f.id === ficha.id);
-
       const now = new Date().toISOString();
-      const fichaSalva = {
+      const fichaSalva: FichaData = {
         ...ficha,
         atualizadoEm: now,
         criadoEm: ficha.criadoEm || now,
       };
 
-      if (index >= 0) {
-        fichas[index] = fichaSalva;
+      // Verificar se a ficha já existe
+      const existente = await db
+        .select()
+        .from(fichasTable)
+        .where(eq(fichasTable.id, ficha.id))
+        .limit(1);
+
+      if (existente.length > 0) {
+        // Atualizar ficha existente
+        await db
+          .update(fichasTable)
+          .set(fichaToDb(fichaSalva))
+          .where(eq(fichasTable.id, ficha.id));
       } else {
-        fichas.push(fichaSalva);
+        // Inserir nova ficha
+        await db.insert(fichasTable).values(fichaToDb(fichaSalva));
       }
 
-      salvarFichas(fichas);
       res.json(fichaSalva);
     } catch (error) {
+      console.error("Erro ao salvar ficha:", error);
       res.status(500).json({ error: "Erro ao salvar ficha" });
     }
   });
 
   // GET /api/fichas/:id - Obter ficha específica
-  app.get("/api/fichas/:id", (req, res) => {
+  app.get("/api/fichas/:id", async (req, res) => {
     try {
-      const fichas = carregarFichas();
-      const ficha = fichas.find((f) => f.id === req.params.id);
+      const ficha = await db
+        .select()
+        .from(fichasTable)
+        .where(eq(fichasTable.id, req.params.id))
+        .limit(1);
 
-      if (!ficha) {
+      if (ficha.length === 0) {
         return res.status(404).json({ error: "Ficha não encontrada" });
       }
 
-      res.json(ficha);
+      res.json(dbToFicha(ficha[0]));
     } catch (error) {
+      console.error("Erro ao obter ficha:", error);
       res.status(500).json({ error: "Erro ao obter ficha" });
     }
   });
 
   // DELETE /api/fichas/:id - Deletar ficha
-  app.delete("/api/fichas/:id", (req, res) => {
+  app.delete("/api/fichas/:id", async (req, res) => {
     try {
-      const fichas = carregarFichas();
-      const index = fichas.findIndex((f) => f.id === req.params.id);
+      const ficha = await db
+        .select()
+        .from(fichasTable)
+        .where(eq(fichasTable.id, req.params.id))
+        .limit(1);
 
-      if (index < 0) {
+      if (ficha.length === 0) {
         return res.status(404).json({ error: "Ficha não encontrada" });
       }
 
-      const deletada = fichas[index];
-      fichas.splice(index, 1);
-      salvarFichas(fichas);
+      const deletada = dbToFicha(ficha[0]);
+      await db.delete(fichasTable).where(eq(fichasTable.id, req.params.id));
 
       res.json({ message: "Ficha deletada", ficha: deletada });
     } catch (error) {
+      console.error("Erro ao deletar ficha:", error);
       res.status(500).json({ error: "Erro ao deletar ficha" });
     }
   });
