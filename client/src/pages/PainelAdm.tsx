@@ -16,6 +16,8 @@ import { useAdmStorage, NpcData, EstadoPJ, NpcStatus, NpcVisibilidade } from "@/
 import { useFichaStorage } from "@/hooks/useFichaStorage";
 import { attributes, skills as dataSkills } from "@/lib/data";
 import { nanoid } from "nanoid";
+import { useAdmAuth } from "@/contexts/AdmAuthContext";
+import { useLocation } from "wouter";
 
 // ============ CONSTANTES ============
 const CONDICOES_DISPONIVEIS = [
@@ -940,62 +942,10 @@ function ModalAdicionarPJ({
   );
 }
 
-// ============ TELA DE LOGIN ADM ============
-function TelaLoginAdm({ onLogin }: { onLogin: () => void }) {
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState(false);
-
-  const tentar = () => {
-    if (senha === 'bluelock2024' || senha === 'adm') {
-      onLogin();
-    } else {
-      setErro(true);
-      setTimeout(() => setErro(false), 2000);
-    }
-  };
-
-  return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm"
-      >
-        <div className="bl-card p-8 text-center">
-          <div className="w-16 h-16 rounded-sm flex items-center justify-center mx-auto mb-6" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}>
-            <Shield className="w-8 h-8 text-primary" />
-          </div>
-          <h2 className="font-display text-3xl text-white tracking-wider mb-2">PAINEL ADM</h2>
-          <p className="text-muted-foreground text-sm mb-8">Acesso restrito ao Mestre da partida</p>
-          <div className="space-y-4">
-            <input
-              type="password"
-              value={senha}
-              onChange={e => setSenha(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && tentar()}
-              placeholder="Senha do ADM"
-              className="w-full px-4 py-3 rounded-sm text-sm font-heading text-center placeholder-muted-foreground focus:outline-none"
-              style={{
-                background: 'oklch(0.12 0.015 260)',
-                border: `1px solid ${erro ? 'oklch(0.5 0.18 25)' : 'oklch(0.22 0.03 260)'}`,
-                color: 'white'
-              }}
-            />
-            {erro && <p className="text-xs text-red-400 font-heading">Senha incorreta</p>}
-            <button onClick={tentar} className="bl-btn-primary w-full flex items-center justify-center gap-2">
-              <Unlock className="w-4 h-4" /> ENTRAR
-            </button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-6 opacity-50">Senha padrão: bluelock2024</p>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 // ============ COMPONENTE PRINCIPAL ============
 export default function PainelAdm() {
-  const [autenticado, setAutenticado] = useState(false);
+  const { autenticado, logout } = useAdmAuth();
+  const [, navigate] = useLocation();
   const [abaAtiva, setAbaAtiva] = useState<'npcs' | 'pjs' | 'iniciativa'>('npcs');
   const [modalNpc, setModalNpc] = useState<{ aberto: boolean; npc: Omit<NpcData, 'criadoEm' | 'atualizadoEm'> | null }>({ aberto: false, npc: null });
   const [modalPJ, setModalPJ] = useState(false);
@@ -1013,12 +963,12 @@ export default function PainelAdm() {
     return (
       <div className="py-16">
         <div className="container">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-            <div className="bl-tag mb-4">Acesso Restrito</div>
-            <h1 className="font-display text-6xl md:text-7xl text-white tracking-wider mb-4 uppercase italic">PAINEL ADM</h1>
-            <div className="w-24 h-0.5 mb-6" style={{ background: 'oklch(0.52 0.22 260)' }} />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bl-card p-12 text-center">
+            <Shield className="w-16 h-16 mx-auto mb-6 opacity-20 text-primary" />
+            <h2 className="font-display text-3xl text-white tracking-wider mb-4 uppercase">Acesso Restrito</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">Você precisa estar autenticado como ADM para acessar o Painel de Controle. Clique no botão ADM no topo da página.</p>
+            <button onClick={() => navigate('/')} className="bl-btn-primary">Voltar para Início</button>
           </motion.div>
-          <TelaLoginAdm onLogin={() => setAutenticado(true)} />
         </div>
       </div>
     );
@@ -1044,7 +994,7 @@ export default function PainelAdm() {
                 Controle total sobre NPCs, fichas dos jogadores, condições de jogo e ordem de iniciativa.
               </p>
             </div>
-            <button onClick={() => setAutenticado(false)}
+            <button onClick={() => { logout(); navigate('/'); }}
               className="flex items-center gap-2 px-3 py-2 rounded-sm text-xs font-heading uppercase tracking-wider text-muted-foreground hover:text-white transition-colors"
               style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}>
               <Lock className="w-4 h-4" /> Sair

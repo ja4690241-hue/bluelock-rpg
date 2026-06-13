@@ -5,8 +5,10 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Zap, Home, BookOpen, Cog, Users, ChevronDown } from "lucide-react";
+import { Menu, X, Zap, Home, BookOpen, Cog, Users, ChevronDown, Shield, LogOut } from "lucide-react";
 import CommandPalette from "./CommandPalette";
+import { useAdmAuth } from "@/contexts/AdmAuthContext";
+import AdmLoginModal from "./AdmLoginModal";
 
 const CONTACT_EMAIL = "ja4690241@gmail.com";
 const DEVELOPER_NAME = "oja/sado";
@@ -116,6 +118,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Search & CTA Button */}
             <div className="hidden lg:flex items-center gap-3">
               <CommandPalette />
+              <AdmLoginButton />
               <Link href="/ficha" className="bl-btn-primary text-xs px-4 py-2 flex-shrink-0">
                 Criar Ficha
               </Link>
@@ -247,5 +250,43 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </footer>
     </div>
+  );
+}
+
+function AdmLoginButton() {
+  const { autenticado, logout } = useAdmAuth();
+  const [modalAberto, setModalAberto] = useState(false);
+
+  if (autenticado) {
+    return (
+      <div className="flex items-center gap-2">
+        <Link href="/adm" className="flex items-center gap-2 text-xs px-3 py-2 rounded-sm transition-all" style={{ background: 'oklch(0.52 0.22 260 / 0.2)', border: '1px solid oklch(0.52 0.22 260 / 0.4)', color: 'oklch(0.75 0.15 230)' }}>
+          <Shield className="w-4 h-4" />
+          <span className="font-heading tracking-wider uppercase hidden sm:inline">ADM</span>
+        </Link>
+        <button
+          onClick={logout}
+          className="p-2 rounded-sm transition-colors text-muted-foreground hover:text-white"
+          style={{ background: 'oklch(0.12 0.015 260)' }}
+          title="Sair"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setModalAberto(true)}
+        className="flex items-center gap-2 text-xs px-3 py-2 rounded-sm transition-all hover:bg-white/10"
+        style={{ color: 'oklch(0.75 0.15 230)' }}
+      >
+        <Shield className="w-4 h-4" />
+        <span className="font-heading tracking-wider uppercase hidden sm:inline">ADM</span>
+      </button>
+      <AdmLoginModal isOpen={modalAberto} onClose={() => setModalAberto(false)} />
+    </>
   );
 }

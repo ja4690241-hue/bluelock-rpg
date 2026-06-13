@@ -22,6 +22,7 @@ import Calculadora from "./pages/Calculadora";
 import Regras from "./pages/Regras";
 import PainelAdm from "./pages/PainelAdm";
 import NpcsPublico from "./pages/NpcsPublico";
+import { AdmAuthProvider } from "./contexts/AdmAuthContext";
 
 function Router() {
   return (
@@ -55,10 +56,12 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <AdmAuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AdmAuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
