@@ -55,14 +55,14 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
-        <AdmAuthProvider>
+      <AdmAuthProvider>
+        <ThemeProvider defaultTheme="dark">
           <TooltipProvider>
             <Toaster />
             <Router />
           </TooltipProvider>
-        </AdmAuthProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </AdmAuthProvider>
     </ErrorBoundary>
   );
 }
