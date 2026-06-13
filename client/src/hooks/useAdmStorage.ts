@@ -93,7 +93,19 @@ export function useAdmStorage() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as AdmData;
-        setAdmData({ ...initialAdmData, ...parsed });
+        // Garantir que arrays existam mesmo em dados antigos do localStorage
+        const sanitizedData: AdmData = {
+          ...initialAdmData,
+          ...parsed,
+          npcs: Array.isArray(parsed.npcs) ? parsed.npcs : [],
+          estadosPJ: Array.isArray(parsed.estadosPJ) ? parsed.estadosPJ : [],
+          rodada: {
+            ...initialRodada,
+            ...(parsed.rodada || {}),
+            iniciativa: Array.isArray(parsed.rodada?.iniciativa) ? parsed.rodada.iniciativa : [],
+          }
+        };
+        setAdmData(sanitizedData);
       } catch (error) {
         console.error('Erro ao carregar dados ADM:', error);
       }

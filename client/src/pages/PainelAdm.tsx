@@ -881,7 +881,7 @@ function ModalAdicionarPJ({
   onAdd: (estado: Omit<EstadoPJ, 'atualizadoEm'>) => void;
   onClose: () => void;
 }) {
-  const fichasDisponiveis = fichas.filter(f => !estadosExistentes.find(e => e.fichaId === f.id));
+  const fichasDisponiveis = Array.isArray(fichas) ? fichas.filter(f => !estadosExistentes.find(e => e.fichaId === f.id)) : [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.85)' }}>
@@ -986,9 +986,9 @@ export default function PainelAdm() {
   }
 
   const abas = [
-    { id: 'npcs' as const, label: 'NPCs', icon: Shield, count: admData.npcs.length },
-    { id: 'pjs' as const, label: 'Personagens', icon: Crown, count: admData.estadosPJ.length },
-    { id: 'iniciativa' as const, label: 'Iniciativa', icon: List, count: admData.rodada.iniciativa.length },
+    { id: 'npcs' as const, label: 'NPCs', icon: Shield, count: Array.isArray(admData.npcs) ? admData.npcs.length : 0 },
+    { id: 'pjs' as const, label: 'Personagens', icon: Crown, count: Array.isArray(admData.estadosPJ) ? admData.estadosPJ.length : 0 },
+    { id: 'iniciativa' as const, label: 'Iniciativa', icon: List, count: Array.isArray(admData.rodada?.iniciativa) ? admData.rodada.iniciativa.length : 0 },
   ];
 
   return (
@@ -1043,9 +1043,9 @@ export default function PainelAdm() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="font-display text-2xl text-white tracking-wider">CONTROLE DE NPCs</h2>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {admData.npcs.filter(n => n.status === 'ativo').length} ativos · {admData.npcs.filter(n => n.status === 'inativo').length} inativos
-                </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {Array.isArray(admData.npcs) ? admData.npcs.filter(n => n.status === 'ativo').length : 0} ativos · {Array.isArray(admData.npcs) ? admData.npcs.filter(n => n.status === 'inativo').length : 0} inativos
+                  </p>
               </div>
               <button
                 onClick={() => setModalNpc({ aberto: true, npc: null })}
@@ -1092,9 +1092,9 @@ export default function PainelAdm() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="font-display text-2xl text-white tracking-wider">FICHAS DOS JOGADORES</h2>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {admData.estadosPJ.length} personagens no painel · {admData.estadosPJ.filter(e => e.exausto).length} exaustos
-                </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {Array.isArray(admData.estadosPJ) ? admData.estadosPJ.length : 0} personagens no painel · {Array.isArray(admData.estadosPJ) ? admData.estadosPJ.filter(e => e.exausto).length : 0} exaustos
+                  </p>
               </div>
               <button onClick={() => setModalPJ(true)} className="bl-btn-primary flex items-center gap-2">
                 <Plus className="w-4 h-4" /> Adicionar PJ
