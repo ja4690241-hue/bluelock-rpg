@@ -3,7 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { db, initializeDatabase } from "./db/index";
-import { fichasTable } from "./db/schema";
+import { fichasTablePostgres, fichasTableMySQL, fichasTableSQLite } from "./db/schema";
 import { eq } from "drizzle-orm";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +27,22 @@ interface FichaData {
   criadoEm: string;
   atualizadoEm: string;
   jogadorId?: string;
+}
+
+// Detectar qual tabela usar baseado na DATABASE_URL
+function detectDatabaseType(url?: string): "postgres" | "mysql" | "sqlite" {
+  if (!url) return "sqlite";
+  if (url.includes("postgresql") || url.includes("postgres")) return "postgres";
+  if (url.includes("mysql")) return "mysql";
+  return "sqlite";
+}
+
+// Obter a tabela correta baseado no tipo de banco
+function getFichasTable() {
+  const dbType = detectDatabaseType(process.env.DATABASE_URL);
+  if (dbType === "postgres") return fichasTablePostgres;
+  if (dbType === "mysql") return fichasTableMySQL;
+  return fichasTableSQLite;
 }
 
 // Converter dados do banco para o formato da API
@@ -79,10 +95,10 @@ async function startServer() {
 
   // Inicializar banco de dados
   try {
-    initializeDatabase();
+    await initializeDatabase();
   } catch (error) {
     console.error("Erro ao inicializar banco de dados:", error);
-    process.exit(1);
+    // Continuar mesmo com erro
   }
 
   // Middleware para parsear JSON
@@ -94,6 +110,7 @@ async function startServer() {
   // GET /api/fichas - Listar todas as fichas
   app.get("/api/fichas", async (_req, res) => {
     try {
+      const fichasTable = getFichasTable();
       const fichas = await db.select().from(fichasTable);
       const resultado = fichas.map(dbToFicha);
       res.json(resultado);
@@ -118,6 +135,8 @@ async function startServer() {
         atualizadoEm: now,
         criadoEm: ficha.criadoEm || now,
       };
+
+      const fichasTable = getFichasTable();
 
       // Verificar se a ficha já existe
       const existente = await db
@@ -147,6 +166,7 @@ async function startServer() {
   // GET /api/fichas/:id - Obter ficha específica
   app.get("/api/fichas/:id", async (req, res) => {
     try {
+      const fichasTable = getFichasTable();
       const ficha = await db
         .select()
         .from(fichasTable)
@@ -167,6 +187,7 @@ async function startServer() {
   // DELETE /api/fichas/:id - Deletar ficha
   app.delete("/api/fichas/:id", async (req, res) => {
     try {
+      const fichasTable = getFichasTable();
       const ficha = await db
         .select()
         .from(fichasTable)
