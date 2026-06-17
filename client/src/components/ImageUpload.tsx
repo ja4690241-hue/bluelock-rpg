@@ -84,7 +84,7 @@ export default function ImageUpload({ onImageChange, currentImage, label = "Foto
           <img
             src={preview}
             alt="Preview"
-            className="w-full h-64 object-cover rounded-sm border border-border/50"
+            className="w-full h-80 object-contain bg-black/40 rounded-sm border border-border/50"
           />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-sm flex items-center justify-center gap-2">
             <button

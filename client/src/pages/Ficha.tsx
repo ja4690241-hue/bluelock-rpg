@@ -11,6 +11,7 @@ import { calculateOverall } from "@/lib/overall";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
 import ImageUpload from "@/components/ImageUpload";
 import { useFichaStorage, FichaData as StoredFichaData } from "@/hooks/useFichaStorage";
+import { useFichaServerSync } from "@/hooks/useFichaServerSync";
 
 interface PoderPersonalizado {
   nome: string;
@@ -102,7 +103,10 @@ export default function Ficha() {
   const [folegoDice, setFolegoDice] = useState<number[]>([]);
   const [showSavedFichas, setShowSavedFichas] = useState(false);
   const [modoClassePersonalizada, setModoClassePersonalizada] = useState(false);
-  const { fichas, isLoaded, saveFicha: saveFichaStorage, deleteFicha, exportFicha: exportFichaStorage, importFicha } = useFichaStorage();
+  // Usar sincronização com servidor (com fallback para localStorage)
+  const { fichas, isLoaded, saveFicha: saveFichaServer, deleteFicha, exportFicha: exportFichaStorage, importFicha } = useFichaServerSync();
+  // Manter compatibilidade com localStorage local
+  const { saveFicha: saveFichaStorage } = useFichaStorage();
 
   const selectedClass = classes.find(c => c.id === ficha.classId);
 
@@ -158,19 +162,32 @@ export default function Ficha() {
       return { ...prev, historico };
     });
   };
-  // Calcular atributos com bônus da classe personalizada
+  // Calcular atributos com bônus (Classe Normal ou Personalizada)
   const atributosComBonus = { ...ficha.atributos };
   if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusAtributos) {
     ficha.classePersonalizadaBonusAtributos.forEach(bonus => {
-      const attrKey = bonus.attr as keyof typeof atributosComBonus;
-      atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
+    });
+  } else if (selectedClass && selectedClass.attributeBonus) {
+    selectedClass.attributeBonus.forEach(bonus => {
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
     });
   }
 
-  // Calcular perícias com bônus da classe personalizada
+  // Calcular perícias com bônus (Classe Normal ou Personalizada)
   const periciasComBonus = { ...ficha.pericias };
   if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusPericia) {
     ficha.classePersonalizadaBonusPericia.forEach(bonus => {
+      periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
+    });
+  } else if (selectedClass && selectedClass.skillBonus) {
+    selectedClass.skillBonus.forEach(bonus => {
       periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
     });
   }
@@ -182,6 +199,7 @@ export default function Ficha() {
     { subject: 'EGO', A: atributosComBonus.ego || 0, fullMark: 10 },
     { subject: 'AGILIDADE', A: atributosComBonus.agilidade || 0, fullMark: 10 },
     { subject: 'VELOCIDADE', A: atributosComBonus.velocidade || 0, fullMark: 10 },
+    { subject: 'INTELIGÊNCIA', A: (atributosComBonus as any).inteligencia || 0, fullMark: 10 },
   ];
 
   const rollFolego = () => {
@@ -216,14 +234,22 @@ export default function Ficha() {
     }));
   };
 
-  const saveFicha = () => {
+  const saveFicha = async () => {
     if (!ficha.nome) {
       toast.error('Por favor, defina um nome para a ficha');
       return;
     }
 
-    const fichaSalva = saveFichaStorage(ficha as StoredFichaData);
-    toast.success(`Ficha "${ficha.nome}" salva com sucesso!`);
+    try {
+      // Salvar no servidor (com fallback para localStorage)
+      await saveFichaServer(ficha as any);
+      // Também salvar no localStorage para compatibilidade
+      saveFichaStorage(ficha as StoredFichaData);
+      toast.success(`Ficha "${ficha.nome}" salva com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao salvar ficha:', error);
+      toast.error('Erro ao salvar ficha');
+    }
   };
 
   const loadFicha = (loadedFicha: StoredFichaData) => {
@@ -252,7 +278,7 @@ export default function Ficha() {
       toast.error('Por favor, defina um nome para a ficha');
       return;
     }
-    exportFichaStorage(ficha as StoredFichaData);
+    exportFichaStorage(ficha as any);
     toast.success('Ficha exportada com sucesso!');
   };
 
@@ -839,27 +865,25 @@ export default function Ficha() {
                     </div>
                   ))}
                   
-                  {/* Inteligência (Especial para Analista) */}
-                  {ficha.classId === 'analista' && (
-                    <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
-                      <div className="flex justify-between items-end">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">🧠</span>
-                          <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
-                        </div>
-                        <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
+                  {/* Inteligência */}
+                  <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
+                    <div className="flex justify-between items-end">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🧠</span>
+                        <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
                       </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="10"
-                        value={ficha.atributos.inteligencia || 0}
-                        onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
-                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
-                      />
-                      <p className="text-[10px] text-muted-foreground leading-relaxed">Atributo especial do Analista para estratégias e anulação de habilidades.</p>
+                      <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
                     </div>
-                  )}
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={ficha.atributos.inteligencia || 0}
+                      onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                    />
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">Mede a capacidade analítica e tática. Essencial para entender o jogo.</p>
+                  </div>
                 </div>
                 <div className="flex gap-3 mt-8">
                   <button onClick={() => setStep(2)} className="bl-btn-secondary flex-1">VOLTAR</button>
@@ -1127,8 +1151,8 @@ export default function Ficha() {
 
                 {/* Imagem do Atleta */}
                 {ficha.imagemUrl && (
-                  <div className="bl-card p-0 overflow-hidden">
-                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-80 object-cover" />
+                  <div className="bl-card p-0 overflow-hidden bg-black/40">
+                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-[500px] object-contain" />
                   </div>
                 )}
 
@@ -1219,8 +1243,8 @@ export default function Ficha() {
                 {/* Atributos Base */}
                 <div className="bl-card p-6">
                   <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
-                  <div className="grid grid-cols-5 gap-2">
-                    {attributes.filter(a => a.id !== 'folego' && a.id !== 'inteligencia').map(attr => (
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
                       <div key={attr.id} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
                         <div className="text-2xl font-black text-white">{ficha.atributos[attr.id] || 0}</div>
                         <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{attr.name}</div>
