@@ -1,0 +1,1765 @@
+// Blue Lock RPG - Interactive character sheet builder with image upload and local storage
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { attributes, classes, skillDescriptions, skills as dataSkills } from "@/lib/data";
+import { trainings } from "@/lib/trainings";
+import { Zap, Download, RotateCcw, ChevronDown, Trophy, Star, Save, Folder, Upload as UploadIcon, Sword, Plus, Minus, Wand2, Trash2 } from "lucide-react";
+import Tooltip, { TooltipText } from "@/components/Tooltip";
+import { toast } from "sonner";
+import { calculateOverall } from "@/lib/overall";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
+import ImageUpload from "@/components/ImageUpload";
+import { useFichaStorage, FichaData as StoredFichaData } from "@/hooks/useFichaStorage";
+import { useFichaServerSync } from "@/hooks/useFichaServerSync";
+
+interface PoderPersonalizado {
+  nome: string;
+  custo: string;
+  tipo: string;
+  descricao: string;
+  bonus: string;
+}
+
+interface RegistroEvolucao {
+  data: string;
+  partidas: number;
+  gols: number;
+  assists: number;
+  notas: string;
+  atributosNaEpoca: Record<string, number>;
+}
+
+interface FichaData {
+  id: string;
+  nome: string;
+  numero: string;
+  classId: string;
+  imagemUrl?: string;
+  atributos: Record<string, number>;
+  pericias: Record<string, number>;
+  folego: number;
+  treinamentos: string[];
+  notas: string;
+  armaNome: string;
+  armaDescricao: string;
+  armaBonus: string;
+  // Modo do Imperador: 'artilheiro' | 'defensor' | null
+  modoImperador?: string | null;
+  // Classe personalizada
+  classePersonalizadaNome?: string;
+  classePersonalizadaSubtitulo?: string;
+  classePersonalizadaDescricao?: string;
+  classePersonalizadaRole?: string;
+  classePersonalizadaPoderes?: PoderPersonalizado[];
+  classePersonalizadaBonusAtributos?: Array<{ attr: string; value: number }>;
+  classePersonalizadaBonusPericia?: Array<{ skill: string; value: number }>;
+  classePersonalizadaArma?: { nome: string; descricao: string; bonus: string };
+  historico?: RegistroEvolucao[];
+  criadoEm?: string;
+  atualizadoEm?: string;
+}
+
+const initialPoderPersonalizado = (): PoderPersonalizado => ({
+  nome: "",
+  custo: "",
+  tipo: "Ativo",
+  descricao: "",
+  bonus: ""
+});
+
+const initialFicha: FichaData = {
+  id: `ficha_${Date.now()}`,
+  nome: "",
+  numero: "",
+  classId: "",
+  imagemUrl: "",
+  atributos: {
+    potencia: 0,
+    tecnica: 0,
+    velocidade: 0,
+    agilidade: 0,
+    ego: 0,
+  },
+  pericias: {},
+  folego: 0,
+  treinamentos: [],
+  notas: "",
+  armaNome: "",
+  armaDescricao: "",
+  armaBonus: "",
+  modoImperador: null,
+  classePersonalizadaNome: "",
+  classePersonalizadaSubtitulo: "",
+  classePersonalizadaDescricao: "",
+  classePersonalizadaRole: "",
+  classePersonalizadaPoderes: [],
+  classePersonalizadaBonusAtributos: [],
+  classePersonalizadaBonusPericia: [],
+  classePersonalizadaArma: { nome: "", descricao: "", bonus: "" },
+  historico: []
+};
+
+const allSkills = dataSkills.map(s => s.name);
+
+export default function Ficha() {
+  const [ficha, setFicha] = useState<FichaData>(initialFicha);
+  const [step, setStep] = useState(1);
+  const [folegoDice, setFolegoDice] = useState<number[]>([]);
+  const [showSavedFichas, setShowSavedFichas] = useState(false);
+  const [modoClassePersonalizada, setModoClassePersonalizada] = useState(false);
+  // Usar sincronização com servidor (com fallback para localStorage)
+  const { fichas, isLoaded, saveFicha: saveFichaServer, deleteFicha, exportFicha: exportFichaStorage, importFicha } = useFichaServerSync();
+  // Manter compatibilidade com localStorage local
+  const { saveFicha: saveFichaStorage } = useFichaStorage();
+
+  const selectedClass = classes.find(c => c.id === ficha.classId);
+
+  // Funções para classe personalizada
+  const addPoderPersonalizado = () => {
+    setFicha(prev => ({
+      ...prev,
+      classePersonalizadaPoderes: [...(prev.classePersonalizadaPoderes || []), initialPoderPersonalizado()]
+    }));
+  };
+
+  const updatePoderPersonalizado = (idx: number, field: keyof PoderPersonalizado, value: string) => {
+    setFicha(prev => {
+      const poderes = [...(prev.classePersonalizadaPoderes || [])];
+      poderes[idx] = { ...poderes[idx], [field]: value };
+      return { ...prev, classePersonalizadaPoderes: poderes };
+    });
+  };
+
+  const removePoderPersonalizado = (idx: number) => {
+    setFicha(prev => ({
+      ...prev,
+      classePersonalizadaPoderes: (prev.classePersonalizadaPoderes || []).filter((_, i) => i !== idx)
+    }));
+  };
+
+  const addRegistroEvolucao = () => {
+    const novoRegistro: RegistroEvolucao = {
+      data: new Date().toLocaleDateString('pt-BR'),
+      partidas: 0,
+      gols: 0,
+      assists: 0,
+      notas: '',
+      atributosNaEpoca: { ...ficha.atributos }
+    };
+    setFicha(prev => ({
+      ...prev,
+      historico: [...(prev.historico || []), novoRegistro]
+    }));
+  };
+
+  const removeRegistroEvolucao = (idx: number) => {
+    setFicha(prev => ({
+      ...prev,
+      historico: (prev.historico || []).filter((_, i) => i !== idx)
+    }));
+  };
+
+  const updateRegistroEvolucao = (idx: number, field: keyof RegistroEvolucao, value: any) => {
+    setFicha(prev => {
+      const historico = [...(prev.historico || [])];
+      historico[idx] = { ...historico[idx], [field]: value };
+      return { ...prev, historico };
+    });
+  };
+  // Calcular atributos com bônus (Classe Normal ou Personalizada)
+  const atributosComBonus = { ...ficha.atributos };
+  if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusAtributos) {
+    ficha.classePersonalizadaBonusAtributos.forEach(bonus => {
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
+    });
+  } else if (selectedClass && selectedClass.attributeBonus) {
+    selectedClass.attributeBonus.forEach(bonus => {
+      const attrKey = bonus.attr.toLowerCase() as keyof typeof atributosComBonus;
+      if (atributosComBonus[attrKey] !== undefined) {
+        atributosComBonus[attrKey] = (atributosComBonus[attrKey] || 0) + bonus.value;
+      }
+    });
+  }
+
+  // Calcular perícias com bônus (Classe Normal ou Personalizada)
+  const periciasComBonus = { ...ficha.pericias };
+  if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusPericia) {
+    ficha.classePersonalizadaBonusPericia.forEach(bonus => {
+      periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
+    });
+  } else if (selectedClass && selectedClass.skillBonus) {
+    selectedClass.skillBonus.forEach(bonus => {
+      periciasComBonus[bonus.skill] = (periciasComBonus[bonus.skill] || 0) + bonus.value;
+    });
+  }
+
+  // Aplicar a nova lógica de soma: (Atributo x 2) + Perícia + Bônus
+  // Primeiro, identificamos qual atributo base cada perícia usa
+  const skillToAttrMap: Record<string, string> = {
+    "Corpo a Corpo": "potencia", "Cabeceio": "potencia", "Chute": "potencia",
+    "Pontaria": "tecnica", "Domínio": "tecnica", "Passe": "tecnica", "Drible": "tecnica", "Intuição": "tecnica", "Roubo de Bola": "tecnica", "Furtividade": "tecnica",
+    "Corrida a Longa Distância": "velocidade", "Explosão": "velocidade",
+    "Acrobacia": "agilidade", "Reflexos": "agilidade", "Defesa": "agilidade",
+    "Intimidação": "ego", "Presença": "ego", "Diplomacia": "ego", "Enganação": "ego",
+    "Análise Individual": "inteligencia"
+  };
+
+  // Criar um objeto para as perícias finais calculadas
+  const periciasCalculadas: Record<string, number> = {};
+  
+  // Lista de todas as perícias possíveis
+  const todasPericias = [
+    'Corpo a Corpo', 'Cabeceio', 'Chute', 
+    'Pontaria', 'Domínio', 'Passe', 'Drible', 'Intuição', 'Roubo de Bola', 'Furtividade',
+    'Corrida a Longa Distância', 'Explosão', 
+    'Acrobacia', 'Reflexos', 'Defesa', 
+    'Intimidação', 'Presença', 'Diplomacia', 'Enganação',
+    'Análise Individual'
+  ];
+
+  todasPericias.forEach(skill => {
+    const attrKey = skillToAttrMap[skill];
+    const attrValue = (atributosComBonus as any)[attrKey] || 0;
+    const skillValue = ficha.pericias[skill] || 0;
+    
+    // Bônus de Classe (Normal ou Personalizada)
+    let bonusClasse = 0;
+    if (ficha.classId === 'personalizada' && ficha.classePersonalizadaBonusPericia) {
+      const b = ficha.classePersonalizadaBonusPericia.find(bp => bp.skill === skill);
+      if (b) bonusClasse = b.value;
+    } else if (selectedClass && selectedClass.skillBonus) {
+      const b = selectedClass.skillBonus.find(sb => sb.skill === skill);
+      if (b) bonusClasse = b.value;
+    }
+
+    // Bônus do Imperador (Meta Visão)
+    let bonusImperador = 0;
+    if (ficha.classId === 'imperador') {
+      bonusImperador = 1; // +1 base da Meta Visão
+      
+      if (ficha.modoImperador === 'artilheiro') {
+        if (['Chute', 'Drible', 'Presença'].includes(skill)) {
+          bonusImperador = 3; // +3 em vez de +1
+        }
+      } else if (ficha.modoImperador === 'defensor') {
+        if (['Corpo a Corpo', 'Reflexos', 'Roubo de Bola'].includes(skill)) {
+          bonusImperador = 3; // +3 em vez de +1
+        }
+      }
+    }
+
+    // FÓRMULA FINAL: (Atributo x 2) + Perícia + Bônus
+    periciasCalculadas[skill] = (attrValue * 2) + skillValue + bonusClasse + bonusImperador;
+  });
+
+  const overallData = calculateOverall(atributosComBonus, periciasCalculadas);
+  const radarData = [
+    { subject: 'POTÊNCIA', A: atributosComBonus.potencia || 0, fullMark: 10 },
+    { subject: 'TÉCNICA', A: atributosComBonus.tecnica || 0, fullMark: 10 },
+    { subject: 'EGO', A: atributosComBonus.ego || 0, fullMark: 10 },
+    { subject: 'AGILIDADE', A: atributosComBonus.agilidade || 0, fullMark: 10 },
+    { subject: 'VELOCIDADE', A: atributosComBonus.velocidade || 0, fullMark: 10 },
+    { subject: 'INTELIGÊNCIA', A: (atributosComBonus as any).inteligencia || 0, fullMark: 10 },
+  ];
+
+  const rollFolego = () => {
+    const d1 = Math.floor(Math.random() * 15) + 1;
+    const d2 = Math.floor(Math.random() * 15) + 1;
+    const total = d1 + d2;
+    setFolegoDice([d1, d2]);
+    setFicha(prev => ({ ...prev, folego: Math.max(12, total) }));
+    toast.success(`Fôlego rolado: ${d1} + ${d2} = ${Math.max(12, total)} pontos!`);
+  };
+
+  const updateAttr = (key: string, value: number) => {
+    setFicha(prev => ({
+      ...prev,
+      atributos: { ...prev.atributos, [key]: Math.max(0, Math.min(10, value)) }
+    }));
+  };
+
+  const updatePericia = (skill: string, value: number) => {
+    setFicha(prev => ({
+      ...prev,
+      pericias: { ...prev.pericias, [skill]: Math.max(0, Math.min(20, value)) }
+    }));
+  };
+
+  const toggleTraining = (id: string) => {
+    setFicha(prev => ({
+      ...prev,
+      treinamentos: prev.treinamentos.includes(id) 
+        ? prev.treinamentos.filter(t => t !== id)
+        : [...prev.treinamentos, id]
+    }));
+  };
+
+  const saveFicha = async () => {
+    if (!ficha.nome) {
+      toast.error('Por favor, defina um nome para a ficha');
+      return;
+    }
+
+    try {
+      // Salvar no servidor (com fallback para localStorage)
+      await saveFichaServer(ficha as any);
+      // Também salvar no localStorage para compatibilidade
+      saveFichaStorage(ficha as StoredFichaData);
+      toast.success(`Ficha "${ficha.nome}" salva com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao salvar ficha:', error);
+      toast.error('Erro ao salvar ficha');
+    }
+  };
+
+  const loadFicha = (loadedFicha: StoredFichaData) => {
+    setFicha({
+      id: loadedFicha.id,
+      nome: loadedFicha.nome,
+      numero: loadedFicha.numero,
+      classId: loadedFicha.classId,
+      imagemUrl: loadedFicha.imagemUrl,
+      atributos: loadedFicha.atributos,
+      pericias: loadedFicha.pericias,
+      folego: loadedFicha.folego,
+      treinamentos: loadedFicha.treinamentos,
+      notas: loadedFicha.notas,
+      armaNome: loadedFicha.armaNome || "",
+      armaDescricao: loadedFicha.armaDescricao || "",
+      armaBonus: loadedFicha.armaBonus || "",
+      modoImperador: (loadedFicha as any).modoImperador || null,
+      classePersonalizadaNome: (loadedFicha as any).classePersonalizadaNome || "",
+      classePersonalizadaSubtitulo: (loadedFicha as any).classePersonalizadaSubtitulo || "",
+      classePersonalizadaDescricao: (loadedFicha as any).classePersonalizadaDescricao || "",
+      classePersonalizadaRole: (loadedFicha as any).classePersonalizadaRole || "",
+      classePersonalizadaPoderes: (loadedFicha as any).classePersonalizadaPoderes || [],
+      classePersonalizadaBonusAtributos: (loadedFicha as any).classePersonalizadaBonusAtributos || [],
+      classePersonalizadaBonusPericia: (loadedFicha as any).classePersonalizadaBonusPericia || [],
+      classePersonalizadaArma: (loadedFicha as any).classePersonalizadaArma || { nome: "", descricao: "", bonus: "" },
+      historico: (loadedFicha as any).historico || []
+    });
+    setShowSavedFichas(false);
+    setStep(1);
+    toast.success(`Ficha "${loadedFicha.nome}" carregada!`);
+  };
+
+  const exportCurrentFicha = () => {
+    if (!ficha.nome) {
+      toast.error('Por favor, defina um nome para a ficha');
+      return;
+    }
+    exportFichaStorage(ficha as any);
+    toast.success('Ficha exportada com sucesso!');
+  };
+
+  const printFicha = () => {
+    window.print();
+  };
+
+  const handleImportFicha = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
+
+    try {
+      const imported = await importFicha(file);
+      loadFicha(imported);
+      toast.success('Ficha importada com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao importar ficha');
+    }
+  };
+
+  const resetFicha = () => {
+    if (confirm('Tem certeza que deseja criar uma nova ficha? Certifique-se de salvar a atual.')) {
+      setFicha({ ...initialFicha, id: `ficha_${Date.now()}` });
+      setStep(1);
+      setFolegoDice([]);
+    }
+  };
+
+  const steps = [
+    { id: 1, label: "Identidade" },
+    { id: 2, label: "Classe" },
+    { id: 3, label: "Atributos" },
+    { id: 4, label: "Perícias" },
+    { id: 5, label: "Treinos" },
+    { id: 6, label: "Arma" },
+    { id: 7, label: "Fôlego" },
+    { id: 8, label: "Ficha Final" }
+  ];
+
+  return (
+    <div className="py-16">
+      <div className="container">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-12"
+        >
+          <div className="bl-tag mb-4">Ferramenta</div>
+          <h1 className="font-display text-6xl md:text-7xl text-white tracking-wider mb-4 uppercase italic">
+            CRIAR FICHA
+          </h1>
+          <div className="w-24 h-0.5 mb-6" style={{ background: 'oklch(0.52 0.22 260)' }} />
+          <p className="text-muted-foreground max-w-2xl leading-relaxed">
+            Crie seu atleta passo a passo. Defina sua identidade, escolha sua classe, distribua atributos, perícias e treinamentos. Suas fichas são salvas automaticamente no navegador.
+          </p>
+        </motion.div>
+
+        {/* Step Indicator */}
+        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 custom-scrollbar no-print">
+          {steps.map((s, i) => (
+            <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => setStep(s.id)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading tracking-wider uppercase transition-all"
+                style={{
+                  background: step === s.id ? 'oklch(0.52 0.22 260)' : step > s.id ? 'oklch(0.52 0.22 260 / 0.2)' : 'oklch(0.12 0.015 260)',
+                  color: step === s.id ? 'white' : step > s.id ? 'oklch(0.75 0.15 230)' : 'oklch(0.5 0.02 260)',
+                  border: `1px solid ${step >= s.id ? 'oklch(0.52 0.22 260 / 0.5)' : 'oklch(0.22 0.03 260)'}`
+                }}
+              >
+                <span className="font-mono-stats">{s.id}</span>
+                {s.label}
+              </button>
+              {i < steps.length - 1 && (
+                <div className="w-4 h-px" style={{ background: 'oklch(0.22 0.03 260)' }} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Form */}
+          <div className={`lg:col-span-2 ${step === 8 ? 'print:lg:col-span-3' : ''}`}>
+            {/* Step 1: Identity */}
+            {step === 1 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">IDENTIDADE</h2>
+                <div className="space-y-6">
+                  {/* Image Upload */}
+                  <ImageUpload
+                    onImageChange={(url) => setFicha(prev => ({ ...prev, imagemUrl: url }))}
+                    currentImage={ficha.imagemUrl}
+                    label="Foto do Atleta"
+                  />
+
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Nome do Atleta</label>
+                    <input
+                      type="text"
+                      value={ficha.nome}
+                      onChange={(e) => setFicha(prev => ({ ...prev, nome: e.target.value }))}
+                      placeholder="Ex: Isagi Yoichi"
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Número da Camisa</label>
+                    <input
+                      type="text"
+                      value={ficha.numero}
+                      onChange={(e) => setFicha(prev => ({ ...prev, numero: e.target.value }))}
+                      placeholder="Ex: 11"
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Notas / Backstory</label>
+                    <textarea
+                      value={ficha.notas}
+                      onChange={(e) => setFicha(prev => ({ ...prev, notas: e.target.value }))}
+                      placeholder="Descreva seu atleta, sua história, motivações..."
+                      rows={4}
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => setStep(2)}
+                  className="bl-btn-primary w-full mt-6"
+                >
+                  PRÓXIMO PASSO
+                </button>
+              </motion.div>
+            )}
+
+                        {/* Step 2: Class */}
+            {step === 2 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-2">ESCOLHA SUA CLASSE</h2>
+
+                {/* Toggle: Classe padrão vs Personalizada */}
+                <div className="flex gap-3 mb-6">
+                  <button
+                    onClick={() => { setModoClassePersonalizada(false); setFicha(prev => ({ ...prev, classePersonalizadaNome: '', classePersonalizadaSubtitulo: '', classePersonalizadaDescricao: '', classePersonalizadaRole: '', classePersonalizadaPoderes: [] })); }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-heading uppercase tracking-wider transition-all ${
+                      !modoClassePersonalizada ? 'bg-primary text-white' : 'bg-white/5 text-muted-foreground hover:bg-white/10'
+                    }`}
+                  >
+                    <Star className="w-3.5 h-3.5" /> Classes do Sistema
+                  </button>
+                  <button
+                    onClick={() => { setModoClassePersonalizada(true); setFicha(prev => ({ ...prev, classId: 'personalizada' })); }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-sm text-xs font-heading uppercase tracking-wider transition-all ${
+                      modoClassePersonalizada ? 'bg-primary text-white' : 'bg-white/5 text-muted-foreground hover:bg-white/10'
+                    }`}
+                  >
+                    <Wand2 className="w-3.5 h-3.5" /> Criar Classe Personalizada
+                  </button>
+                </div>
+
+                {/* Classes do sistema */}
+                {!modoClassePersonalizada && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {classes.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setFicha(prev => ({ ...prev, classId: c.id }))}
+                        className={`text-left p-4 rounded-sm border transition-all ${ficha.classId === c.id ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-display text-xl text-white italic">{c.name}</h3>
+                          {ficha.classId === c.id && <Star className="w-4 h-4 text-primary fill-primary" />}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{c.subtitle}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mb-4">{c.description}</p>
+                        <div className="space-y-3 pt-3 border-t border-white/5">
+                          {c.attributeBonus && c.attributeBonus.length > 0 && (
+                            <div>
+                              <p className="text-[9px] font-heading uppercase tracking-widest text-primary mb-1.5">Bônus de Atributos</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {c.attributeBonus.map((ab, idx) => (
+                                  <span key={idx} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-white font-medium">
+                                    {ab.attr} +{ab.value}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {c.skillBonus && c.skillBonus.length > 0 && (
+                            <div>
+                              <p className="text-[9px] font-heading uppercase tracking-widest text-primary mb-1.5">Bônus de Perícias</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {c.skillBonus.map((sb, idx) => (
+                                  <span key={idx} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-muted-foreground">
+                                    {sb.skill} +{sb.value}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Classe personalizada */}
+                {modoClassePersonalizada && (
+                  <div className="space-y-6">
+                    <div className="bl-card p-6 border-primary/30">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Wand2 className="w-5 h-5 text-primary" />
+                        <h3 className="font-display text-xl text-white tracking-wider">DADOS DA CLASSE</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Nome da Classe *</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaNome || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaNome: e.target.value }))}
+                            placeholder="Ex: O Gênio Absoluto"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Subtítulo</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaSubtitulo || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaSubtitulo: e.target.value }))}
+                            placeholder="Ex: O Escolhido"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Posição / Role</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaRole || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaRole: e.target.value }))}
+                            placeholder="Ex: Ataque / Meio-Campo"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Descrição da Classe</label>
+                          <textarea
+                            value={ficha.classePersonalizadaDescricao || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaDescricao: e.target.value }))}
+                            placeholder="Descreva o estilo de jogo e a identidade desta classe..."
+                            rows={3}
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Poderes personalizados */}
+                    <div className="bl-card p-6">
+                    {/* Bônus de Atributos */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl text-white tracking-wider">BÔNUS DE ATRIBUTOS</h3>
+                        <button
+                          onClick={() => {
+                            setFicha(prev => ({
+                              ...prev,
+                              classePersonalizadaBonusAtributos: [...(prev.classePersonalizadaBonusAtributos || []), { attr: 'potencia', value: 1 }]
+                            }));
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                          style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Adicionar Bônus
+                        </button>
+                      </div>
+                      {(!ficha.classePersonalizadaBonusAtributos || ficha.classePersonalizadaBonusAtributos.length === 0) ? (
+                        <p className="text-xs text-muted-foreground italic">Nenhum bônus de atributo adicionado ainda.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {ficha.classePersonalizadaBonusAtributos.map((bonus, idx) => (
+                            <div key={idx} className="flex items-center gap-2 p-3 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                              <select
+                                value={bonus.attr}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusAtributos || [])];
+                                  newBonus[idx].attr = e.target.value;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusAtributos: newBonus }));
+                                }}
+                                className="flex-1 px-2 py-1 rounded-sm text-xs font-heading"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              >
+                                <option value="potencia">Potência</option>
+                                <option value="tecnica">Técnica</option>
+                                <option value="velocidade">Velocidade</option>
+                                <option value="agilidade">Agilidade</option>
+                                <option value="resistencia">Resistência</option>
+                              </select>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={bonus.value}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusAtributos || [])];
+                                  newBonus[idx].value = parseInt(e.target.value) || 0;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusAtributos: newBonus }));
+                                }}
+                                className="w-16 px-2 py-1 rounded-sm text-xs font-heading text-center"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              />
+                              <span className="text-xs text-muted-foreground">pontos</span>
+                              <button
+                                onClick={() => {
+                                  setFicha(prev => ({
+                                    ...prev,
+                                    classePersonalizadaBonusAtributos: (prev.classePersonalizadaBonusAtributos || []).filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {/* Bônus de Perícias */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl text-white tracking-wider">BÔNUS DE PERÍCIAS</h3>
+                        <button
+                          onClick={() => {
+                            setFicha(prev => ({
+                              ...prev,
+                              classePersonalizadaBonusPericia: [...(prev.classePersonalizadaBonusPericia || []), { skill: 'Chute', value: 1 }]
+                            }));
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                          style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Adicionar Bônus
+                        </button>
+                      </div>
+                      {(!ficha.classePersonalizadaBonusPericia || ficha.classePersonalizadaBonusPericia.length === 0) ? (
+                        <p className="text-xs text-muted-foreground italic">Nenhum bônus de perícia adicionado ainda.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {ficha.classePersonalizadaBonusPericia.map((bonus, idx) => (
+                            <div key={idx} className="flex items-center gap-2 p-3 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                              <select
+                                value={bonus.skill}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusPericia || [])];
+                                  newBonus[idx].skill = e.target.value;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusPericia: newBonus }));
+                                }}
+                                className="flex-1 px-2 py-1 rounded-sm text-xs font-heading"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              >
+                                {allSkills.map(skill => (
+                                  <option key={skill} value={skill}>{skill}</option>
+                                ))}
+                              </select>
+                              <input
+                                type="number"
+                                min="0"
+                                max="10"
+                                value={bonus.value}
+                                onChange={e => {
+                                  const newBonus = [...(ficha.classePersonalizadaBonusPericia || [])];
+                                  newBonus[idx].value = parseInt(e.target.value) || 0;
+                                  setFicha(prev => ({ ...prev, classePersonalizadaBonusPericia: newBonus }));
+                                }}
+                                className="w-16 px-2 py-1 rounded-sm text-xs font-heading text-center"
+                                style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                              />
+                              <span className="text-xs text-muted-foreground">pontos</span>
+                              <button
+                                onClick={() => {
+                                  setFicha(prev => ({
+                                    ...prev,
+                                    classePersonalizadaBonusPericia: (prev.classePersonalizadaBonusPericia || []).filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {/* Arma Personalizada */}
+                    <div className="bl-card p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <Sword className="w-5 h-5 text-primary" />
+                        <h3 className="font-display text-xl text-white tracking-wider">ARMA BLUE LOCK</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Nome da Arma</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaArma?.nome || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: e.target.value, descricao: prev.classePersonalizadaArma?.descricao || '', bonus: prev.classePersonalizadaArma?.bonus || '' } }))}
+                            placeholder="Ex: Remate Diagonal"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Bônus da Arma</label>
+                          <input
+                            type="text"
+                            value={ficha.classePersonalizadaArma?.bonus || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: prev.classePersonalizadaArma?.nome || '', descricao: prev.classePersonalizadaArma?.descricao || '', bonus: e.target.value } }))}
+                            placeholder="Ex: +2 em Chute"
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1.5">Descrição da Arma</label>
+                          <textarea
+                            value={ficha.classePersonalizadaArma?.descricao || ''}
+                            onChange={e => setFicha(prev => ({ ...prev, classePersonalizadaArma: { nome: prev.classePersonalizadaArma?.nome || '', descricao: e.target.value, bonus: prev.classePersonalizadaArma?.bonus || '' } }))}
+                            placeholder="Descreva como funciona sua arma Blue Lock..."
+                            rows={3}
+                            className="w-full px-3 py-2 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                            style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl text-white tracking-wider">PODERES / HABILIDADES</h3>
+                        <button
+                          onClick={addPoderPersonalizado}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                          style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Adicionar Poder
+                        </button>
+                      </div>
+
+                      {(!ficha.classePersonalizadaPoderes || ficha.classePersonalizadaPoderes.length === 0) && (
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                          <Wand2 className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                          <p>Nenhum poder adicionado ainda.</p>
+                          <p className="text-xs mt-1">Clique em "Adicionar Poder" para criar habilidades personalizadas.</p>
+                        </div>
+                      )}
+
+                      <div className="space-y-4">
+                        {(ficha.classePersonalizadaPoderes || []).map((poder, idx) => (
+                          <div key={idx} className="p-4 rounded-sm border border-white/10 bg-white/3 space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-heading uppercase tracking-wider text-primary">Poder #{idx + 1}</span>
+                              <button
+                                onClick={() => removePoderPersonalizado(idx)}
+                                className="text-red-400 hover:text-red-300 transition-colors p-1"
+                                title="Remover poder"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Nome do Poder *</label>
+                                <input
+                                  type="text"
+                                  value={poder.nome}
+                                  onChange={e => updatePoderPersonalizado(idx, 'nome', e.target.value)}
+                                  placeholder="Ex: Chute Dimensional"
+                                  className="w-full px-3 py-2 rounded-sm text-xs font-heading placeholder-muted-foreground focus:outline-none"
+                                  style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Custo (FO)</label>
+                                  <input
+                                    type="text"
+                                    value={poder.custo}
+                                    onChange={e => updatePoderPersonalizado(idx, 'custo', e.target.value)}
+                                    placeholder="Ex: 10 FO"
+                                    className="w-full px-3 py-2 rounded-sm text-xs font-heading placeholder-muted-foreground focus:outline-none"
+                                    style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Tipo</label>
+                                  <select
+                                    value={poder.tipo}
+                                    onChange={e => updatePoderPersonalizado(idx, 'tipo', e.target.value)}
+                                    className="w-full px-3 py-2 rounded-sm text-xs font-heading focus:outline-none"
+                                    style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                                  >
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Passivo">Passivo</option>
+                                    <option value="Reação">Reação</option>
+                                    <option value="Especial">Especial</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Descrição</label>
+                                <textarea
+                                  value={poder.descricao}
+                                  onChange={e => updatePoderPersonalizado(idx, 'descricao', e.target.value)}
+                                  placeholder="Descreva o que este poder faz..."
+                                  rows={2}
+                                  className="w-full px-3 py-2 rounded-sm text-xs font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                                  style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <label className="block font-heading text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Bônus / Efeito Mecânico</label>
+                                <input
+                                  type="text"
+                                  value={poder.bonus}
+                                  onChange={e => updatePoderPersonalizado(idx, 'bonus', e.target.value)}
+                                  placeholder="Ex: +8 em Chute, vantagem em Pontaria"
+                                  className="w-full px-3 py-2 rounded-sm text-xs font-heading placeholder-muted-foreground focus:outline-none"
+                                  style={{ background: 'oklch(0.10 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setStep(1)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button
+                    onClick={() => setStep(3)}
+                    className="bl-btn-primary flex-1"
+                    disabled={!modoClassePersonalizada ? !ficha.classId : !ficha.classePersonalizadaNome}
+                  >
+                    PRÓXIMO PASSO
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Attributes */}
+            {step === 3 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">DISTRIBUIR ATRIBUTOS</h2>
+                <div className="space-y-8">
+                  {attributes.filter(a => a.id !== 'folego' && a.id !== 'inteligencia').map(attr => (
+                    <div key={attr.id} className="space-y-3">
+                      <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{attr.icon}</span>
+                          <label className="font-heading text-xs tracking-widest uppercase text-white">{attr.name}</label>
+                        </div>
+                        <span className="font-mono-stats text-2xl text-primary">{ficha.atributos[attr.id] || 0}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        value={ficha.atributos[attr.id] || 0}
+                        onChange={(e) => updateAttr(attr.id, parseInt(e.target.value))}
+                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                      />
+                      <p className="text-[10px] text-muted-foreground leading-relaxed">{attr.description}</p>
+                    </div>
+                  ))}
+                  
+                  {/* Inteligência */}
+                  <div className="space-y-3 p-4 rounded-sm bg-primary/5 border border-primary/20">
+                    <div className="flex justify-between items-end">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🧠</span>
+                        <label className="font-heading text-xs tracking-widest uppercase text-white">Inteligência</label>
+                      </div>
+                      <span className="font-mono-stats text-2xl text-primary">{ficha.atributos.inteligencia || 0}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={ficha.atributos.inteligencia || 0}
+                      onChange={(e) => updateAttr('inteligencia', parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                    />
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">Mede a capacidade analítica e tática. Essencial para entender o jogo.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(2)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(4)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Skills */}
+            {step === 4 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">PERÍCIAS</h2>
+                <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
+                  {attributes.filter(a => a.id !== 'folego').map(attr => (
+                    <div key={attr.id} className="space-y-4">
+                      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                        <span className="text-sm">{attr.icon}</span>
+                        <h3 className="font-heading text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{attr.name}</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {attr.skills.map(skill => (
+                          <div key={skill} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <label className="text-xs text-white">{skill}</label>
+                              <div className="flex items-center gap-1">
+                                <button 
+                                  onClick={() => updatePericia(skill, (ficha.pericias[skill] || 0) - 1)}
+                                  className="w-6 h-6 flex items-center justify-center rounded-sm bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <input
+                                  type="number"
+                                  value={ficha.pericias[skill] || 0}
+                                  onChange={(e) => updatePericia(skill, parseInt(e.target.value) || 0)}
+                                  className="w-10 bg-transparent text-center font-mono-stats text-sm text-primary focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button 
+                                  onClick={() => updatePericia(skill, (ficha.pericias[skill] || 0) + 1)}
+                                  className="w-6 h-6 flex items-center justify-center rounded-sm bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(3)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(5)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 5: Trainings */}
+            {step === 5 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">TREINAMENTOS</h2>
+                <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
+                  {trainings.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => toggleTraining(t.id)}
+                      className={`w-full text-left p-4 rounded-sm border transition-all ${ficha.treinamentos.includes(t.id) ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-heading text-sm text-white uppercase tracking-wider">{t.name}</h3>
+                        {ficha.treinamentos.includes(t.id) && <Star className="w-4 h-4 text-primary fill-primary" />}
+                      </div>
+                      <div className="flex gap-2 mb-2">
+                        <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-white/10 text-muted-foreground uppercase font-bold">{t.category}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-3">{t.description}</p>
+                      <div className="p-2 rounded-sm bg-primary/5 border border-primary/10">
+                        <p className="text-[10px] font-heading uppercase tracking-widest text-primary mb-1">Efeito</p>
+                        <p className="text-[11px] text-white leading-relaxed">{t.effect}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(4)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(6)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 6: Arma Blue Lock */}
+            {step === 6 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Sword className="w-8 h-8 text-primary" />
+                  <h2 className="font-display text-3xl text-white tracking-wider">ARMA BLUE LOCK</h2>
+                </div>
+                <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
+                  Todo atacante de elite no Blue Lock possui uma "Arma" — uma habilidade ou característica física única que o torna um monstro em campo. Defina a sua agora.
+                </p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Nome da Arma</label>
+                    <input
+                      type="text"
+                      value={ficha.armaNome}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaNome: e.target.value }))}
+                      placeholder="Ex: Chute Direto, Meta-Visão, Drible Elástico..."
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Descrição da Arma</label>
+                    <textarea
+                      value={ficha.armaDescricao}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaDescricao: e.target.value }))}
+                      placeholder="Como sua arma funciona? Em que momento ela é ativada?"
+                      rows={4}
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none resize-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-heading text-xs tracking-widest uppercase text-muted-foreground mb-2">Bônus da Arma</label>
+                    <input
+                      type="text"
+                      value={ficha.armaBonus}
+                      onChange={(e) => setFicha(prev => ({ ...prev, armaBonus: e.target.value }))}
+                      placeholder="Ex: +5 em Pontaria, Vantagem em Drible..."
+                      className="w-full px-4 py-2.5 rounded-sm text-sm font-heading placeholder-muted-foreground focus:outline-none"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)', color: 'white' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(5)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(7)} className="bl-btn-primary flex-1">PRÓXIMO PASSO</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 7: Fôlego */}
+            {step === 7 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bl-card p-8 text-center">
+                <h2 className="font-display text-3xl text-white tracking-wider mb-6">DEFINIR FÔLEGO</h2>
+                <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
+                  O fôlego é sua energia para usar habilidades. Defina o valor que melhor representa seu personagem. Alguns têm muito, outros pouco. Você tem total liberdade!
+                </p>
+                
+                <div className="flex justify-center gap-4 mb-8">
+                  {folegoDice.length > 0 ? (
+                    folegoDice.map((d, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        className="w-20 h-20 flex items-center justify-center bg-primary text-white text-3xl font-black italic rounded-sm shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)]"
+                      >
+                        {d}
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="w-20 h-20 flex items-center justify-center bg-white/5 border border-white/10 text-muted-foreground text-3xl font-black italic rounded-sm">?</div>
+                  )}
+                </div>
+
+                {/* Valor atual com edição manual */}
+                <div className="mb-8">
+                  <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Total de Fôlego</div>
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: Math.max(0, prev.folego - 1) }))}
+                      className="w-10 h-10 flex items-center justify-center rounded-sm text-xl font-bold transition-all hover:text-white text-muted-foreground"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      value={ficha.folego}
+                      onChange={e => {
+                        const v = parseInt(e.target.value);
+                        if (!isNaN(v) && v >= 0) setFicha(prev => ({ ...prev, folego: v }));
+                      }}
+                      className="w-32 text-center text-5xl font-black text-white italic focus:outline-none rounded-sm py-2"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    />
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: prev.folego + 1 }))}
+                      className="w-10 h-10 flex items-center justify-center rounded-sm text-xl font-bold transition-all hover:text-white text-muted-foreground"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Digite diretamente ou use os botões. Sem limite máximo.</p>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={rollFolego}
+                    className="bl-btn-secondary px-12 py-3 flex items-center justify-center gap-2 mx-auto"
+                  >
+                    <Zap className="w-4 h-4" /> Sugestão: Rolar 2d15
+                  </button>
+                  <p className="text-[10px] text-muted-foreground">Ou defina manualmente o valor que preferir acima</p>
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setStep(6)} className="bl-btn-secondary flex-1">VOLTAR</button>
+                  <button onClick={() => setStep(8)} className="bl-btn-primary flex-1" disabled={ficha.folego === 0}>VER FICHA FINAL</button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 8: Final Sheet */}
+            {step === 8 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                {/* Header da Ficha */}
+                <div className="bl-card p-8 relative overflow-hidden" style={{
+                  background: overallData.rank === 'S' ? 'linear-gradient(135deg, oklch(0.52 0.22 260 / 0.15) 0%, oklch(0.08 0.01 260) 100%)' : undefined,
+                  boxShadow: overallData.rank === 'S' ? '0 0 40px oklch(0.52 0.22 260 / 0.3), inset 0 0 40px oklch(0.52 0.22 260 / 0.1)' : undefined
+                }}>
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+                  {overallData.rank === 'S' && (
+                    <div className="absolute inset-0 animate-pulse" style={{
+                      background: 'radial-gradient(circle at 50% 0%, oklch(0.52 0.22 260 / 0.1) 0%, transparent 70%)',
+                      animation: 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                  )}
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                      <div className="bl-tag mb-4">Atleta Blue Lock</div>
+                      <h2 className="font-display text-6xl text-white tracking-tighter italic uppercase leading-none mb-2">
+                        {ficha.nome || "Sem Nome"}
+                      </h2>
+                      <div className="flex items-center gap-4">
+                        <span className="text-primary font-mono-stats text-2xl">#{ficha.numero || "00"}</span>
+                        <div className="w-1 h-1 rounded-full bg-white/20" />
+                        <span className="text-muted-foreground font-heading text-xs uppercase tracking-widest">
+                          {ficha.classId === 'personalizada' ? (ficha.classePersonalizadaRole || 'Classe Personalizada') : (selectedClass?.role || 'Posição não definida')}
+                        </span>
+                      </div>
+                    </div>
+                    {(selectedClass || ficha.classId === 'personalizada') && (
+                      <div className="text-right">
+                        <p className="text-[10px] font-heading uppercase tracking-widest text-muted-foreground mb-1">Classe Selecionada</p>
+                        <p className="text-lg font-bold text-white">
+                          {ficha.classId === 'personalizada' ? (ficha.classePersonalizadaNome || 'Classe Personalizada') : selectedClass?.name}
+                        </p>
+                        {ficha.classId === 'personalizada' && ficha.classePersonalizadaSubtitulo && (
+                          <p className="text-xs text-primary/80 italic">{ficha.classePersonalizadaSubtitulo}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Imagem do Atleta */}
+                {ficha.imagemUrl && (
+                  <div className="bl-card p-0 overflow-hidden bg-black/40">
+                    <img src={ficha.imagemUrl} alt={ficha.nome} className="w-full h-[500px] object-contain" />
+                  </div>
+                )}
+
+                {/* Overall & Rank Display - Destaque */}
+                <div className="bl-card p-8 relative overflow-hidden" style={{
+                  background: `linear-gradient(135deg, ${overallData.rankColor}15 0%, ${overallData.rankColor}08 100%)`,
+                  border: `2px solid ${overallData.rankColor}`,
+                  boxShadow: `0 0 30px ${overallData.rankColor}33, inset 0 0 30px ${overallData.rankColor}11`
+                }}>
+                  {overallData.rank === 'S' && (
+                    <div className="absolute inset-0 animate-pulse" style={{
+                      background: `radial-gradient(circle at 50% 50%, ${overallData.rankColor}20 0%, transparent 70%)`,
+                      animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }} />
+                  )}
+                  <div className="relative z-10">
+                    <div className="grid grid-cols-3 gap-6">
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Overall</div>
+                        <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                          {overallData.total}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-px h-20 bg-white/20" />
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Rank</div>
+                        <div className="text-7xl font-black italic leading-none" style={{ color: overallData.rankColor, textShadow: `0 0 30px ${overallData.rankColor}88` }}>
+                          {overallData.rank}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-white/20 text-center">
+                      <div className="text-base font-bold italic uppercase" style={{ color: overallData.rankColor }}>
+                        {overallData.description}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Arma Blue Lock - Destaque */}
+                {(ficha.armaNome || ficha.armaDescricao) && (
+                  <div className="bl-card p-8 border-primary/30 bg-primary/5">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Sword className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">ARMA BLUE LOCK</p>
+                    </div>
+                    <h3 className="font-display text-3xl text-white italic uppercase mb-4">{ficha.armaNome || "Arma Sem Nome"}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-6">{ficha.armaDescricao}</p>
+                    {ficha.armaBonus && (
+                      <div className="inline-block px-4 py-2 bg-primary/20 border border-primary/30 rounded-sm">
+                        <span className="text-xs font-bold text-primary uppercase tracking-wider">BÔNUS: {ficha.armaBonus}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Gráfico de Atributos - Destaque Principal */}
+                <div className="bl-card p-8">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-8 text-center">GRÁFICO DE ATRIBUTOS</p>
+                  <div className="h-[350px] w-full flex items-center justify-center relative">
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-48 h-48 rounded-full border border-white/5" />
+                      <div className="w-32 h-32 rounded-full border border-white/5" />
+                      <div className="w-16 h-16 rounded-full border border-white/5" />
+                    </div>
+                    
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
+                        <PolarGrid stroke="rgba(255,255,255,0.1)" gridType="polygon" />
+                        <PolarAngleAxis 
+                          dataKey="subject" 
+                          tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, fontFamily: 'Rajdhani' }}
+                        />
+                        <Radar
+                          name="Atleta"
+                          dataKey="A"
+                          stroke="oklch(0.52 0.22 260)"
+                          fill="oklch(0.52 0.22 260)"
+                          fillOpacity={0.4}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Atributos Base */}
+                <div className="bl-card p-6">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">ATRIBUTOS BASE</p>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
+                      <div key={attr.id} className="text-center p-3 rounded-sm bg-white/5 border border-border/50">
+                        <div className="text-2xl font-black text-white">{ficha.atributos[attr.id] || 0}</div>
+                        <div className="text-[10px] font-heading uppercase text-muted-foreground mt-1">{attr.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Perícias por Atributo */}
+                <div className="bl-card p-6">
+                  <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-6">PERÍCIAS & COMPETÊNCIAS</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {attributes.filter(a => a.id !== 'folego').map(attr => (
+                      <div key={attr.id} className="space-y-3">
+                        <div className="flex items-center gap-2 border-b border-white/5 pb-1">
+                          <span className="text-xs">{attr.icon}</span>
+                          <span className="font-heading text-[10px] font-bold text-white uppercase tracking-wider">{attr.name}</span>
+                        </div>
+	                        <div className="space-y-2">
+	                          {attr.skills.map(skill => (
+	                            <div key={skill} className="flex items-center justify-between group">
+	                              <span className="text-xs text-muted-foreground group-hover:text-white transition-colors">{skill}</span>
+	                              <div className="flex items-center gap-2">
+	                                <span className="text-[10px] text-muted-foreground/50 font-mono-stats">
+	                                  ({((atributosComBonus as any)[skillToAttrMap[skill]] || 0) * 2} + {ficha.pericias[skill] || 0})
+	                                </span>
+	                                <span className="font-mono-stats text-sm text-primary font-bold">
+	                                  +{periciasCalculadas[skill] || 0}
+	                                </span>
+	                              </div>
+	                            </div>
+	                          ))}
+	                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fôlego */}
+                <div className="bl-card p-6">
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Tooltip term="FO" definition="Fôlego — Energia necessária para usar habilidades e realizar ações especiais durante a partida.">
+                      <span className="font-bold text-primary underline decoration-dotted cursor-help">Fôlego (FO)</span>
+                    </Tooltip>
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: Math.max(0, prev.folego - 1) }))}
+                      className="w-9 h-9 flex items-center justify-center rounded-sm text-lg font-bold transition-all hover:text-white text-muted-foreground no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >-</button>
+                    <input
+                      type="number"
+                      min="0"
+                      value={ficha.folego}
+                      onChange={e => {
+                        const v = parseInt(e.target.value);
+                        if (!isNaN(v) && v >= 0) setFicha(prev => ({ ...prev, folego: v }));
+                      }}
+                      className="w-28 text-center text-3xl font-black text-primary focus:outline-none rounded-sm py-1 no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    />
+                    <span className="text-3xl font-black text-primary print:block hidden">{ficha.folego}</span>
+                    <button
+                      onClick={() => setFicha(prev => ({ ...prev, folego: prev.folego + 1 }))}
+                      className="w-9 h-9 flex items-center justify-center rounded-sm text-lg font-bold transition-all hover:text-white text-muted-foreground no-print"
+                      style={{ background: 'oklch(0.12 0.015 260)', border: '1px solid oklch(0.22 0.03 260)' }}
+                    >+</button>
+                    <span className="text-sm text-muted-foreground">pontos</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 no-print">Clique nos botões ou digite diretamente. Sem limite máximo.</p>
+                </div>
+
+                                {/* Notas */}
+                {ficha.notas && (
+                  <div className="bl-card p-6">
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Notas</p>
+                    <p className="text-sm text-white leading-relaxed">{ficha.notas}</p>
+                  </div>
+                )}
+
+                {/* Poderes da Classe Personalizada */}
+                {ficha.classId === 'personalizada' && ficha.classePersonalizadaNome && (
+                  <div className="bl-card p-8 border-primary/30" style={{ background: 'oklch(0.10 0.015 260)' }}>
+                    <div className="flex items-center gap-3 mb-2">
+                      <Wand2 className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">CLASSE PERSONALIZADA</p>
+                    </div>
+                    <h3 className="font-display text-3xl text-white italic uppercase mb-1">{ficha.classePersonalizadaNome}</h3>
+                    {ficha.classePersonalizadaSubtitulo && (
+                      <p className="text-sm text-primary/80 font-heading tracking-wider mb-3">{ficha.classePersonalizadaSubtitulo}</p>
+                    )}
+                    {ficha.classePersonalizadaDescricao && (
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-6">{ficha.classePersonalizadaDescricao}</p>
+                    )}
+                    {ficha.classePersonalizadaPoderes && ficha.classePersonalizadaPoderes.length > 0 && (
+                      <div>
+                        <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">HABILIDADES</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {ficha.classePersonalizadaPoderes.map((poder, idx) => (
+                            <div key={idx} className="p-4 rounded-sm border border-white/10" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <p className="font-bold text-primary text-xs uppercase tracking-wider">{poder.nome || `Poder ${idx + 1}`}</p>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded flex-shrink-0 ${
+                                  poder.tipo === 'Passivo' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-primary/20 text-primary border border-primary/30'
+                                }`}>
+                                  {poder.tipo}
+                                </span>
+                              </div>
+                              {poder.descricao && <p className="text-[11px] text-white/80 leading-relaxed mb-2">{poder.descricao}</p>}
+                              {poder.bonus && (
+                                <p className="text-[11px] text-primary/80"><span className="font-bold">Bônus:</span> {poder.bonus}</p>
+                              )}
+                              {poder.custo && (
+                                <p className="text-[10px] text-muted-foreground mt-1"><span className="text-primary/70 font-bold">CUSTO:</span> {poder.custo}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Toggle Modo Imperador — aparece apenas para quem escolheu O Imperador */}
+                {ficha.classId === 'imperador' && (
+                  <div className="bl-card p-8 border-2" style={{ background: 'oklch(0.10 0.015 260)', borderColor: 'oklch(0.52 0.22 260 / 0.5)' }}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Zap className="w-6 h-6" style={{ color: 'oklch(0.75 0.22 55)' }} />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em]" style={{ color: 'oklch(0.75 0.22 55)' }}>META VISÃO — MODO ATIVO</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">
+                      A Meta Visão concede <span className="text-white font-bold">+1 em todas as perícias</span> e permite alternar entre dois modos de jogo. Escolha abaixo qual mentalidade seu Imperador adota em campo.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      {/* Modo Artilheiro */}
+                      <button
+                        onClick={() => setFicha(prev => ({ ...prev, modoImperador: prev.modoImperador === 'artilheiro' ? null : 'artilheiro' }))}
+                        className={`text-left p-5 rounded-sm border-2 transition-all ${
+                          ficha.modoImperador === 'artilheiro'
+                            ? 'border-orange-500 bg-orange-500/10'
+                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">⚽</span>
+                            <span className="font-display text-lg text-white italic uppercase">Artilheiro</span>
+                          </div>
+                          {ficha.modoImperador === 'artilheiro' && (
+                            <span className="text-[9px] px-2 py-0.5 rounded-full font-heading uppercase tracking-wider" style={{ background: 'oklch(0.65 0.22 55 / 0.3)', color: 'oklch(0.75 0.22 55)', border: '1px solid oklch(0.65 0.22 55 / 0.5)' }}>ATIVO</span>
+                          )}
+                        </div>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-400 font-bold">+3</span>
+                            <span className="text-white">Chute, Drible, Presença</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-red-400 font-bold">− bônus extra</span>
+                            <span className="text-muted-foreground">Roubo De Bola, Reflexos, Corpo a Corpo</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-2 italic">Foco total no ataque. Perde o bônus extra em perícias defensivas.</p>
+                        </div>
+                      </button>
+
+                      {/* Modo Defensor */}
+                      <button
+                        onClick={() => setFicha(prev => ({ ...prev, modoImperador: prev.modoImperador === 'defensor' ? null : 'defensor' }))}
+                        className={`text-left p-5 rounded-sm border-2 transition-all ${
+                          ficha.modoImperador === 'defensor'
+                            ? 'border-blue-500 bg-blue-500/10'
+                            : 'border-white/10 bg-white/5 hover:border-white/20'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">🛡️</span>
+                            <span className="font-display text-lg text-white italic uppercase">Defensor</span>
+                          </div>
+                          {ficha.modoImperador === 'defensor' && (
+                            <span className="text-[9px] px-2 py-0.5 rounded-full font-heading uppercase tracking-wider" style={{ background: 'oklch(0.55 0.22 260 / 0.3)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.55 0.22 260 / 0.5)' }}>ATIVO</span>
+                          )}
+                        </div>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="text-green-400 font-bold">+3</span>
+                            <span className="text-white">Corpo a Corpo, Reflexos, Roubo De Bola</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-red-400 font-bold">− bônus extra</span>
+                            <span className="text-muted-foreground">Chute, Presença, Drible</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-2 italic">Foco total na defesa. Perde o bônus extra em perícias ofensivas.</p>
+                        </div>
+                      </button>
+                    </div>
+
+                    {/* Resumo do modo ativo */}
+                    {ficha.modoImperador && (
+                      <div className="p-4 rounded-sm" style={{ background: ficha.modoImperador === 'artilheiro' ? 'oklch(0.65 0.22 55 / 0.1)' : 'oklch(0.55 0.22 260 / 0.1)', border: `1px solid ${ficha.modoImperador === 'artilheiro' ? 'oklch(0.65 0.22 55 / 0.3)' : 'oklch(0.55 0.22 260 / 0.3)'}` }}>
+                        <p className="text-[10px] font-heading uppercase tracking-wider mb-2" style={{ color: ficha.modoImperador === 'artilheiro' ? 'oklch(0.75 0.22 55)' : 'oklch(0.75 0.15 230)' }}>
+                          Modo {ficha.modoImperador === 'artilheiro' ? 'Artilheiro' : 'Defensor'} Ativado
+                        </p>
+                        <p className="text-xs text-white/70">
+                          {ficha.modoImperador === 'artilheiro'
+                            ? 'Chute, Drible e Presença com +3. Roubo De Bola, Reflexos e Corpo a Corpo com +1 (bônus base da Meta Visão).'
+                            : 'Corpo a Corpo, Reflexos e Roubo De Bola com +3. Chute, Presença e Drible com +1 (bônus base da Meta Visão).'
+                          }
+                        </p>
+                      </div>
+                    )}
+                    {!ficha.modoImperador && (
+                      <div className="p-4 rounded-sm bg-white/5 border border-white/10">
+                        <p className="text-xs text-muted-foreground italic">Nenhum modo selecionado. Todas as perícias recebem apenas o +1 base da Meta Visão.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Habilidades da Classe do Sistema */}
+                {selectedClass && selectedClass.abilities && selectedClass.abilities.length > 0 && (
+                  <div className="bl-card p-8" style={{ background: 'oklch(0.10 0.015 260)' }}>
+                    <div className="flex items-center gap-3 mb-6">
+                      <Zap className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">HABILIDADES DE CLASSE</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {selectedClass.abilities.map((ab, idx) => (
+                        <div key={idx} className="p-4 rounded-sm border border-white/10" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <p className="font-bold text-primary text-xs uppercase tracking-wider">{ab.name}</p>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded flex-shrink-0 ${
+                              ab.type === 'Passivo' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-primary/20 text-primary border border-primary/30'
+                            }`}>
+                              {ab.type}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-white/80 leading-relaxed mb-2">{ab.description}</p>
+                          <p className="text-[11px] text-primary/80"><span className="font-bold">Bônus:</span> {ab.bonus}</p>
+                          <div className="flex gap-3 mt-1 text-[9px] text-muted-foreground">
+                            <span><span className="text-primary/70 font-bold">CUSTO:</span> {ab.cost}</span>
+                            <span><span className="text-primary/70 font-bold">DURAÇÃO:</span> {ab.duration}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Histórico de Evolução */}
+                <div className="bl-card p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Trophy className="w-6 h-6 text-primary" />
+                      <p className="text-[10px] font-heading uppercase tracking-[0.3em] text-primary">Histórico de Evolução</p>
+                    </div>
+                    <button
+                      onClick={addRegistroEvolucao}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-heading uppercase tracking-wider transition-all"
+                      style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)', border: '1px solid oklch(0.52 0.22 260 / 0.4)' }}
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Adicionar Partida
+                    </button>
+                  </div>
+                  {(!ficha.historico || ficha.historico.length === 0) ? (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      <Trophy className="w-8 h-8 mx-auto mb-3 opacity-30" />
+                      <p>Nenhuma partida registrada ainda.</p>
+                      <p className="text-xs mt-1">Clique em "Adicionar Partida" para começar a registrar sua evolução.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {ficha.historico.map((registro, idx) => (
+                        <div key={idx} className="p-4 rounded-sm border border-white/10" style={{ background: 'oklch(0.10 0.015 260)' }}>
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <p className="text-xs font-bold text-white">{registro.data}</p>
+                              <p className="text-[10px] text-muted-foreground">Partidas: <span className="text-primary font-bold">{registro.partidas}</span> | Gols: <span className="text-primary font-bold">{registro.gols}</span> | Assistências: <span className="text-primary font-bold">{registro.assists}</span></p>
+                            </div>
+                            <button
+                              onClick={() => removeRegistroEvolucao(idx)}
+                              className="text-red-400 hover:text-red-300 transition-colors p-1"
+                              title="Remover registro"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          {registro.notas && (
+                            <p className="text-[10px] text-white/70 italic border-l-2 border-primary/30 pl-2 mb-2">{registro.notas}</p>
+                          )}
+                          <div className="grid grid-cols-5 gap-2 text-[9px]">
+                            {Object.entries(registro.atributosNaEpoca).map(([attr, valor]) => (
+                              <div key={attr} className="text-center p-1.5 rounded-sm" style={{ background: 'oklch(0.12 0.015 260)' }}>
+                                <div className="font-bold text-primary">{valor}</div>
+                                <div className="text-muted-foreground uppercase tracking-wider">{attr.substring(0, 3)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Botões de Ação */}
+                <div className="flex flex-wrap gap-3 no-print">
+                  <button onClick={() => setStep(7)} className="bl-btn-secondary">Voltar</button>
+                  <button onClick={saveFicha} className="bl-btn-primary flex items-center gap-2">
+                    <Save className="w-4 h-4" /> SALVAR
+                  </button>
+                  <button 
+                    onClick={printFicha} 
+                    className="bl-btn-secondary flex items-center gap-2"
+                    style={{ background: 'oklch(0.52 0.22 260 / 0.2)', borderColor: 'oklch(0.52 0.22 260)' }}
+                  >
+                    <Download className="w-4 h-4" /> IMPRIMIR PDF
+                  </button>
+                  <button onClick={exportCurrentFicha} className="bl-btn-secondary flex items-center gap-2">
+                    <Folder className="w-4 h-4" /> JSON
+                  </button>
+                  <button onClick={resetFicha} className="bl-btn-secondary flex items-center gap-2">
+                    <RotateCcw className="w-4 h-4" /> NOVA FICHA
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="hidden lg:block no-print">
+            <div className="sticky top-24 space-y-6">
+              {/* Preview Card */}
+              <div className="bl-card p-6 border-primary/20">
+                <div className="text-[10px] font-heading uppercase tracking-[0.3em] text-muted-foreground mb-4">PREVIEW DA FICHA</div>
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-xl font-display text-white uppercase italic truncate">{ficha.nome || "Novo Atleta"}</div>
+                    <div className="text-primary font-heading text-xs">#{ficha.numero || "00"}</div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 py-4 border-y border-white/5">
+                    <div className="text-center">
+                      <div className="text-3xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.total}</div>
+                      <div className="text-[8px] font-heading uppercase tracking-widest text-muted-foreground">TOTAL</div>
+                    </div>
+                    <div className="w-px h-10 bg-white/10" />
+                    <div>
+                      <div className="text-4xl font-black italic leading-none" style={{ color: overallData.rankColor }}>{overallData.rank}</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {Object.entries(overallData.categories).map(([key, val]) => (
+                      <div key={key} className="text-center p-2 rounded-sm bg-white/5 border border-white/5">
+                        <div className="text-xs font-bold text-white">{val}</div>
+                        <div className="text-[8px] font-heading uppercase text-muted-foreground">{key}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {(selectedClass || ficha.classId === 'personalizada') && (
+                    <div className="pt-2">
+                      <div className="text-[10px] font-heading uppercase text-muted-foreground mb-1">CLASSE</div>
+                      <div className="text-xs font-bold text-white uppercase italic">
+                        {ficha.classId === 'personalizada' ? (ficha.classePersonalizadaNome || 'Personalizada') : selectedClass?.name}
+                      </div>
+                      {ficha.classId === 'personalizada' && (
+                        <div className="text-[9px] text-primary/70 mt-0.5">Personalizada</div>
+                      )}
+                    </div>
+                  )}
+
+                  {ficha.armaNome && (
+                    <div className="pt-2 border-t border-white/5">
+                      <div className="text-[10px] font-heading uppercase text-primary mb-1">ARMA</div>
+                      <div className="text-xs font-bold text-white uppercase italic truncate">{ficha.armaNome}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Saved Fichas */}
+              {isLoaded && fichas.length > 0 && (
+                <div className="bl-card p-6">
+                  <button
+                    onClick={() => setShowSavedFichas(!showSavedFichas)}
+                    className="w-full flex items-center justify-between font-heading text-sm uppercase tracking-wider text-white mb-4"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Folder className="w-4 h-4" /> Minhas Fichas ({fichas.length})
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showSavedFichas ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showSavedFichas && (
+                    <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+                      {fichas.map(f => (
+                        <div key={f.id} className="p-3 rounded-sm bg-white/5 border border-border/50">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex-1">
+                              <p className="font-bold text-white text-sm">{f.nome}</p>
+                              <p className="text-[10px] text-muted-foreground">#{f.numero}</p>
+                            </div>
+                            <button
+                              onClick={() => deleteFicha(f.id)}
+                              className="text-red-500 hover:text-red-400 transition-colors"
+                              title="Deletar"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => loadFicha(f)}
+                            className="w-full py-1.5 text-[10px] font-heading uppercase tracking-wider rounded-sm transition-colors"
+                            style={{ background: 'oklch(0.52 0.22 260 / 0.2)', color: 'oklch(0.75 0.15 230)' }}
+                          >
+                            Carregar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <label className="mt-4 flex items-center justify-center gap-2 w-full py-2 rounded-sm font-heading text-xs uppercase tracking-wider cursor-pointer transition-colors"
+                    style={{ background: 'oklch(0.52 0.22 260 / 0.1)', color: 'oklch(0.75 0.15 230)' }}>
+                    <UploadIcon className="w-4 h-4" />
+                    Importar Ficha
+                    <input type="file" accept=".json" onChange={handleImportFicha} className="hidden" />
+                  </label>
+                </div>
+              )}
+
+              <div className="p-4 rounded-sm bg-primary/10 border border-primary/20">
+                <p className="text-[10px] text-primary/80 leading-relaxed italic uppercase font-bold">
+                  "O futebol é um esporte onde você cria seu próprio valor através do seu ego."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
